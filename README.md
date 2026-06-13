@@ -1,5 +1,7 @@
 # Music Ontology
 
+[![CI](https://github.com/blacng/music-ontology/actions/workflows/ci.yml/badge.svg)](https://github.com/blacng/music-ontology/actions/workflows/ci.yml)
+
 A **gist-aligned OWL 2 ontology** of the popular- and classical-music domain, built to power a
 **music discovery / recommendation** application — and, just as importantly, a worked example of
 the **GRL Workshop methodology** (Graph Research Labs, KGC 2026) for engineering ontologies with
@@ -116,24 +118,20 @@ events/venues, awards/charts, places, and musical features (key, tempo, time sig
 
 ## Running the validation
 
-Requires [`uv`](https://docs.astral.sh/uv/) (Python pinned to 3.14).
+Requires [`uv`](https://docs.astral.sh/uv/) (Python pinned to 3.14) and `make`.
 
 ```bash
-uv sync
+make install   # uv sync
+make check     # the full gate: model checks + CQ tests + SHACL (run by CI on every PR)
 
-# Model checks: parse + SPARQL exercising genre traversal, place roll-up, etc.
-uv run python scripts/validate_fixes.py
-
-# CQ regression suite (12/12 — one SPARQL test per competency question)
-uv run python scripts/run_cq_tests.py
-
-# SHACL conformance (type-checks as Violations, completeness as Warnings)
-uv run pyshacl -s ontology/music_vocabulary_shapes.ttl -m -f human \
-  ontology/music_vocabulary_comprehensive.ttl
+# or individually:
+make validate  # parse + SPARQL (genre traversal, place roll-up, …)
+make test      # CQ regression suite (12/12)
+make shacl     # SHACL conformance — fails only on Violations; Warnings are advisory
 ```
 
-The transform that applied the structural fixes is preserved and re-runnable at
-`scripts/apply_structural_fixes.py`.
+`make check` is exactly what GitHub Actions runs on every push and pull request. The transform
+that applied the structural fixes is preserved and re-runnable at `scripts/apply_structural_fixes.py`.
 
 ---
 

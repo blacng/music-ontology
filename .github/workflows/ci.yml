@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate:
+    name: Validate ontology
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Sync dependencies (locked)
+        run: uv sync --locked
+
+      - name: Model checks (parse + SPARQL)
+        run: make validate
+
+      - name: CQ regression suite
+        run: make test
+
+      - name: SHACL conformance (fail on Violations)
+        run: make shacl
