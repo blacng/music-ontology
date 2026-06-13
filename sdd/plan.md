@@ -11,8 +11,8 @@ Each generation step is followed by adversarial critique (Artefact 2) — not op
 | 1 | **CQ Generation** (Artefact 1) | ✅ Done | `docs/competency-questions.md` v1 |
 | 2 | **Adversarial Critique** of CQs (Artefact 2) | ✅ Done | 5 ranked findings; 2 hard blockers |
 | 3 | CQ revision per critique | ✅ Done | `docs/competency-questions.md` **v2** |
-| 4 | **Modeller Dialogue** — structural fixes (Artefact 4) | ✅ Done | genre→gist:Category (`:hasBroaderGenre`+`:TopLevelGenre`); `:originatesFrom`→`:Place`+`:locatedIn` roll-up; `:hasAge`→`:bornOn`, drop `:hasHeight`. Applied via `music_ontology/scripts/apply_structural_fixes.py`, verified by `music_ontology/scripts/validate_fixes.py` |
-| 5 | **SHACL Generation** (Artefact 3) | ✅ Done | `music_ontology/ontology/music_vocabulary_shapes.ttl` + `docs/shacl-report.md`; pyshacl-validated |
+| 4 | **Modeller Dialogue** — structural fixes (Artefact 4) | ✅ Done | genre→gist:Category (`:hasBroaderGenre`+`:TopLevelGenre`); `:originatesFrom`→`:Place`+`:locatedIn` roll-up; `:hasAge`→`:bornOn`, drop `:hasHeight`. Applied via `scripts/apply_structural_fixes.py`, verified by `scripts/validate_fixes.py` |
+| 5 | **SHACL Generation** (Artefact 3) | ✅ Done | `ontology/music_vocabulary_shapes.ttl` + `docs/shacl-report.md`; pyshacl-validated |
 | 5b | **Modeller Dialogue loop-back** (Artefact 4) | ✅ Done | `:Musician`↔`:MusicalArtist` boundary fixed via `:MusicalAgent` superclass + `:SoloArtist ⊑ :Musician` + `:collaboratesWith`→`:MusicalAgent`; **0 Violations** |
 | 6 | **Test Data + CQ Tests** (Artefact 5) | ⏳ Next | covers CQ-8, CQ-11 gaps + the 19 SHACL Warnings; validate against shapes |
 | 7 | **Production Readiness** (Artefact 7) | ⏳ Pending | 12-point gate |

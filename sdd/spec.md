@@ -50,7 +50,7 @@ production use. Scope is **content-based candidate generation**, not personalise
   of `:MusicalArtist` and `:Musician`; `:SoloArtist ⊑ :Musician`; `:collaboratesWith` relates
   `:MusicalAgent`s. Clears the 2 SHACL Violations at the schema level (no individual patching).
 
-Applied via `music_ontology/scripts/apply_structural_fixes.py`; verified by `music_ontology/scripts/validate_fixes.py`
+Applied via `scripts/apply_structural_fixes.py`; verified by `scripts/validate_fixes.py`
 (parse + SPARQL checks all pass) and `pyshacl` (0 Violations).
 
 ## Known issues / decisions pending

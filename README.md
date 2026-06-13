@@ -104,8 +104,8 @@ events/venues, awards/charts, places, and musical features (key, tempo, time sig
 
 | Path | Contents |
 |------|----------|
-| `music_ontology/ontology/` | the `.ttl` files: `music_vocabulary_comprehensive.ttl` (model + instances), `music_vocabulary_shapes.ttl` (SHACL) |
-| `music_ontology/scripts/` | transform + validation scripts |
+| `ontology/` | the `.ttl` files: `music_vocabulary_comprehensive.ttl` (model + instances), `music_vocabulary_shapes.ttl` (SHACL) |
+| `scripts/` | transform + validation scripts |
 | `sdd/` | spec-driven-development control docs: `spec.md`, `plan.md` |
 | `docs/` | engineering deliverables: `competency-questions.md`, `shacl-report.md` |
 | `CLAUDE.md` | guidance for Claude Code working in this repo |
@@ -121,15 +121,15 @@ Requires [`uv`](https://docs.astral.sh/uv/) (Python pinned to 3.14).
 uv sync
 
 # Model checks: parse + SPARQL exercising genre traversal, place roll-up, etc.
-uv run python music_ontology/scripts/validate_fixes.py
+uv run python scripts/validate_fixes.py
 
 # SHACL conformance (type-checks as Violations, completeness as Warnings)
-uv run pyshacl -s music_ontology/ontology/music_vocabulary_shapes.ttl -m -f human \
-  music_ontology/ontology/music_vocabulary_comprehensive.ttl
+uv run pyshacl -s ontology/music_vocabulary_shapes.ttl -m -f human \
+  ontology/music_vocabulary_comprehensive.ttl
 ```
 
 The transform that applied the structural fixes is preserved and re-runnable at
-`music_ontology/scripts/apply_structural_fixes.py`.
+`scripts/apply_structural_fixes.py`.
 
 ---
 
