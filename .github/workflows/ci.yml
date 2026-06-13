@@ -5,6 +5,11 @@ on:
     branches: [main]
   pull_request:
 
+# Force JS actions onto Node 24 now (GitHub makes it the default on 2026-06-16).
+# Verifies the workflow survives the migration even though setup-uv still ships Node 20.
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 jobs:
   validate:
     name: Validate ontology
