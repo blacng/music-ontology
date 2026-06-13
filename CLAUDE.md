@@ -8,7 +8,7 @@ This is an **ontology-engineering project**, not a conventional application. The
 `pyproject.toml` setup exists only to run the validation tooling — there is no application
 code. The actual deliverables are:
 
-1. **`music_ontology/music_vocabulary_comprehensive.ttl`** — a ~50-class, ~38-property OWL 2 ontology
+1. **`music_ontology/ontology/music_vocabulary_comprehensive.ttl`** — a ~50-class, ~38-property OWL 2 ontology
    of music concepts (artists, works, instruments, genres, relationships), aligned to the
    **gist** upper ontology (`gist:` = `https://w3id.org/semanticarts/ontology/gistCore#`).
    Its own namespace is `:` = `https://www.somusicvocabulary.org/music#`.
@@ -80,7 +80,8 @@ over many hand-edits for bulk `.ttl` changes (see `apply_structural_fixes.py`).
 
 ## Repository layout
 
-- `music_ontology/` — the ontology (`*.ttl`) and its transform/validation `scripts/`.
+- `music_ontology/ontology/` — the `*.ttl` files (model + instances, and SHACL shapes).
+- `music_ontology/scripts/` — transform/validation scripts.
 - `sdd/` — spec-driven-development control docs (`spec.md`, `plan.md`).
 - `docs/` — engineering deliverables (`competency-questions.md`, `shacl-report.md`).
 - `prompt_library/`, `docs/prompt-library-summary.md` — local-only (git-ignored).
@@ -88,7 +89,7 @@ over many hand-edits for bulk `.ttl` changes (see `apply_structural_fixes.py`).
 ## Commands
 
 - Validate model (parse + SPARQL): `uv run python music_ontology/scripts/validate_fixes.py`
-- Validate SHACL: `uv run pyshacl -s music_ontology/music_vocabulary_shapes.ttl -m -f human music_ontology/music_vocabulary_comprehensive.ttl`
+- Validate SHACL: `uv run pyshacl -s music_ontology/ontology/music_vocabulary_shapes.ttl -m -f human music_ontology/ontology/music_vocabulary_comprehensive.ttl`
 - Add a dependency: `uv add <package>` · Sync: `uv sync`
 - Python pinned to **3.14** (`.python-version`, `requires-python = ">=3.14"`)
 

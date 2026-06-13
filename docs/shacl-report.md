@@ -1,12 +1,12 @@
 # SHACL Validation Report
 
 **Artefact:** 3 (SHACL Generation) · GRL Workshop methodology
-**Shapes:** `music_ontology/music_vocabulary_shapes.ttl`
-**Data:** `music_ontology/music_vocabulary_comprehensive.ttl`
+**Shapes:** `music_ontology/ontology/music_vocabulary_shapes.ttl`
+**Data:** `music_ontology/ontology/music_vocabulary_comprehensive.ttl`
 **Tool:** pyshacl 0.31.0 (`meta_shacl=True` — shapes themselves validate)
 **Result:** `conforms=False` — **0 Violations, 19 Warnings** (Warnings are completeness only)
 
-Reproduce: `uv run pyshacl -s music_ontology/music_vocabulary_shapes.ttl -m -f human music_ontology/music_vocabulary_comprehensive.ttl`
+Reproduce: `uv run pyshacl -s music_ontology/ontology/music_vocabulary_shapes.ttl -m -f human music_ontology/ontology/music_vocabulary_comprehensive.ttl`
 
 ## Violations — resolved ✅
 

@@ -1,7 +1,7 @@
 # Competency Questions — Comprehensive Music Vocabulary
 
 **Artefact:** 1 of 7 (Competency Question Generation) · GRL Workshop methodology
-**Target ontology:** `music_ontology/music_vocabulary_comprehensive.ttl`
+**Target ontology:** `music_ontology/ontology/music_vocabulary_comprehensive.ttl`
 **Status:** **v3 — SPARQL regenerated against the post-Artefact-4 model** (gist:Category genres, structured `:Place`, `:bornOn`). Supersedes v2.
 
 ## Generation parameters

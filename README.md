@@ -104,7 +104,8 @@ events/venues, awards/charts, places, and musical features (key, tempo, time sig
 
 | Path | Contents |
 |------|----------|
-| `music_ontology/` | the ontology itself: `music_vocabulary_comprehensive.ttl` (model + instances), `music_vocabulary_shapes.ttl` (SHACL), and `scripts/` (transform + validation) |
+| `music_ontology/ontology/` | the `.ttl` files: `music_vocabulary_comprehensive.ttl` (model + instances), `music_vocabulary_shapes.ttl` (SHACL) |
+| `music_ontology/scripts/` | transform + validation scripts |
 | `sdd/` | spec-driven-development control docs: `spec.md`, `plan.md` |
 | `docs/` | engineering deliverables: `competency-questions.md`, `shacl-report.md` |
 | `CLAUDE.md` | guidance for Claude Code working in this repo |
@@ -123,8 +124,8 @@ uv sync
 uv run python music_ontology/scripts/validate_fixes.py
 
 # SHACL conformance (type-checks as Violations, completeness as Warnings)
-uv run pyshacl -s music_ontology/music_vocabulary_shapes.ttl -m -f human \
-  music_ontology/music_vocabulary_comprehensive.ttl
+uv run pyshacl -s music_ontology/ontology/music_vocabulary_shapes.ttl -m -f human \
+  music_ontology/ontology/music_vocabulary_comprehensive.ttl
 ```
 
 The transform that applied the structural fixes is preserved and re-runnable at
