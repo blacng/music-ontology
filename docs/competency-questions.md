@@ -74,11 +74,13 @@ label rosters (`isSignedTo`), authorship/performance (`performedBy`, `composedBy
 - **SPARQL skeleton:**
   ```sparql
   SELECT DISTINCT ?reachable WHERE {
-    :PaulMcCartney (:collaboratesWith|^:hasMember/:hasMember){1,2} ?reachable .
+    { :PaulMcCartney (:collaboratesWith|^:hasMember/:hasMember) ?reachable }
+    UNION
+    { :PaulMcCartney (:collaboratesWith|^:hasMember/:hasMember)/(:collaboratesWith|^:hasMember/:hasMember) ?reachable }
     FILTER(?reachable != :PaulMcCartney)
   }
   ```
-- **Note:** `collaboratesWith` is sparse (one pair today); the bandmate path is well populated. Adding role-typed collaboration edges is a test-data target (Artefact 5).
+- **Note:** the `{1,2}` path quantifier (used in the v1–v3 skeleton) is **not** standard SPARQL 1.1 and is rejected by rdflib — Artefact 5 caught this; rewritten above as an explicit 1-hop ∪ 2-hop union. `collaboratesWith` is sparse (one pair today); the bandmate path is well populated.
 
 ### CQ-3 — Labelmates ✅
 - **Question:** Which artists are signed to the same record label as a seed artist?
@@ -213,10 +215,18 @@ label rosters (`isSignedTo`), authorship/performance (`performedBy`, `composedBy
 
 ---
 
+## Regression suite (Artefact 5)
+
+Every CQ now has an executable test in `tests/cq_test_manifest.json`, run against
+`ontology/music_vocabulary_comprehensive.ttl` + `tests/test_data.ttl` (synthetic `:TST_*`
+fixtures) by `scripts/run_cq_tests.py`. Each test is membership-based — a designated
+yes-instance must appear and a no-instance must not — so it is robust to the illustrative
+real catalog. **12/12 pass.** Run: `uv run python scripts/run_cq_tests.py`.
+
 ## Coverage, flags & waivers
 
-- **Answerable today (10):** CQ-1, 2, 3, 4, 5, 6, 7, 9, 10, 12.
-- **Needs synthetic data first (2):** CQ-8 (one album/producer), CQ-11 (member→work links absent) — targets for Artefact 5.
+- **All 12 CQs now testable** against the synthetic fixture; CQ-8 (producer lineage) and
+  CQ-11 (member crossover) — previously ⚠ — are covered by `:TST_*` data and pass.
 - **Signal balance (critique #3):** genre-only CQs reduced; the set now also exercises label, collaboration/membership, instrument, producer, era, charts, and an explicit explainability CQ.
 - **Waivers (research prototype, critique #3/#4):**
   - *Rights/availability* modelling — out of scope for a prototype.
@@ -226,6 +236,9 @@ label rosters (`isSignedTo`), authorship/performance (`performedBy`, `composedBy
 
 ## Changelog
 
+- **v4** (Artefact 5): added the executable regression suite (`tests/`, `scripts/run_cq_tests.py`);
+  fixed CQ-2's non-standard `{1,2}` path quantifier (→ explicit 1∪2-hop union) caught by running
+  the queries; all 12 CQs pass.
 - **v3** (post-Artefact-4): regenerated all genre SPARQL to the gist:Category model
   (`:hasBroaderGenre*` + `:TopLevelGenre`); CQ-12 origin now structured `:Place` with
   `:locatedIn` roll-up; updated Elements lines; marked the geography and personal-attribute

@@ -1,0 +1,159 @@
+@prefix : <https://www.somusicvocabulary.org/music#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+###############################################################################
+# SYNTHETIC TEST DATA — Artefact 5 (Test Data + CQ Tests)
+#
+# A small, controlled fixture with obviously-synthetic identifiers (:TST_*).
+# Loaded ALONGSIDE music_vocabulary_comprehensive.ttl (which supplies the TBox
+# plus the genre / instrument / place reference individuals it reuses).
+#
+# Designed so every CQ has at least one YES-instance and one NO-instance.
+# Edge cases: missing optionals (:TST_SoloEmpty), boundary chart position
+# (:TST_Song1 peaksAt 1), multi-valued genre (:TST_SoloA), dual-role agent
+# (:TST_MusM is a SoloArtist AND a band member — the boundary-fix case).
+###############################################################################
+
+# --- Places ---
+:TST_CountryZ a :Country ; rdfs:label "Testland"@en ; .
+:TST_CityX a :City ; rdfs:label "Test City X"@en ; :locatedIn :TST_CountryZ ; .
+:TST_CityY a :City ; rdfs:label "Test City Y"@en ; :locatedIn :TST_CountryZ ; .
+
+# --- Labels / charts / awards / producers ---
+:TST_Label1 a :RecordLabel ; rdfs:label "Test Label One"@en ; :locatedIn :TST_CityX ; .
+:TST_Label2 a :RecordLabel ; rdfs:label "Test Label Two"@en ; .
+:TST_Chart1 a :MusicChart ; rdfs:label "Test Chart"@en ; .
+:TST_Award1 a :MusicAward ; rdfs:label "Test Award"@en ; .
+:TST_Producer1 a :MusicProducer ; rdfs:label "Test Producer One"@en ; .
+:TST_Producer2 a :MusicProducer ; rdfs:label "Test Producer Two"@en ; .
+
+# --- Solo artists (SoloArtist ⊑ MusicalArtist ⊑ MusicalAgent, and ⊑ Musician) ---
+:TST_SoloA a :SoloArtist ;
+    rdfs:label "Test Solo A"@en ;
+    :hasGenre :Rock, :Pop ;           # multi-valued → genre-spanning (CQ-6)
+    :hasInstrument :Guitar ;
+    :isSignedTo :TST_Label1 ;
+    :collaboratesWith :TST_SoloB ;
+    :originatesFrom :TST_CityX ;
+    :bornOn "1970-03-04"^^xsd:date ;
+    :startsCareerIn "1983"^^xsd:gYear ;
+    :hasAward :TST_Award1 ;
+    .
+
+:TST_SoloB a :SoloArtist ;
+    rdfs:label "Test Solo B"@en ;
+    :hasGenre :Rock ;                  # shares Rock with A; only 1 top genre
+    :hasInstrument :Piano ;            # different instrument family from A
+    :isSignedTo :TST_Label1 ;          # labelmate of A (CQ-3)
+    :originatesFrom :TST_CityX ;       # same scene as A (CQ-12)
+    :startsCareerIn "1984"^^xsd:gYear ;
+    .
+
+:TST_SoloC a :SoloArtist ;
+    rdfs:label "Test Solo C"@en ;
+    :hasGenre :Jazz ;                  # shares nothing with A → NO-instance
+    :hasInstrument :Saxophone ;
+    :isSignedTo :TST_Label2 ;
+    :originatesFrom :TST_CityY ;
+    :startsCareerIn "1985"^^xsd:gYear ;
+    .
+
+:TST_SoloEmpty a :SoloArtist ;
+    rdfs:label "Test Solo Empty"@en ;  # edge case: missing optional properties
+    .
+
+# --- Musicians / band ---
+:TST_MusM a :SoloArtist ;             # dual role: solo artist AND band member
+    rdfs:label "Test Musician M"@en ;
+    :hasGenre :Rock ;
+    :hasInstrument :Guitar ;          # same instrument as SoloA (CQ-5)
+    :isMemberOf :TST_BandX ;
+    :performs :TST_SoloWork ;         # member's solo work (CQ-11)
+    .
+
+:TST_MusN a :Musician ;              # pure musician (no solo work)
+    rdfs:label "Test Musician N"@en ;
+    :hasInstrument :Drums ;
+    :isMemberOf :TST_BandX ;
+    .
+
+:TST_MusBass a :Musician ;
+    rdfs:label "Test Musician Bass"@en ;
+    :hasInstrument :Bass ;            # PluckedString family, like Guitar (CQ-5)
+    :isMemberOf :TST_BandAlt ;
+    .
+
+:TST_BandX a :RockBand ;
+    rdfs:label "Test Band X"@en ;
+    :hasGenre :Rock ;
+    :isSignedTo :TST_Label1 ;
+    :hasMember :TST_MusM, :TST_MusN ;
+    :originatesFrom :TST_CityX ;
+    .
+
+:TST_BandAlt a :RockBand ;
+    rdfs:label "Test Band Alt"@en ;
+    :hasGenre :AlternativeRock ;       # subgenre of Rock → transitive browse (CQ-9)
+    :hasMember :TST_MusBass ;
+    .
+
+# --- Works ---
+:TST_Album1 a :StudioAlbum ;
+    rdfs:label "Test Album One"@en ;
+    :performedBy :TST_SoloA ;
+    :producedBy :TST_Producer1 ;
+    :releasedBy :TST_Label1 ;
+    :releasedIn "1985"^^xsd:gYear ;
+    :hasGenre :Rock ;
+    :hasTrack :TST_Song1 ;
+    .
+
+:TST_Album2 a :StudioAlbum ;
+    rdfs:label "Test Album Two"@en ;
+    :performedBy :TST_SoloB ;
+    :producedBy :TST_Producer1 ;       # same producer as Album1 → lineage (CQ-8)
+    :releasedIn "1987"^^xsd:gYear ;    # same decade as Album1 (CQ-4)
+    :hasGenre :Rock ;
+    .
+
+:TST_Album3 a :StudioAlbum ;
+    rdfs:label "Test Album Three"@en ;
+    :performedBy :TST_SoloC ;
+    :producedBy :TST_Producer2 ;       # different producer → NO-instance (CQ-8)
+    :releasedIn "1999"^^xsd:gYear ;
+    :hasGenre :Jazz ;
+    .
+
+:TST_Song1 a :Song ;
+    rdfs:label "Test Song One"@en ;
+    :performedBy :TST_SoloA ;
+    :belongsToAlbum :TST_Album1 ;
+    :releasedIn "1985"^^xsd:gYear ;
+    :hasGenre :Rock ;
+    :peaksAt 1 ;                        # boundary: #1 hit (CQ-10)
+    :chartedIn :TST_Chart1 ;
+    .
+
+:TST_Song2 a :Song ;
+    rdfs:label "Test Song Two"@en ;
+    :performedBy :TST_SoloB ;
+    :releasedIn "1985"^^xsd:gYear ;
+    :hasGenre :Rock ;
+    :peaksAt 5 ;                        # not #1 → NO-instance (CQ-10)
+    :chartedIn :TST_Chart1 ;
+    .
+
+:TST_Song1969 a :Song ;
+    rdfs:label "Test Song 1969"@en ;
+    :performedBy :TST_SoloA ;
+    :releasedIn "1969"^^xsd:gYear ;    # same genre as Album1 but wrong decade (CQ-4 NO)
+    :hasGenre :Rock ;
+    .
+
+:TST_SoloWork a :Song ;
+    rdfs:label "Test Solo Work"@en ;
+    :performedBy :TST_MusM ;
+    :releasedIn "1990"^^xsd:gYear ;
+    :hasGenre :Rock ;
+    .

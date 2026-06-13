@@ -50,9 +50,9 @@ flowchart TB
     shacl --> rep[pyshacl · 2 Violations surfaced]
     rep --> dlg2[Artefact 4 loop-back · MusicalAgent superclass]
     dlg2 --> ok[0 Violations · 19 completeness Warnings]
+    ok --> td[Test Data · 12/12 CQ tests pass]
   end
   subgraph pending [Pending]
-    ok --> td[Test Data · clears Warnings]
     td --> pr[Production Readiness · 12-pt gate]
   end
 ```
@@ -106,6 +106,7 @@ events/venues, awards/charts, places, and musical features (key, tempo, time sig
 |------|----------|
 | `ontology/` | the `.ttl` files: `music_vocabulary_comprehensive.ttl` (model + instances), `music_vocabulary_shapes.ttl` (SHACL) |
 | `scripts/` | transform + validation scripts |
+| `tests/` | CQ regression suite: `test_data.ttl` (synthetic fixtures) + `cq_test_manifest.json` |
 | `sdd/` | spec-driven-development control docs: `spec.md`, `plan.md` |
 | `docs/` | engineering deliverables: `competency-questions.md`, `shacl-report.md` |
 | `CLAUDE.md` | guidance for Claude Code working in this repo |
@@ -122,6 +123,9 @@ uv sync
 
 # Model checks: parse + SPARQL exercising genre traversal, place roll-up, etc.
 uv run python scripts/validate_fixes.py
+
+# CQ regression suite (12/12 — one SPARQL test per competency question)
+uv run python scripts/run_cq_tests.py
 
 # SHACL conformance (type-checks as Violations, completeness as Warnings)
 uv run pyshacl -s ontology/music_vocabulary_shapes.ttl -m -f human \
@@ -141,8 +145,8 @@ The transform that applied the structural fixes is preserved and re-runnable at
 | Modeller Dialogue — structural fixes | ✅ done (validated) |
 | SHACL generation | ✅ done — `docs/shacl-report.md` |
 | Resolve `:Musician` ↔ `:MusicalArtist` boundary | ✅ done — `:MusicalAgent` superclass; **0 Violations** |
-| Test data + CQ tests | ⏳ next (clears the 19 completeness Warnings) |
-| Production readiness (12-pt gate) | ⏳ pending |
+| Test data + CQ tests | ✅ done — **12/12 CQs pass** (`tests/`, `scripts/run_cq_tests.py`) |
+| Production readiness (12-pt gate) | ⏳ next |
 
 See [`sdd/plan.md`](sdd/plan.md) for the live lifecycle tracker and [`sdd/spec.md`](sdd/spec.md)
 for the specification.

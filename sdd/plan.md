@@ -14,8 +14,8 @@ Each generation step is followed by adversarial critique (Artefact 2) — not op
 | 4 | **Modeller Dialogue** — structural fixes (Artefact 4) | ✅ Done | genre→gist:Category (`:hasBroaderGenre`+`:TopLevelGenre`); `:originatesFrom`→`:Place`+`:locatedIn` roll-up; `:hasAge`→`:bornOn`, drop `:hasHeight`. Applied via `scripts/apply_structural_fixes.py`, verified by `scripts/validate_fixes.py` |
 | 5 | **SHACL Generation** (Artefact 3) | ✅ Done | `ontology/music_vocabulary_shapes.ttl` + `docs/shacl-report.md`; pyshacl-validated |
 | 5b | **Modeller Dialogue loop-back** (Artefact 4) | ✅ Done | `:Musician`↔`:MusicalArtist` boundary fixed via `:MusicalAgent` superclass + `:SoloArtist ⊑ :Musician` + `:collaboratesWith`→`:MusicalAgent`; **0 Violations** |
-| 6 | **Test Data + CQ Tests** (Artefact 5) | ⏳ Next | covers CQ-8, CQ-11 gaps + the 19 SHACL Warnings; validate against shapes |
-| 7 | **Production Readiness** (Artefact 7) | ⏳ Pending | 12-point gate |
+| 6 | **Test Data + CQ Tests** (Artefact 5) | ✅ Done | `tests/test_data.ttl` + `tests/cq_test_manifest.json` + `scripts/run_cq_tests.py`; **12/12 CQs pass**. Caught & fixed CQ-2's non-standard `{1,2}` path quantifier |
+| 7 | **Production Readiness** (Artefact 7) | ⏳ Next | 12-point gate |
 
 > **Sequencing rationale:** structural fixes precede SHACL and test data because both sit
 > downstream of the schema (regeneration discipline) — fix the schema → constrain it →
@@ -32,9 +32,10 @@ Each generation step is followed by adversarial critique (Artefact 2) — not op
 
 ## Next action
 
-Artefact 5 — Test Data + CQ Tests. Generate synthetic instances to clear the 19 completeness
-Warnings (band members, song/album performers, musician instruments) and to make CQ-8 (producer
-lineage) and CQ-11 (member crossover) answerable. Open follow-up: the 5 vocalist "no instrument"
-warnings (model `:Voice` or relax the expectation to "sings or plays").
+Artefact 7 — Production Readiness (12-point gate): CQ tests pass ✅, reasoner check (consistency /
+unsatisfiable classes), SHACL on canonical data, OWL profile declaration, `owl:versionIRI`,
+change-log. Open follow-ups: (a) the 5 vocalist "no instrument" warnings (model `:Voice` or relax
+to "sings or plays"); (b) completing the real catalog so its 19 SHACL completeness Warnings clear
+(distinct from the synthetic test fixture).
 
 > Living document — update before completing each feature/development task.

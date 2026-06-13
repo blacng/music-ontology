@@ -23,7 +23,9 @@ beyond key/tempo/time-signature.
 The ontology's functional contract is the competency-question set in
 [`docs/competency-questions.md`](../docs/competency-questions.md) — 12 CQs oriented to discovery
 and recommendation. "Done" for the ontology means every CQ has a passing SPARQL test against
-canonical instance data (Production Readiness Checklist item 1).
+canonical instance data (Production Readiness Checklist item 1). **Realized in Artefact 5:**
+`tests/cq_test_manifest.json` + `tests/test_data.ttl`, run by `scripts/run_cq_tests.py` —
+**12/12 pass**.
 
 ## Conventions
 
