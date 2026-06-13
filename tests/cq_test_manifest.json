@@ -1,0 +1,102 @@
+{
+  "description": "Artefact 5 CQ regression suite. One SPARQL test per competency question, run against music_vocabulary_comprehensive.ttl + tests/test_data.ttl. Pass condition is membership-based (robust to the illustrative real catalog): each designated yes-instance must appear in the result and each no-instance must not. `var` is the projected variable whose values are checked; `contains`/`excludes` are local names (the bit after '#').",
+  "namespace": "https://www.somusicvocabulary.org/music#",
+  "tests": [
+    {
+      "id": "CQ-1",
+      "question": "Which artists share at least one top-level genre with a seed artist?",
+      "var": "other",
+      "sparql": "SELECT DISTINCT ?other WHERE { :TST_SoloA :hasGenre/:hasBroaderGenre* ?root . ?root a :TopLevelGenre . ?other :hasGenre/:hasBroaderGenre* ?root . FILTER(?other != :TST_SoloA) }",
+      "expect": { "contains": ["TST_SoloB"], "excludes": ["TST_SoloC", "TST_SoloEmpty"] },
+      "sample_row": "TST_SoloB shares the Rock root with TST_SoloA"
+    },
+    {
+      "id": "CQ-2",
+      "question": "Which agents are within two hops via collaboratesWith or shared band membership?",
+      "var": "reachable",
+      "sparql": "SELECT DISTINCT ?reachable WHERE { { :TST_SoloA (:collaboratesWith|^:hasMember/:hasMember) ?reachable } UNION { :TST_SoloA (:collaboratesWith|^:hasMember/:hasMember)/(:collaboratesWith|^:hasMember/:hasMember) ?reachable } FILTER(?reachable != :TST_SoloA) }",
+      "expect": { "contains": ["TST_SoloB"], "excludes": ["TST_SoloC"] },
+      "sample_row": "TST_SoloB reached via collaboratesWith"
+    },
+    {
+      "id": "CQ-3",
+      "question": "Which artists are signed to the same label as a seed artist?",
+      "var": "labelmate",
+      "sparql": "SELECT DISTINCT ?labelmate WHERE { :TST_SoloA :isSignedTo ?l . ?labelmate :isSignedTo ?l . FILTER(?labelmate != :TST_SoloA) }",
+      "expect": { "contains": ["TST_SoloB", "TST_BandX"], "excludes": ["TST_SoloC"] },
+      "sample_row": "TST_SoloB and TST_BandX share TST_Label1"
+    },
+    {
+      "id": "CQ-4",
+      "question": "Which works share a seed work's release decade and a top-level genre?",
+      "var": "work",
+      "sparql": "SELECT DISTINCT ?work WHERE { :TST_Album1 :releasedIn ?y0 ; :hasGenre/:hasBroaderGenre* ?root . ?root a :TopLevelGenre . ?work :releasedIn ?y ; :hasGenre/:hasBroaderGenre* ?root . FILTER(FLOOR(xsd:integer(STR(?y0))/10) = FLOOR(xsd:integer(STR(?y))/10) && ?work != :TST_Album1) }",
+      "expect": { "contains": ["TST_Album2"], "excludes": ["TST_Song1969"] },
+      "sample_row": "TST_Album2 (1987, Rock) shares the 1980s+Rock with TST_Album1 (1985)"
+    },
+    {
+      "id": "CQ-5",
+      "question": "Which musicians play the same instrument or instrument family as a seed musician?",
+      "var": "m",
+      "sparql": "SELECT DISTINCT ?m WHERE { :TST_MusM :hasInstrument ?i . ?i a ?fam . ?m :hasInstrument ?i2 . ?i2 a ?fam . FILTER(?m != :TST_MusM) }",
+      "expect": { "contains": ["TST_SoloA", "TST_MusBass"], "excludes": ["TST_SoloB"] },
+      "sample_row": "TST_SoloA (Guitar, exact) and TST_MusBass (Bass, same PluckedString family)"
+    },
+    {
+      "id": "CQ-6",
+      "question": "Which artists span more than one top-level genre?",
+      "var": "artist",
+      "sparql": "SELECT ?artist (COUNT(DISTINCT ?root) AS ?n) WHERE { ?artist :hasGenre/:hasBroaderGenre* ?root . ?root a :TopLevelGenre . } GROUP BY ?artist HAVING(COUNT(DISTINCT ?root) > 1)",
+      "expect": { "contains": ["TST_SoloA"], "excludes": ["TST_SoloB", "TST_SoloC"] },
+      "sample_row": "TST_SoloA spans Rock + Pop (2 roots)"
+    },
+    {
+      "id": "CQ-7",
+      "question": "Which candidates are related to a seed by a shared genre, label, or instrument (with evidence)?",
+      "var": "candidate",
+      "sparql": "SELECT DISTINCT ?candidate WHERE { { :TST_SoloA :hasGenre/:hasBroaderGenre* ?r . ?r a :TopLevelGenre . ?candidate :hasGenre/:hasBroaderGenre* ?r } UNION { :TST_SoloA :isSignedTo ?l . ?candidate :isSignedTo ?l } UNION { :TST_SoloA :hasInstrument ?i . ?candidate :hasInstrument ?i } FILTER(?candidate != :TST_SoloA) }",
+      "expect": { "contains": ["TST_SoloB"], "excludes": ["TST_SoloC"] },
+      "sample_row": "TST_SoloB shares Rock genre and TST_Label1 with TST_SoloA"
+    },
+    {
+      "id": "CQ-8",
+      "question": "Which albums share a seed album's producer?",
+      "var": "other",
+      "sparql": "SELECT DISTINCT ?other WHERE { :TST_Album1 :producedBy ?p . ?other :producedBy ?p . FILTER(?other != :TST_Album1) }",
+      "expect": { "contains": ["TST_Album2"], "excludes": ["TST_Album3"] },
+      "sample_row": "TST_Album2 shares TST_Producer1 with TST_Album1"
+    },
+    {
+      "id": "CQ-9",
+      "question": "Which entities belong to a top-level genre or any of its subgenres (transitive)?",
+      "var": "entity",
+      "sparql": "SELECT DISTINCT ?entity WHERE { ?sub :hasBroaderGenre* :Rock . ?entity :hasGenre ?sub . }",
+      "expect": { "contains": ["TST_BandAlt", "TST_BandX"], "excludes": ["TST_SoloC"] },
+      "sample_row": "TST_BandAlt (AlternativeRock) reached via :hasBroaderGenre* :Rock"
+    },
+    {
+      "id": "CQ-10",
+      "question": "Which songs reached the #1 chart position?",
+      "var": "song",
+      "sparql": "SELECT DISTINCT ?song WHERE { ?song :peaksAt 1 . }",
+      "expect": { "contains": ["TST_Song1"], "excludes": ["TST_Song2"] },
+      "sample_row": "TST_Song1 peaksAt 1; TST_Song2 peaksAt 5 (excluded)"
+    },
+    {
+      "id": "CQ-11",
+      "question": "What other works are associated with a band's members?",
+      "var": "otherWork",
+      "sparql": "SELECT DISTINCT ?otherWork WHERE { :TST_BandX :hasMember ?member . ?member :performs ?otherWork . }",
+      "expect": { "contains": ["TST_SoloWork"], "excludes": ["TST_Album3"] },
+      "sample_row": "Band member TST_MusM performs TST_SoloWork"
+    },
+    {
+      "id": "CQ-12",
+      "question": "Which artists originate from the same place as a seed artist?",
+      "var": "artist",
+      "sparql": "SELECT DISTINCT ?artist WHERE { :TST_SoloA :originatesFrom ?p . ?artist :originatesFrom ?p . FILTER(?artist != :TST_SoloA) }",
+      "expect": { "contains": ["TST_SoloB"], "excludes": ["TST_SoloC"] },
+      "sample_row": "TST_SoloB and TST_SoloA both originate from TST_CityX"
+    }
+  ]
+}

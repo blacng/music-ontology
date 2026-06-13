@@ -82,6 +82,7 @@ over many hand-edits for bulk `.ttl` changes (see `apply_structural_fixes.py`).
 
 - `ontology/` — the `*.ttl` files (model + instances, and SHACL shapes).
 - `scripts/` — transform/validation scripts.
+- `tests/` — CQ regression suite: `test_data.ttl` (synthetic `:TST_*` fixtures) + `cq_test_manifest.json`; run via `scripts/run_cq_tests.py`.
 - `sdd/` — spec-driven-development control docs (`spec.md`, `plan.md`).
 - `docs/` — engineering deliverables (`competency-questions.md`, `shacl-report.md`).
 - `prompt_library/`, `docs/prompt-library-summary.md` — local-only (git-ignored).
@@ -89,6 +90,7 @@ over many hand-edits for bulk `.ttl` changes (see `apply_structural_fixes.py`).
 ## Commands
 
 - Validate model (parse + SPARQL): `uv run python scripts/validate_fixes.py`
+- Run CQ regression suite: `uv run python scripts/run_cq_tests.py`
 - Validate SHACL: `uv run pyshacl -s ontology/music_vocabulary_shapes.ttl -m -f human ontology/music_vocabulary_comprehensive.ttl`
 - Add a dependency: `uv add <package>` · Sync: `uv sync`
 - Python pinned to **3.14** (`.python-version`, `requires-python = ">=3.14"`)
