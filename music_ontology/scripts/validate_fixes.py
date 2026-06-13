@@ -13,7 +13,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 """
 
 g = Graph()
-g.parse("music_ontology/music_vocabulary_comprehensive.ttl", format="turtle")
+g.parse("music_ontology/ontology/music_vocabulary_comprehensive.ttl", format="turtle")
 print(f"parsed OK: {len(g)} triples\n")
 
 checks = []

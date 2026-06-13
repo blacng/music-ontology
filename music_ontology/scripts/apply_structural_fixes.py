@@ -21,7 +21,7 @@ Run: uv run python music_ontology/scripts/apply_structural_fixes.py
 import re
 from pathlib import Path
 
-TTL = Path("music_ontology/music_vocabulary_comprehensive.ttl")
+TTL = Path("music_ontology/ontology/music_vocabulary_comprehensive.ttl")
 
 # free-text origin literal -> city IRI
 ORIGIN_MAP = {
