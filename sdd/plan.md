@@ -12,9 +12,9 @@ Each generation step is followed by adversarial critique (Artefact 2) — not op
 | 2 | **Adversarial Critique** of CQs (Artefact 2) | ✅ Done | 5 ranked findings; 2 hard blockers |
 | 3 | CQ revision per critique | ✅ Done | `docs/competency-questions.md` **v2** |
 | 4 | **Modeller Dialogue** — structural fixes (Artefact 4) | ✅ Done | genre→gist:Category (`:hasBroaderGenre`+`:TopLevelGenre`); `:originatesFrom`→`:Place`+`:locatedIn` roll-up; `:hasAge`→`:bornOn`, drop `:hasHeight`. Applied via `music_ontology/scripts/apply_structural_fixes.py`, verified by `music_ontology/scripts/validate_fixes.py` |
-| 5 | **SHACL Generation** (Artefact 3) | ✅ Done | `music_ontology/music_vocabulary_shapes.ttl` + `docs/shacl-report.md`; pyshacl-validated (2 Violations, 14 Warnings) |
-| 5b | **Modeller Dialogue loop-back** (Artefact 4) | ⏳ Next | resolve `:Musician`↔`:MusicalArtist` boundary (the 2 Violations) |
-| 6 | **Test Data + CQ Tests** (Artefact 5) | ⏳ Pending | covers CQ-8, CQ-11 gaps + the 14 SHACL Warnings; validate against shapes |
+| 5 | **SHACL Generation** (Artefact 3) | ✅ Done | `music_ontology/music_vocabulary_shapes.ttl` + `docs/shacl-report.md`; pyshacl-validated |
+| 5b | **Modeller Dialogue loop-back** (Artefact 4) | ✅ Done | `:Musician`↔`:MusicalArtist` boundary fixed via `:MusicalAgent` superclass + `:SoloArtist ⊑ :Musician` + `:collaboratesWith`→`:MusicalAgent`; **0 Violations** |
+| 6 | **Test Data + CQ Tests** (Artefact 5) | ⏳ Next | covers CQ-8, CQ-11 gaps + the 19 SHACL Warnings; validate against shapes |
 | 7 | **Production Readiness** (Artefact 7) | ⏳ Pending | 12-point gate |
 
 > **Sequencing rationale:** structural fixes precede SHACL and test data because both sit
@@ -32,9 +32,9 @@ Each generation step is followed by adversarial critique (Artefact 2) — not op
 
 ## Next action
 
-SHACL surfaced the predicted loop-back: a `:Musician`↔`:MusicalArtist` boundary inconsistency
-(2 Violations — see `docs/shacl-report.md`). Run a short Modeller Dialogue to resolve it
-(recommended: multi-type the dual-role individuals). Then proceed to Artefact 5 (test data),
-which also clears the 14 completeness Warnings.
+Artefact 5 — Test Data + CQ Tests. Generate synthetic instances to clear the 19 completeness
+Warnings (band members, song/album performers, musician instruments) and to make CQ-8 (producer
+lineage) and CQ-11 (member crossover) answerable. Open follow-up: the 5 vocalist "no instrument"
+warnings (model `:Voice` or relax the expectation to "sings or plays").
 
 > Living document — update before completing each feature/development task.

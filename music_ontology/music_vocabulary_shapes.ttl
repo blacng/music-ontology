@@ -33,8 +33,8 @@
         sh:message "An artist's origin must be a single :Place." ] ;
     sh:property [ sh:path :isSignedTo ; sh:class :RecordLabel ;
         sh:message "isSignedTo must point to a :RecordLabel (CQ-3)." ] ;
-    sh:property [ sh:path :collaboratesWith ; sh:class :MusicalArtist ;
-        sh:message "collaboratesWith must relate one musical artist to another (CQ-2)." ] ;
+    sh:property [ sh:path :collaboratesWith ; sh:class :MusicalAgent ;
+        sh:message "collaboratesWith must relate one music-making agent to another (CQ-2)." ] ;
     sh:property [ sh:path :hasAward ; sh:class :MusicAward ;
         sh:message "hasAward must point to a :MusicAward (CQ-7)." ] ;
     sh:property [ sh:path :bornOn ; sh:datatype xsd:date ; sh:maxCount 1 ;

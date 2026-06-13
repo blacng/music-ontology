@@ -54,6 +54,10 @@ These come from `style_guide_system_prompt.md` and are reflected in the existing
 - **Geography:** `:originatesFrom` (agents → `:Place`) and transitive `:locatedIn`
   (orgs/venues/events/place-containment) over `:Place`/`:City`/`:Country`. Not free-text.
 - **Time:** use `:bornOn` (`xsd:date`); never store `:hasAge` (time-varying).
+- **Agent hierarchy:** `:MusicalAgent` (⊑ `gist:Agent`) is the shared parent of `:MusicalArtist`
+  and `:Musician`; `:SoloArtist` is **both** (`⊑ :MusicalArtist` and `⊑ :Musician`); `:Band` is a
+  `:MusicalArtist` only (a group, not a person). `:collaboratesWith` ranges over `:MusicalAgent`;
+  `:hasMember` ranges over `:Musician`. Keep this when adding agents.
 - **`:exampleInstance`** is a project-local annotation property used throughout the `.ttl` to
   attach illustrative individuals to classes.
 - **Forbidden (≈5 ruthless rules):** no `owl:equivalentClass` without authorisation; no
