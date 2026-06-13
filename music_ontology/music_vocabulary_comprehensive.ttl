@@ -20,8 +20,15 @@
 # CLASSES — AGENTS & PEOPLE
 ###############################################################################
 
-:MusicalArtist a owl:Class ;
+:MusicalAgent a owl:Class ;
     rdfs:subClassOf gist:Agent ;
+    rdfs:label "Musical Agent"@en ;
+    rdfs:comment "Any agent — person or group — that creates or performs music."@en ;
+    skos:definition "A gist:Agent that creates or performs music; the common parent of musical artists and musicians."@en ;
+    .
+
+:MusicalArtist a owl:Class ;
+    rdfs:subClassOf :MusicalAgent ;
     rdfs:label "Musical Artist"@en ;
     rdfs:comment "An individual or group that performs music."@en ;
     skos:broader :Artist ;
@@ -33,6 +40,7 @@
 
 :SoloArtist a owl:Class ;
     rdfs:subClassOf :MusicalArtist ;
+    rdfs:subClassOf :Musician ;
     rdfs:label "Solo Artist"@en ;
     rdfs:comment "An individual musical artist who performs or records under their own name."@en ;
     skos:broader :MusicalArtist ;
@@ -86,7 +94,7 @@
     .
 
 :Musician a owl:Class ;
-    rdfs:subClassOf gist:Agent ;
+    rdfs:subClassOf :MusicalAgent ;
     rdfs:label "Musician"@en ;
     rdfs:comment "A person who plays a musical instrument or sings."@en ;
     skos:related :MusicalInstrument, :Band ;
@@ -730,10 +738,10 @@
 
 :collaboratesWith a owl:ObjectProperty, owl:SymmetricProperty ;
     rdfs:label "collaborates with"@en ;
-    rdfs:comment "Associates two artists who have worked together."@en ;
-    rdfs:domain :MusicalArtist ;
-    rdfs:range :MusicalArtist ;
-    skos:definition "Relates a musical artist to another artist with whom they have collaborated."@en ;
+    rdfs:comment "Associates two music-making agents who have worked together."@en ;
+    rdfs:domain :MusicalAgent ;
+    rdfs:range :MusicalAgent ;
+    skos:definition "Relates a musical agent to another agent with whom they have collaborated."@en ;
     .
 
 :isSignedTo a owl:ObjectProperty ;

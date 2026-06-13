@@ -46,17 +46,19 @@ production use. Scope is **content-based candidate generation**, not personalise
 - **Geography** is structured: `:originatesFrom` (agents) and `:locatedIn` (orgs/venues/places,
   transitive) point to `:Place`/`:City`/`:Country`, enabling regional roll-up.
 - **Personal attrs:** `:hasHeight` removed; `:hasAge` replaced by `:bornOn` (`xsd:date`).
+- **Agent boundary** (Artefact-4 loop-back, SHACL-driven): `:MusicalAgent` is the shared parent
+  of `:MusicalArtist` and `:Musician`; `:SoloArtist ⊑ :Musician`; `:collaboratesWith` relates
+  `:MusicalAgent`s. Clears the 2 SHACL Violations at the schema level (no individual patching).
 
 Applied via `music_ontology/scripts/apply_structural_fixes.py`; verified by `music_ontology/scripts/validate_fixes.py`
-(parse + SPARQL checks all pass).
+(parse + SPARQL checks all pass) and `pyshacl` (0 Violations).
 
 ## Known issues / decisions pending
 
-- **`:Musician` ↔ `:MusicalArtist` boundary** (SHACL-surfaced, 2 Violations): the two are
-  parallel `gist:Agent` branches, but individuals span both (McCartney is a solo artist *and*
-  a Beatle; Lennon is a band musician *and* a collaborator). Needs a modelling decision —
-  see `docs/shacl-report.md`. Recommended: multi-type the dual-role individuals.
 - CQ-8 (producer lineage) and CQ-11 (member crossover) need richer instance data (Artefact 5).
+- **Vocalist instrument gap:** with `:SoloArtist ⊑ :Musician`, vocalists trip the soft
+  "a musician should play an instrument" warning (voice isn't modelled). Resolve by modelling
+  `:Voice` or relaxing the expectation to "sings or plays."
 - Annotation style is still mixed `rdfs:label`/`rdfs:comment` + SKOS; the style guide targets
   SKOS-only `skos:prefLabel`/`skos:definition` — a separate cleanup, not yet scheduled.
 - `:locatedIn` is left domain-open (permissive) to span orgs, venues, events, and places.

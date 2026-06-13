@@ -47,11 +47,12 @@ flowchart TB
     bd --> ttl
     ttl --> cq3[CQ v3 · SPARQL regenerated]
     ttl --> shacl[SHACL shapes]
-    shacl --> rep[pyshacl · 2 Violations, 14 Warnings]
+    shacl --> rep[pyshacl · 2 Violations surfaced]
+    rep --> dlg2[Artefact 4 loop-back · MusicalAgent superclass]
+    dlg2 --> ok[0 Violations · 19 completeness Warnings]
   end
-  rep -. loop back .-> dlg2[Resolve Musician ↔ MusicalArtist]
   subgraph pending [Pending]
-    dlg2 --> td[Test Data · clears Warnings]
+    ok --> td[Test Data · clears Warnings]
     td --> pr[Production Readiness · 12-pt gate]
   end
 ```
@@ -73,14 +74,17 @@ Key decision points along the way:
 
 ```mermaid
 graph LR
-  SoloArtist & Band -->|subClassOf| MusicalArtist
+  MusicalArtist & Musician -->|subClassOf| MusicalAgent
+  SoloArtist -->|subClassOf| MusicalArtist
+  SoloArtist -->|subClassOf| Musician
+  Band -->|subClassOf| MusicalArtist
   MusicalArtist -->|hasGenre| MusicGenre
   MusicGenre -->|hasBroaderGenre*| MusicGenre
   TopLevelGenre -->|subClassOf| MusicGenre
   Band -->|hasMember| Musician
   Musician -->|hasInstrument| MusicalInstrument
   MusicalArtist -->|isSignedTo| RecordLabel
-  MusicalArtist -->|collaboratesWith| MusicalArtist
+  MusicalAgent -->|collaboratesWith| MusicalAgent
   MusicalArtist -->|originatesFrom| Place
   City -->|locatedIn*| Country
   Song & Album -->|performedBy| MusicalArtist
@@ -135,8 +139,8 @@ The transform that applied the structural fixes is preserved and re-runnable at
 | CQ generation → critique → revision (v3) | ✅ done |
 | Modeller Dialogue — structural fixes | ✅ done (validated) |
 | SHACL generation | ✅ done — `docs/shacl-report.md` |
-| **Resolve `:Musician` ↔ `:MusicalArtist` boundary** | ⏳ next (the 2 SHACL Violations) |
-| Test data + CQ tests | ⏳ pending (clears the 14 Warnings) |
+| Resolve `:Musician` ↔ `:MusicalArtist` boundary | ✅ done — `:MusicalAgent` superclass; **0 Violations** |
+| Test data + CQ tests | ⏳ next (clears the 19 completeness Warnings) |
 | Production readiness (12-pt gate) | ⏳ pending |
 
 See [`sdd/plan.md`](sdd/plan.md) for the live lifecycle tracker and [`sdd/spec.md`](sdd/spec.md)

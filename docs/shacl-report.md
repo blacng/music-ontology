@@ -4,43 +4,45 @@
 **Shapes:** `music_ontology/music_vocabulary_shapes.ttl`
 **Data:** `music_ontology/music_vocabulary_comprehensive.ttl`
 **Tool:** pyshacl 0.31.0 (`meta_shacl=True` — shapes themselves validate)
-**Result:** `conforms=False` — 2 Violations, 14 Warnings
+**Result:** `conforms=False` — **0 Violations, 19 Warnings** (Warnings are completeness only)
 
 Reproduce: `uv run pyshacl -s music_ontology/music_vocabulary_shapes.ttl -m -f human music_ontology/music_vocabulary_comprehensive.ttl`
 
-## Violations (must fix — genuine inconsistencies)
+## Violations — resolved ✅
 
-Both violations share **one root cause: the `:Musician` ↔ `:MusicalArtist` boundary is
-incoherent.** The ontology models them as parallel branches of `gist:Agent`, but real
-individuals span both.
+The initial run surfaced **2 Violations**, both tracing to one root cause: the
+`:Musician` ↔ `:MusicalArtist` boundary was incoherent (parallel `gist:Agent` branches, but
+individuals span both — McCartney is a solo artist *and* a Beatle; Lennon is a band musician
+*and* a collaborator).
 
-| Focus | Path | Why |
-|-------|------|-----|
-| `:TheBeatles` | `:hasMember` | member `:PaulMcCartney` is typed `:SoloArtist`/`:Lyricist`, **not** `:Musician` (the declared range of `:hasMember`) |
-| `:PaulMcCartney` | `:collaboratesWith` | value `:JohnLennon` is typed `:Musician`, **not** `:MusicalArtist` (the declared range of `:collaboratesWith`) |
+**Resolved structurally (Artefact 4 loop-back, option B):**
+- introduced **`:MusicalAgent`** (⊑ `gist:Agent`) as the shared parent of `:MusicalArtist` and `:Musician`;
+- **`:SoloArtist` ⊑ `:Musician`** (a solo performer is a person who sings/plays) — so a solo-artist band member satisfies `:hasMember`'s `:Musician` range;
+- **`:collaboratesWith`** domain/range widened to `:MusicalAgent` — bands *and* individual musicians can collaborate.
 
-→ **Requires a modelling decision (loop back to Artefact 4).** Candidate resolutions:
-- **(C) Multi-type the individuals** — also type McCartney `:Musician`, Lennon `:SoloArtist`.
-  Simplest; acknowledges these people genuinely are both. *(Recommended for a prototype.)*
-- **(B) Common superclass / widen ranges** — introduce a shared `gist:Agent`-level person
-  class as the range of `:hasMember`/`:collaboratesWith`. More invasive.
-- **(A) Re-parent the hierarchy** — e.g. `:SoloArtist ⊑ :Musician`. Rejected: a `:Band` is a
-  `:MusicalArtist` but is **not** a `:Musician` (a band is not a person), so this breaks bands.
+This fixes the *cause* via the class hierarchy rather than patching individuals, so future band
+members / collaborators won't re-break it. Re-validation: **0 Violations**.
 
 ## Warnings (completeness — test-data targets for Artefact 5)
 
-These are not errors; they mark where sparse prototype data won't yet satisfy a recommender.
+Not errors; they mark where sparse prototype data won't yet satisfy a recommender.
 
 | # | Expectation (CQ) | Nodes |
 |---|------------------|-------|
 | 7 | A band should have ≥1 member (CQ-11) | BerlinPhilharmonic, Coldplay, LedZeppelin, LondonSymphonyOrchestra, Nirvana, Radiohead, TheRollingStones |
+| 7 | A musician should play ≥1 instrument (CQ-5) | BeyonceKnowles, DavidBowie, HerbertVonKarajan, KanyeWest, LeonardBernstein, MichaelJackson, SadeAdu |
 | 4 | A song should state its performer | BohemianRhapsody, CryMeARiver, ImagineSong, SmokeOnTheWater |
-| 2 | A musician should play ≥1 instrument (CQ-5) | HerbertVonKarajan, LeonardBernstein |
 | 1 | An album should state its performer | TheDarkSideOfTheMoon |
+
+**Note on the instrument warnings:** 5 of the 7 (Beyoncé, Bowie, Kanye, Jackson, Sade) are new
+— a *consequence* of `:SoloArtist ⊑ :Musician`. They're vocalists, and voice isn't modelled as
+an instrument. Two clean ways to clear them later: model a `:Voice` (the `:MusicalInstrument`
+definition — "a device constructed for making music" — doesn't fit voice well, so this needs
+thought), or relax the expectation to "sings **or** plays." Left as a documented follow-up.
 
 ## Shape inventory
 
 10 NodeShapes (MusicalArtist, Band, Musician, Song, Album, Composition, MusicGenre,
 TopLevelGenre, City) + 1 SHACL-SPARQL constraint (chart consistency, CQ-10). Type-checks are
-`sh:Violation`; cardinality-completeness is `sh:Warning`. The CQ-10 SPARQL constraint and all
-genre/place type constraints currently pass.
+`sh:Violation`; cardinality-completeness is `sh:Warning`. After the Artefact-4 fix,
+`:collaboratesWith` checks against `:MusicalAgent`. All type/structural constraints pass.
