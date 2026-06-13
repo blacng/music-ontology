@@ -1,7 +1,7 @@
 """Validate the structural fixes: parse the ontology and run SPARQL checks
 that exercise the new genre / place / time modelling.
 
-Run: uv run python music_ontology/scripts/validate_fixes.py
+Run: uv run python scripts/validate_fixes.py
 """
 import sys
 from rdflib import Graph
@@ -13,7 +13,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 """
 
 g = Graph()
-g.parse("music_ontology/ontology/music_vocabulary_comprehensive.ttl", format="turtle")
+g.parse("ontology/music_vocabulary_comprehensive.ttl", format="turtle")
 print(f"parsed OK: {len(g)} triples\n")
 
 checks = []

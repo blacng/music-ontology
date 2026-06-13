@@ -1,7 +1,7 @@
 # Competency Questions — Comprehensive Music Vocabulary
 
 **Artefact:** 1 of 7 (Competency Question Generation) · GRL Workshop methodology
-**Target ontology:** `music_ontology/ontology/music_vocabulary_comprehensive.ttl`
+**Target ontology:** `ontology/music_vocabulary_comprehensive.ttl`
 **Status:** **v3 — SPARQL regenerated against the post-Artefact-4 model** (gist:Category genres, structured `:Place`, `:bornOn`). Supersedes v2.
 
 ## Generation parameters
@@ -31,7 +31,7 @@ explicitly typed `:TopLevelGenre`** (a subclass of `:MusicGenre`). So:
 - "a genre and all its descendants" is `?sub :hasBroaderGenre* :Rock`.
 
 `:hasBroaderGenre` is a real `owl:TransitiveProperty`, so the `*` path and a reasoner agree —
-the v1/v2 SKOS non-transitivity gap is closed. Validated by `music_ontology/scripts/validate_fixes.py`.
+the v1/v2 SKOS non-transitivity gap is closed. Validated by `scripts/validate_fixes.py`.
 
 ## Domain description
 
@@ -229,7 +229,7 @@ label rosters (`isSignedTo`), authorship/performance (`performedBy`, `composedBy
 - **v3** (post-Artefact-4): regenerated all genre SPARQL to the gist:Category model
   (`:hasBroaderGenre*` + `:TopLevelGenre`); CQ-12 origin now structured `:Place` with
   `:locatedIn` roll-up; updated Elements lines; marked the geography and personal-attribute
-  smells resolved. Verified by `music_ontology/scripts/validate_fixes.py`.
+  smells resolved. Verified by `scripts/validate_fixes.py`.
 - **v2** (post-critique): fixed top-level-genre traversal (CQ-1/4/6/9/10); added measurable
   pass conditions to all CQs; reworked CQ-4 to release-era; replaced award-within-genre CQ
   with explainability CQ-7; recorded prototype waivers and deferred modelling fixes.
