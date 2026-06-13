@@ -1,0 +1,146 @@
+@prefix : <https://www.somusicvocabulary.org/music#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+###############################################################################
+# SHACL SHAPES — Comprehensive Music Vocabulary
+# Artefact 3 (SHACL Generation), against the post-Artefact-4 model.
+#
+# Severity policy:
+#   sh:Violation (default) — type/datatype/structural constraints the model
+#                            asserts; data MUST conform. Type-checks are ALWAYS
+#                            Violations (kept in their own property shape).
+#   sh:Warning            — completeness expectations a recommender wants but
+#                            the current sparse prototype data may not yet meet
+#                            (these double as test-data targets for Artefact 5).
+###############################################################################
+
+:musicPrefixes
+    sh:declare [ sh:prefix "m" ; sh:namespace "https://www.somusicvocabulary.org/music#"^^xsd:anyURI ] .
+
+###############################################################################
+# NODE SHAPES
+###############################################################################
+
+:MusicalArtistShape a sh:NodeShape ;
+    sh:targetClass :MusicalArtist ;
+    # --- type / structural (Violation) ---
+    sh:property [ sh:path :hasGenre ; sh:class :MusicGenre ;
+        sh:message "hasGenre must point to a :MusicGenre." ] ;
+    sh:property [ sh:path :originatesFrom ; sh:class :Place ; sh:maxCount 1 ;
+        sh:message "An artist's origin must be a single :Place." ] ;
+    sh:property [ sh:path :isSignedTo ; sh:class :RecordLabel ;
+        sh:message "isSignedTo must point to a :RecordLabel (CQ-3)." ] ;
+    sh:property [ sh:path :collaboratesWith ; sh:class :MusicalArtist ;
+        sh:message "collaboratesWith must relate one musical artist to another (CQ-2)." ] ;
+    sh:property [ sh:path :hasAward ; sh:class :MusicAward ;
+        sh:message "hasAward must point to a :MusicAward (CQ-7)." ] ;
+    sh:property [ sh:path :bornOn ; sh:datatype xsd:date ; sh:maxCount 1 ;
+        sh:message "bornOn must be a single xsd:date." ] ;
+    sh:property [ sh:path :startsCareerIn ; sh:datatype xsd:gYear ; sh:maxCount 1 ;
+        sh:message "startsCareerIn must be a single xsd:gYear." ] ;
+    # --- completeness (Warning) ---
+    sh:property [ sh:path :hasGenre ; sh:minCount 1 ; sh:severity sh:Warning ;
+        sh:message "A musical artist should have at least one genre (needed for genre discovery, CQ-1/CQ-9)." ] ;
+    .
+
+:BandShape a sh:NodeShape ;
+    sh:targetClass :Band ;
+    sh:property [ sh:path :hasMember ; sh:class :Musician ;
+        sh:message "Every band member must be a :Musician (type check)." ] ;
+    sh:property [ sh:path :hasMember ; sh:minCount 1 ; sh:severity sh:Warning ;
+        sh:message "A band should have at least one member (enables band-member crossover, CQ-11)." ] ;
+    .
+
+:MusicianShape a sh:NodeShape ;
+    sh:targetClass :Musician ;
+    sh:property [ sh:path :hasInstrument ; sh:class :MusicalInstrument ;
+        sh:message "hasInstrument must point to a :MusicalInstrument." ] ;
+    sh:property [ sh:path :hasInstrument ; sh:minCount 1 ; sh:severity sh:Warning ;
+        sh:message "A musician should play at least one instrument (enables instrument discovery, CQ-5)." ] ;
+    .
+
+:SongShape a sh:NodeShape ;
+    sh:targetClass :Song ;
+    sh:property [ sh:path :performedBy ; sh:class :MusicalArtist ;
+        sh:message "performedBy must point to a :MusicalArtist." ] ;
+    sh:property [ sh:path :writtenBy ; sh:class :Lyricist ;
+        sh:message "writtenBy must point to a :Lyricist." ] ;
+    sh:property [ sh:path :belongsToAlbum ; sh:class :Album ; sh:maxCount 1 ;
+        sh:message "A song belongs to at most one album." ] ;
+    sh:property [ sh:path :releasedIn ; sh:datatype xsd:gYear ; sh:maxCount 1 ;
+        sh:message "releasedIn must be a single xsd:gYear." ] ;
+    sh:property [ sh:path :hasDuration ; sh:datatype xsd:decimal ; sh:maxCount 1 ;
+        sh:message "hasDuration must be a single xsd:decimal (seconds)." ] ;
+    sh:property [ sh:path :peaksAt ; sh:datatype xsd:integer ; sh:minInclusive 1 ; sh:maxCount 1 ;
+        sh:message "peaksAt must be a single positive chart position (CQ-10)." ] ;
+    sh:property [ sh:path :performedBy ; sh:minCount 1 ; sh:severity sh:Warning ;
+        sh:message "A song should state who performs it." ] ;
+    .
+
+:AlbumShape a sh:NodeShape ;
+    sh:targetClass :Album ;
+    sh:property [ sh:path :performedBy ; sh:class :MusicalArtist ;
+        sh:message "performedBy must point to a :MusicalArtist." ] ;
+    sh:property [ sh:path :releasedBy ; sh:class :RecordLabel ;
+        sh:message "releasedBy must point to a :RecordLabel." ] ;
+    sh:property [ sh:path :producedBy ; sh:class :MusicProducer ;
+        sh:message "producedBy must point to a :MusicProducer (CQ-8)." ] ;
+    sh:property [ sh:path :hasTrack ; sh:class :Song ;
+        sh:message "hasTrack must point to a :Song." ] ;
+    sh:property [ sh:path :releasedIn ; sh:datatype xsd:gYear ; sh:maxCount 1 ;
+        sh:message "releasedIn must be a single xsd:gYear." ] ;
+    sh:property [ sh:path :performedBy ; sh:minCount 1 ; sh:severity sh:Warning ;
+        sh:message "An album should state the artist who performs it." ] ;
+    .
+
+:CompositionShape a sh:NodeShape ;
+    sh:targetClass :Composition ;
+    sh:property [ sh:path :composedBy ; sh:class :Composer ;
+        sh:message "composedBy must point to a :Composer." ] ;
+    sh:property [ sh:path :composedBy ; sh:minCount 1 ; sh:severity sh:Warning ;
+        sh:message "A composition should state its composer." ] ;
+    .
+
+# --- Genre shapes (gist:Category pattern) ---
+
+:MusicGenreShape a sh:NodeShape ;
+    sh:targetClass :MusicGenre ;
+    sh:property [ sh:path :hasBroaderGenre ; sh:class :MusicGenre ;
+        sh:message "hasBroaderGenre must relate a genre to another genre." ] ;
+    .
+
+:TopLevelGenreShape a sh:NodeShape ;
+    sh:targetClass :TopLevelGenre ;
+    sh:property [ sh:path :hasBroaderGenre ; sh:maxCount 0 ;
+        sh:message "A top-level genre must not have a broader genre (it is a root of the hierarchy)." ] ;
+    .
+
+# --- Geography shapes ---
+
+:CityShape a sh:NodeShape ;
+    sh:targetClass :City ;
+    sh:property [ sh:path :locatedIn ; sh:class :Place ; sh:minCount 1 ;
+        sh:message "Every city must roll up to a containing place (its country) so regional discovery works (CQ-12)." ] ;
+    .
+
+###############################################################################
+# CQ-DERIVED SPARQL CONSTRAINT
+###############################################################################
+
+# CQ-10: a song with a chart peak position must say which chart it charted in.
+:ChartConsistencyShape a sh:NodeShape ;
+    sh:targetClass :Song ;
+    sh:sparql [
+        sh:message "A song with a peak chart position (:peaksAt) must also state the chart via :chartedIn (CQ-10)." ;
+        sh:prefixes :musicPrefixes ;
+        sh:select """
+            SELECT $this WHERE {
+                $this m:peaksAt ?pos .
+                FILTER NOT EXISTS { $this m:chartedIn ?chart }
+            }
+        """ ;
+    ] ;
+    .

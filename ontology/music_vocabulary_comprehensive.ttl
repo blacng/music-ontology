@@ -1,0 +1,1987 @@
+@prefix : <https://www.somusicvocabulary.org/music#> .
+@prefix gist: <https://w3id.org/semanticarts/ontology/gistCore#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+###############################################################################
+# ONTOLOGY DECLARATION
+###############################################################################
+
+:MusicVocabulary a owl:Ontology ;
+    rdfs:label "Comprehensive Music Vocabulary"@en ;
+    rdfs:comment "A comprehensive vocabulary for describing music concepts, works, artists, instruments, and relationships."@en ;
+    owl:versionInfo "2.0" ;
+    owl:imports gist: .
+
+###############################################################################
+# CLASSES — AGENTS & PEOPLE
+###############################################################################
+
+:MusicalArtist a owl:Class ;
+    rdfs:subClassOf gist:Agent ;
+    rdfs:label "Musical Artist"@en ;
+    rdfs:comment "An individual or group that performs music."@en ;
+    skos:broader :Artist ;
+    skos:related :MusicGenre ;
+    skos:narrower :SoloArtist, :Band ;
+    skos:definition "A musical artist is an individual or group that creates or performs music."@en ;
+    :exampleInstance :PaulMcCartney, :KanyeWest, :SadeAdu, :BeyonceKnowles, :MilesDavis ;
+    .
+
+:SoloArtist a owl:Class ;
+    rdfs:subClassOf :MusicalArtist ;
+    rdfs:label "Solo Artist"@en ;
+    rdfs:comment "An individual musical artist who performs or records under their own name."@en ;
+    skos:broader :MusicalArtist ;
+    skos:definition "A solo artist is an individual who performs or records music independently."@en ;
+    :exampleInstance :PaulMcCartney, :KanyeWest, :SadeAdu, :BeyonceKnowles, :MilesDavis, :BobMarley, :DavidBowie, :TaylorSwift, :MichaelJackson, :LudwigVanBeethoven ;
+    .
+
+:Band a owl:Class ;
+    rdfs:subClassOf :MusicalArtist ;
+    rdfs:label "Band"@en ;
+    rdfs:comment "A group of musicians who perform together under a collective name."@en ;
+    skos:broader :MusicalArtist ;
+    skos:narrower :RockBand, :JazzEnsemble, :Orchestra, :Choir ;
+    skos:definition "A band is a group of musicians who perform or record together."@en ;
+    :exampleInstance :TheBeatles, :Coldplay, :Nirvana, :LedZeppelin, :Radiohead, :TheRollingStones ;
+    .
+
+:RockBand a owl:Class ;
+    rdfs:subClassOf :Band ;
+    rdfs:label "Rock Band"@en ;
+    rdfs:comment "A band whose primary genre is rock music."@en ;
+    skos:broader :Band ;
+    skos:definition "A rock band is a musical group specializing in rock music."@en ;
+    :exampleInstance :TheBeatles, :Nirvana, :LedZeppelin, :Radiohead, :TheRollingStones ;
+    .
+
+:JazzEnsemble a owl:Class ;
+    rdfs:subClassOf :Band ;
+    rdfs:label "Jazz Ensemble"@en ;
+    rdfs:comment "A group of musicians performing jazz music."@en ;
+    skos:broader :Band ;
+    skos:definition "A jazz ensemble is a group of musicians performing jazz music."@en ;
+    :exampleInstance :MilesDavisTrio ;
+    .
+
+:Orchestra a owl:Class ;
+    rdfs:subClassOf :Band ;
+    rdfs:label "Orchestra"@en ;
+    rdfs:comment "A large ensemble of musicians, typically performing classical music."@en ;
+    skos:broader :Band ;
+    skos:definition "An orchestra is a large instrumental ensemble composed of strings, winds, brass, and percussion."@en ;
+    :exampleInstance :BerlinPhilharmonic, :LondonSymphonyOrchestra ;
+    .
+
+:Choir a owl:Class ;
+    rdfs:subClassOf :Band ;
+    rdfs:label "Choir"@en ;
+    rdfs:comment "An organized group of singers."@en ;
+    skos:broader :Band ;
+    skos:definition "A choir is an organized group of singers who perform together."@en ;
+    .
+
+:Musician a owl:Class ;
+    rdfs:subClassOf gist:Agent ;
+    rdfs:label "Musician"@en ;
+    rdfs:comment "A person who plays a musical instrument or sings."@en ;
+    skos:related :MusicalInstrument, :Band ;
+    skos:definition "A musician is a person who practices music, either as a performer or composer."@en ;
+    :exampleInstance :JohnLennon, :JimiHendrix, :YoYoMa ;
+    .
+
+:Composer a owl:Class ;
+    rdfs:subClassOf :Musician ;
+    rdfs:label "Composer"@en ;
+    rdfs:comment "A person who writes original music."@en ;
+    skos:broader :Musician ;
+    skos:definition "A composer is a musician who creates original musical works."@en ;
+    :exampleInstance :LudwigVanBeethoven, :WolfgangAmadeusMozart, :JohannSebastianBach ;
+    .
+
+:Lyricist a owl:Class ;
+    rdfs:subClassOf gist:Agent ;
+    rdfs:label "Lyricist"@en ;
+    rdfs:comment "A person who writes the words (lyrics) for songs."@en ;
+    skos:related :Song ;
+    skos:definition "A lyricist is a writer who specializes in writing song lyrics."@en ;
+    :exampleInstance :BobDylan, :PaulMcCartney ;
+    .
+
+:MusicProducer a owl:Class ;
+    rdfs:subClassOf gist:Agent ;
+    rdfs:label "Music Producer"@en ;
+    rdfs:comment "A person who oversees and manages the recording and production of music."@en ;
+    skos:related :Album, :RecordLabel ;
+    skos:definition "A music producer is responsible for overseeing the recording, mixing, and production of musical recordings."@en ;
+    :exampleInstance :QuincyJones, :RickRubin, :GeorgeMartin ;
+    .
+
+:Conductor a owl:Class ;
+    rdfs:subClassOf :Musician ;
+    rdfs:label "Conductor"@en ;
+    rdfs:comment "A person who directs the performance of an orchestra or choir."@en ;
+    skos:broader :Musician ;
+    skos:related :Orchestra ;
+    skos:definition "A conductor is a musician who leads an orchestra, choir, or other musical ensemble."@en ;
+    :exampleInstance :HerbertVonKarajan, :LeonardBernstein ;
+    .
+
+:RecordLabel a owl:Class ;
+    rdfs:subClassOf gist:Organization ;
+    rdfs:label "Record Label"@en ;
+    rdfs:comment "A company that manages the production and distribution of music recordings."@en ;
+    skos:related :Album, :MusicalArtist ;
+    skos:definition "A record label is a brand or trademark of a music recording company."@en ;
+    :exampleInstance :EMI, :SonyMusicEntertainment, :UniversalMusicGroup, :WarnerMusicGroup, :DefJamRecordings ;
+    .
+
+###############################################################################
+# CLASSES — MUSICAL WORKS
+###############################################################################
+
+:MusicalWork a owl:Class ;
+    rdfs:subClassOf gist:Artifact ;
+    rdfs:label "Musical Work"@en ;
+    rdfs:comment "A creative work in the medium of music."@en ;
+    skos:narrower :Song, :Album, :EP, :Composition, :Soundtrack ;
+    skos:definition "A musical work is any creative work expressed in the form of music."@en ;
+    .
+
+:Song a owl:Class ;
+    rdfs:subClassOf :MusicalWork ;
+    rdfs:label "Song"@en ;
+    rdfs:comment "A short musical composition with vocals."@en ;
+    skos:broader :MusicalWork ;
+    skos:related :Album, :MusicalArtist, :Lyricist ;
+    skos:definition "A song is a short musical composition intended to be sung, typically combining melody and lyrics."@en ;
+    :exampleInstance :HeyJude, :BohemianRhapsody, :BillieJean, :SmokeOnTheWater, :ImagineSong, :NoWomanNoCry, :CryMeARiver ;
+    .
+
+:Album a owl:Class ;
+    rdfs:subClassOf :MusicalWork ;
+    rdfs:label "Album"@en ;
+    rdfs:comment "A collection of songs released as a single unit."@en ;
+    skos:broader :MusicalWork ;
+    skos:narrower :StudioAlbum, :LiveAlbum, :CompilationAlbum ;
+    skos:related :Song, :MusicalArtist, :RecordLabel ;
+    skos:definition "An album is a collection of audio recordings released as a single package."@en ;
+    :exampleInstance :AbbeyRoad, :TheDarkSideOfTheMoon, :Thriller, :KindOfBlue, :Lemonade, :OkComputer ;
+    .
+
+:StudioAlbum a owl:Class ;
+    rdfs:subClassOf :Album ;
+    rdfs:label "Studio Album"@en ;
+    rdfs:comment "An album of original recordings made in a recording studio."@en ;
+    skos:broader :Album ;
+    skos:definition "A studio album consists of original material recorded in a professional recording studio."@en ;
+    :exampleInstance :AbbeyRoad, :Thriller, :KindOfBlue, :Lemonade, :OkComputer ;
+    .
+
+:LiveAlbum a owl:Class ;
+    rdfs:subClassOf :Album ;
+    rdfs:label "Live Album"@en ;
+    rdfs:comment "An album recorded during a live performance."@en ;
+    skos:broader :Album ;
+    skos:definition "A live album is a recording made during a live performance rather than in a studio."@en ;
+    .
+
+:CompilationAlbum a owl:Class ;
+    rdfs:subClassOf :Album ;
+    rdfs:label "Compilation Album"@en ;
+    rdfs:comment "An album of songs drawn from multiple sources or artists."@en ;
+    skos:broader :Album ;
+    skos:definition "A compilation album consists of songs chosen from earlier releases or from various artists."@en ;
+    .
+
+:EP a owl:Class ;
+    rdfs:subClassOf :MusicalWork ;
+    rdfs:label "Extended Play (EP)"@en ;
+    rdfs:comment "A musical recording that contains more than a single but fewer tracks than a full album."@en ;
+    skos:broader :MusicalWork ;
+    skos:definition "An EP (Extended Play) is a music release that contains more tracks than a single but fewer than an album."@en ;
+    .
+
+:Composition a owl:Class ;
+    rdfs:subClassOf :MusicalWork ;
+    rdfs:label "Musical Composition"@en ;
+    rdfs:comment "A formal musical work, typically in the classical tradition."@en ;
+    skos:broader :MusicalWork ;
+    skos:narrower :Symphony, :Concerto, :Sonata, :Opera ;
+    skos:related :Composer ;
+    skos:definition "A musical composition is a formal musical work created by a composer."@en ;
+    :exampleInstance :Symphony9Beethoven, :RequiemMozart ;
+    .
+
+:Symphony a owl:Class ;
+    rdfs:subClassOf :Composition ;
+    rdfs:label "Symphony"@en ;
+    rdfs:comment "An extended musical composition for full orchestra."@en ;
+    skos:broader :Composition ;
+    skos:definition "A symphony is an extended musical composition in Western classical music, scored for orchestra."@en ;
+    :exampleInstance :Symphony9Beethoven ;
+    .
+
+:Concerto a owl:Class ;
+    rdfs:subClassOf :Composition ;
+    rdfs:label "Concerto"@en ;
+    rdfs:comment "A composition for a solo instrument and orchestra."@en ;
+    skos:broader :Composition ;
+    skos:definition "A concerto is a composition for one or more solo instruments and an orchestral ensemble."@en ;
+    .
+
+:Sonata a owl:Class ;
+    rdfs:subClassOf :Composition ;
+    rdfs:label "Sonata"@en ;
+    rdfs:comment "A composition for one or two instruments, typically in several movements."@en ;
+    skos:broader :Composition ;
+    skos:definition "A sonata is a composition for solo instrument, typically structured in multiple movements."@en ;
+    .
+
+:Opera a owl:Class ;
+    rdfs:subClassOf :Composition ;
+    rdfs:label "Opera"@en ;
+    rdfs:comment "A dramatic work set to music for singers and orchestra."@en ;
+    skos:broader :Composition ;
+    skos:definition "An opera is a form of theater in which music has a leading role, combining vocal and orchestral music with drama."@en ;
+    .
+
+:Soundtrack a owl:Class ;
+    rdfs:subClassOf :MusicalWork ;
+    rdfs:label "Soundtrack"@en ;
+    rdfs:comment "Music composed and recorded for a film, television show, or other media."@en ;
+    skos:broader :MusicalWork ;
+    skos:definition "A soundtrack is the recorded music accompanying and synchronized to a film, television show, or other visual media."@en ;
+    .
+
+###############################################################################
+# CLASSES — GENRES
+###############################################################################
+
+:MusicGenre a owl:Class ;
+    rdfs:subClassOf gist:Category ;
+    rdfs:label "Music Genre"@en ;
+    rdfs:comment "A category of music characterized by a particular style, form, or content."@en ;
+    skos:definition "A music genre is a conventional category that identifies musical compositions as belonging to a shared tradition or set of conventions."@en ;
+    :exampleInstance :Rock, :Jazz, :Classical, :HipHop, :Blues, :Soul, :Pop, :Reggae ;
+    .
+
+:Rock a :TopLevelGenre ;
+    rdfs:label "Rock"@en ;
+    rdfs:comment "A genre of popular music that originated as rock and roll in the 1950s."@en ;
+    skos:definition "Rock music is a broad genre of popular music that originated in the United States in the early 1950s."@en ;
+    .
+
+:AlternativeRock a :MusicGenre ;
+    rdfs:label "Alternative Rock"@en ;
+    rdfs:comment "A genre of rock music that emerged in the 1980s as an alternative to mainstream rock."@en ;
+    :hasBroaderGenre :Rock ;
+    skos:definition "Alternative rock is a style of rock music that emerged from the independent music underground of the 1980s."@en ;
+    :exampleInstance :Nirvana, :Radiohead ;
+    .
+
+:ClassicRock a :MusicGenre ;
+    rdfs:label "Classic Rock"@en ;
+    rdfs:comment "Rock music from the late 1960s through the 1980s."@en ;
+    :hasBroaderGenre :Rock ;
+    skos:definition "Classic rock is a radio format and cultural phenomenon focusing on rock music from the late 1960s through the 1980s."@en ;
+    :exampleInstance :LedZeppelin, :TheRollingStones, :TheBeatles ;
+    .
+
+:HardRock a :MusicGenre ;
+    rdfs:label "Hard Rock"@en ;
+    rdfs:comment "A heavy form of rock music using loud electric guitars and bass."@en ;
+    :hasBroaderGenre :Rock ;
+    skos:definition "Hard rock is a loosely defined subgenre of rock music typified by aggressive vocals and heavy use of distorted electric guitars."@en ;
+    :exampleInstance :LedZeppelin ;
+    .
+
+:PunkRock a :MusicGenre ;
+    rdfs:label "Punk Rock"@en ;
+    rdfs:comment "A stripped-down, high-energy form of rock music."@en ;
+    :hasBroaderGenre :Rock ;
+    :hasBroaderGenre :Punk ;
+    skos:definition "Punk rock is a rock music genre that developed in the mid-1970s, emphasizing short, fast-paced songs with hard-edged melodies."@en ;
+    .
+
+:IndieRock a :MusicGenre ;
+    rdfs:label "Indie Rock"@en ;
+    rdfs:comment "Rock music produced independently from commercial record labels."@en ;
+    :hasBroaderGenre :Rock ;
+    skos:definition "Indie rock is a genre of rock music that originated in the United States and United Kingdom in the 1970s–80s."@en ;
+    :exampleInstance :Radiohead ;
+    .
+
+:Jazz a :TopLevelGenre ;
+    rdfs:label "Jazz"@en ;
+    rdfs:comment "A music genre originating in African American communities in New Orleans in the late 19th and early 20th centuries."@en ;
+    skos:definition "Jazz is a music genre that originated in the African-American communities of New Orleans, characterized by improvisation, syncopation, and swing."@en ;
+    :exampleInstance :MilesDavis, :SadeAdu ;
+    .
+
+:BeBop a :MusicGenre ;
+    rdfs:label "Bebop"@en ;
+    rdfs:comment "A style of jazz developed in the early-mid 1940s, characterized by fast tempo and complex chord progressions."@en ;
+    :hasBroaderGenre :Jazz ;
+    skos:definition "Bebop is a style of jazz characterized by a fast tempo, complex chord progressions, and improvisational technique."@en ;
+    .
+
+:SmoothJazz a :MusicGenre ;
+    rdfs:label "Smooth Jazz"@en ;
+    rdfs:comment "A genre of jazz that is commercially oriented with pop music influences."@en ;
+    :hasBroaderGenre :Jazz ;
+    skos:definition "Smooth jazz is a genre that blends jazz improvisation with elements of rhythm and blues, funk, and pop music."@en ;
+    .
+
+:ModalJazz a :MusicGenre ;
+    rdfs:label "Modal Jazz"@en ;
+    rdfs:comment "A jazz style using musical modes rather than chord progressions as the basis for improvisation."@en ;
+    :hasBroaderGenre :Jazz ;
+    skos:definition "Modal jazz is a style that uses musical modes as the primary basis for melody and harmony."@en ;
+    :exampleInstance :MilesDavis ;
+    .
+
+:Classical a :TopLevelGenre ;
+    rdfs:label "Classical"@en ;
+    rdfs:comment "Art music produced in Western tradition covering a broad period from roughly the 11th century to the present."@en ;
+    skos:definition "Classical music is art music produced in the tradition of Western culture, generally considered to include musical works from the 11th century to the present."@en ;
+    :exampleInstance :LudwigVanBeethoven, :WolfgangAmadeusMozart, :JohannSebastianBach ;
+    .
+
+:Baroque a :MusicGenre ;
+    rdfs:label "Baroque"@en ;
+    rdfs:comment "Western classical music from approximately 1600 to 1750."@en ;
+    :hasBroaderGenre :Classical ;
+    skos:definition "Baroque music is a period or style of Western classical music composed from approximately 1600 to 1750."@en ;
+    :exampleInstance :JohannSebastianBach ;
+    .
+
+:Romantic a :MusicGenre ;
+    rdfs:label "Romantic"@en ;
+    rdfs:comment "Western classical music from approximately 1820 to 1900."@en ;
+    :hasBroaderGenre :Classical ;
+    skos:definition "Romantic music is a period of Western classical music that began in the late 18th or early 19th century."@en ;
+    :exampleInstance :LudwigVanBeethoven ;
+    .
+
+:HipHop a :TopLevelGenre ;
+    rdfs:label "Hip-Hop"@en ;
+    rdfs:comment "A music genre consisting of stylized rhythmic music with rapping."@en ;
+    skos:definition "Hip-hop is a music genre developed in the United States in the 1970s, characterized by rapping, DJing, sampling, and beatboxing."@en ;
+    :exampleInstance :KanyeWest ;
+    .
+
+:Trap a :MusicGenre ;
+    rdfs:label "Trap"@en ;
+    rdfs:comment "A subgenre of hip-hop originating in Atlanta, characterized by double-time hi-hats."@en ;
+    :hasBroaderGenre :HipHop ;
+    skos:definition "Trap music is a subgenre of hip-hop that originated in the Southern United States, characterized by triple hi-hats and heavy 808 bass."@en ;
+    .
+
+:Blues a :TopLevelGenre ;
+    rdfs:label "Blues"@en ;
+    rdfs:comment "A genre of music originating in the deep south of the USA from African American communities."@en ;
+    skos:definition "Blues is a music genre originating in the Deep South of the United States around the 1860s, rooted in African American work songs and spirituals."@en ;
+    .
+
+:DeltaBlues a :MusicGenre ;
+    rdfs:label "Delta Blues"@en ;
+    rdfs:comment "An early form of blues originating in the Mississippi Delta region."@en ;
+    :hasBroaderGenre :Blues ;
+    skos:definition "Delta blues is a style of blues music originating in the Mississippi Delta."@en ;
+    .
+
+:Soul a :TopLevelGenre ;
+    rdfs:label "Soul"@en ;
+    rdfs:comment "A genre combining elements of gospel, R&B, and jazz."@en ;
+    skos:related :RnB, :Gospel ;
+    skos:definition "Soul music is a popular music genre that originated in African American communities in the United States combining elements of gospel, R&B, and jazz."@en ;
+    :exampleInstance :SadeAdu ;
+    .
+
+:RnB a :TopLevelGenre ;
+    rdfs:label "R&B"@en ;
+    rdfs:comment "Rhythm and Blues; a genre of popular music combining jazz, gospel, and blues."@en ;
+    skos:related :Soul ;
+    skos:definition "R&B (rhythm and blues) is a genre of popular music that originated in African American communities in the 1940s."@en ;
+    :exampleInstance :BeyonceKnowles ;
+    .
+
+:Pop a :TopLevelGenre ;
+    rdfs:label "Pop"@en ;
+    rdfs:comment "Popular music genre with wide appeal, typically short songs with simple hooks."@en ;
+    skos:definition "Pop music is a genre of popular music that originated in the United States and United Kingdom during the mid-1950s."@en ;
+    :exampleInstance :MichaelJackson, :TaylorSwift ;
+    .
+
+:Electronic a :TopLevelGenre ;
+    rdfs:label "Electronic"@en ;
+    rdfs:comment "Music produced primarily using electronic instruments and technology."@en ;
+    skos:definition "Electronic music is music that employs electronic musical instruments, digital instruments, or circuitry-based music technology."@en ;
+    .
+
+:HouseMusic a :MusicGenre ;
+    rdfs:label "House Music"@en ;
+    rdfs:comment "A genre of electronic dance music originating in Chicago in the early 1980s."@en ;
+    :hasBroaderGenre :Electronic ;
+    skos:definition "House music is a genre of electronic dance music created by DJs and music producers in Chicago in the early 1980s."@en ;
+    .
+
+:Techno a :MusicGenre ;
+    rdfs:label "Techno"@en ;
+    rdfs:comment "A genre of electronic dance music originating in Detroit."@en ;
+    :hasBroaderGenre :Electronic ;
+    skos:definition "Techno is a genre of electronic dance music that emerged in Detroit, Michigan, in the United States during the mid-to-late 1980s."@en ;
+    .
+
+:Ambient a :MusicGenre ;
+    rdfs:label "Ambient"@en ;
+    rdfs:comment "A genre of electronic music that emphasizes tone and atmosphere over traditional musical structure."@en ;
+    :hasBroaderGenre :Electronic ;
+    skos:definition "Ambient music is a genre of music that emphasizes tone and atmosphere over traditional musical structure or rhythm."@en ;
+    .
+
+:Country a :TopLevelGenre ;
+    rdfs:label "Country"@en ;
+    rdfs:comment "A genre of popular music originating in the Southern United States."@en ;
+    skos:definition "Country music is a genre of popular music with origins in the Southern United States in the early 1920s."@en ;
+    :exampleInstance :TaylorSwift ;
+    .
+
+:Reggae a :TopLevelGenre ;
+    rdfs:label "Reggae"@en ;
+    rdfs:comment "A music genre originating in Jamaica in the late 1960s."@en ;
+    skos:definition "Reggae is a music genre originating in Jamaica in the late 1960s."@en ;
+    :exampleInstance :BobMarley ;
+    .
+
+:Dancehall a :MusicGenre ;
+    rdfs:label "Dancehall"@en ;
+    rdfs:comment "A subgenre of reggae with a more electronic sound."@en ;
+    :hasBroaderGenre :Reggae ;
+    skos:definition "Dancehall is a genre of Jamaican popular music that originated in the late 1970s."@en ;
+    .
+
+:Folk a :TopLevelGenre ;
+    rdfs:label "Folk"@en ;
+    rdfs:comment "Traditional music passed down through communities, typically using acoustic instruments."@en ;
+    skos:definition "Folk music is a music genre that includes traditional folk music and the contemporary folk music revival."@en ;
+    :exampleInstance :BobDylan ;
+    .
+
+:Metal a :TopLevelGenre ;
+    rdfs:label "Metal"@en ;
+    rdfs:comment "A genre of rock music known for loud distorted guitars and aggressive performing style."@en ;
+    skos:definition "Heavy metal is a genre of rock music that developed in the late 1960s and early 1970s, known for distorted guitars and aggressive musicianship."@en ;
+    .
+
+:Punk a :TopLevelGenre ;
+    rdfs:label "Punk"@en ;
+    rdfs:comment "A music genre rooted in anti-establishment themes, short songs, and raw energy."@en ;
+    skos:definition "Punk is a music genre that emerged in the mid-1970s, characterized by short, fast-paced songs with political and anti-establishment themes."@en ;
+    .
+
+:Gospel a :TopLevelGenre ;
+    rdfs:label "Gospel"@en ;
+    rdfs:comment "Christian music rooted in African American spiritual traditions."@en ;
+    skos:related :Soul ;
+    skos:definition "Gospel music is a genre of Christian music expressing the themes of prayer, faith, and redemption."@en ;
+    .
+
+###############################################################################
+# CLASSES — INSTRUMENTS
+###############################################################################
+
+:MusicalInstrument a owl:Class ;
+    rdfs:subClassOf gist:PhysicalThing ;
+    rdfs:label "Musical Instrument"@en ;
+    rdfs:comment "A device constructed or modified for the purpose of making music."@en ;
+    skos:narrower :StringInstrument, :WindInstrument, :PercussionInstrument, :KeyboardInstrument, :ElectronicInstrument ;
+    skos:definition "A musical instrument is a device created or adapted to make musical sounds."@en ;
+    :exampleInstance :Guitar, :Piano, :Drums, :Violin, :Trumpet, :Saxophone, :Bass ;
+    .
+
+:StringInstrument a owl:Class ;
+    rdfs:subClassOf :MusicalInstrument ;
+    rdfs:label "String Instrument"@en ;
+    rdfs:comment "An instrument that produces sound through vibrating strings."@en ;
+    skos:broader :MusicalInstrument ;
+    skos:narrower :PluckedString, :BowedString ;
+    skos:definition "A string instrument is a musical instrument that produces sound by vibrating strings."@en ;
+    :exampleInstance :Guitar, :Violin, :Cello, :Harp, :Banjo, :Bass ;
+    .
+
+:PluckedString a owl:Class ;
+    rdfs:subClassOf :StringInstrument ;
+    rdfs:label "Plucked String Instrument"@en ;
+    rdfs:comment "A string instrument played by plucking or strumming the strings."@en ;
+    skos:broader :StringInstrument ;
+    skos:definition "A plucked string instrument is played by plucking or strumming."@en ;
+    :exampleInstance :Guitar, :Banjo, :Harp ;
+    .
+
+:BowedString a owl:Class ;
+    rdfs:subClassOf :StringInstrument ;
+    rdfs:label "Bowed String Instrument"@en ;
+    rdfs:comment "A string instrument played with a bow."@en ;
+    skos:broader :StringInstrument ;
+    skos:definition "A bowed string instrument is played using a bow drawn across the strings."@en ;
+    :exampleInstance :Violin, :Cello, :DoubleBass ;
+    .
+
+:WindInstrument a owl:Class ;
+    rdfs:subClassOf :MusicalInstrument ;
+    rdfs:label "Wind Instrument"@en ;
+    rdfs:comment "An instrument that produces sound through vibrating air in a tube."@en ;
+    skos:broader :MusicalInstrument ;
+    skos:narrower :BrassInstrument, :WoodwindInstrument ;
+    skos:definition "A wind instrument is a musical instrument that produces sound by causing a body of air to vibrate."@en ;
+    :exampleInstance :Trumpet, :Saxophone, :Flute, :Clarinet, :Tuba ;
+    .
+
+:BrassInstrument a owl:Class ;
+    rdfs:subClassOf :WindInstrument ;
+    rdfs:label "Brass Instrument"@en ;
+    rdfs:comment "A wind instrument made of brass or similar metal."@en ;
+    skos:broader :WindInstrument ;
+    skos:definition "A brass instrument is a musical instrument that produces sound by sympathetic vibration of air in a tubular resonator."@en ;
+    :exampleInstance :Trumpet, :Trombone, :Tuba, :FrenchHorn ;
+    .
+
+:WoodwindInstrument a owl:Class ;
+    rdfs:subClassOf :WindInstrument ;
+    rdfs:label "Woodwind Instrument"@en ;
+    rdfs:comment "A wind instrument in which sound is produced by blowing against an edge or through a reed."@en ;
+    skos:broader :WindInstrument ;
+    skos:definition "A woodwind instrument is a musical instrument in which sound is produced by the vibration of a reed or the player's lips."@en ;
+    :exampleInstance :Saxophone, :Flute, :Clarinet, :Oboe ;
+    .
+
+:PercussionInstrument a owl:Class ;
+    rdfs:subClassOf :MusicalInstrument ;
+    rdfs:label "Percussion Instrument"@en ;
+    rdfs:comment "An instrument that produces sound by being struck, shaken, or scraped."@en ;
+    skos:broader :MusicalInstrument ;
+    skos:definition "A percussion instrument is a musical instrument that produces sound by being struck or scraped by a beater, scraped by hand, or struck against another instrument."@en ;
+    :exampleInstance :Drums, :Xylophone, :Marimba, :Tambourine ;
+    .
+
+:KeyboardInstrument a owl:Class ;
+    rdfs:subClassOf :MusicalInstrument ;
+    rdfs:label "Keyboard Instrument"@en ;
+    rdfs:comment "An instrument played using a keyboard of keys."@en ;
+    skos:broader :MusicalInstrument ;
+    skos:definition "A keyboard instrument is a musical instrument played using a keyboard, a row of levers which are pressed by the fingers."@en ;
+    :exampleInstance :Piano, :Organ, :Harpsichord, :Synthesizer ;
+    .
+
+:ElectronicInstrument a owl:Class ;
+    rdfs:subClassOf :MusicalInstrument ;
+    rdfs:label "Electronic Instrument"@en ;
+    rdfs:comment "An instrument that produces or modifies sound electronically."@en ;
+    skos:broader :MusicalInstrument ;
+    skos:definition "An electronic musical instrument uses electronic circuits to produce or modify sound."@en ;
+    :exampleInstance :Synthesizer, :DrumMachine, :Theremin ;
+    .
+
+###############################################################################
+# CLASSES — EVENTS & VENUES
+###############################################################################
+
+:MusicEvent a owl:Class ;
+    rdfs:subClassOf gist:Event ;
+    rdfs:label "Music Event"@en ;
+    rdfs:comment "A scheduled occasion at which music is performed."@en ;
+    skos:narrower :Concert, :MusicFestival, :RecordingSession ;
+    skos:definition "A music event is any organized occasion involving the performance or creation of music."@en ;
+    .
+
+:Concert a owl:Class ;
+    rdfs:subClassOf :MusicEvent ;
+    rdfs:label "Concert"@en ;
+    rdfs:comment "A live performance of music before an audience."@en ;
+    skos:broader :MusicEvent ;
+    skos:related :MusicalArtist, :Venue ;
+    skos:definition "A concert is a live performance of music before an audience."@en ;
+    :exampleInstance :TheBeatlesShea1965, :Woodstock1969Concert ;
+    .
+
+:MusicFestival a owl:Class ;
+    rdfs:subClassOf :MusicEvent ;
+    rdfs:label "Music Festival"@en ;
+    rdfs:comment "A community event with performances by multiple artists over multiple days."@en ;
+    skos:broader :MusicEvent ;
+    skos:related :MusicalArtist, :Venue ;
+    skos:definition "A music festival is a community event oriented towards live music performances."@en ;
+    :exampleInstance :Glastonbury, :Coachella, :Woodstock ;
+    .
+
+:RecordingSession a owl:Class ;
+    rdfs:subClassOf :MusicEvent ;
+    rdfs:label "Recording Session"@en ;
+    rdfs:comment "A period of time during which music is recorded in a studio."@en ;
+    skos:broader :MusicEvent ;
+    skos:related :Album, :MusicProducer ;
+    skos:definition "A recording session is a period of time used in a recording studio to record music."@en ;
+    .
+
+:Venue a owl:Class ;
+    rdfs:subClassOf gist:Place ;
+    rdfs:label "Venue"@en ;
+    rdfs:comment "A place where music events are held."@en ;
+    skos:related :Concert, :MusicFestival ;
+    skos:definition "A venue is a place where a music event is held."@en ;
+    :exampleInstance :Madison_Square_Garden, :RoyalAlbertHall, :CarnegieHall ;
+    .
+
+###############################################################################
+# CLASSES — AWARDS, CHARTS & PLAYLISTS
+###############################################################################
+
+:MusicAward a owl:Class ;
+    rdfs:subClassOf gist:Artifact ;
+    rdfs:label "Music Award"@en ;
+    rdfs:comment "An honor given in recognition of musical achievement."@en ;
+    skos:related :MusicalArtist, :Album, :Song ;
+    skos:definition "A music award is a recognition given to a musician, group, album, or song for musical excellence or commercial success."@en ;
+    :exampleInstance :GrammyAward, :BritAward, :MercuryPrize, :MTV_VMA ;
+    .
+
+:MusicChart a owl:Class ;
+    rdfs:subClassOf gist:Artifact ;
+    rdfs:label "Music Chart"@en ;
+    rdfs:comment "A ranked list of the most popular songs or albums for a given period."@en ;
+    skos:related :Song, :Album ;
+    skos:definition "A music chart is a ranked list of the most popular songs or albums based on various criteria such as sales, airplay, or streaming."@en ;
+    :exampleInstance :Billboard_Hot100, :UK_Singles_Chart ;
+    .
+
+:Playlist a owl:Class ;
+    rdfs:subClassOf gist:Collection ;
+    rdfs:label "Playlist"@en ;
+    rdfs:comment "A curated collection of songs."@en ;
+    skos:related :Song, :MusicalArtist ;
+    skos:definition "A playlist is a list of songs or other audio tracks that are grouped together and played in sequence."@en ;
+    .
+
+###############################################################################
+# CLASSES — MUSICAL ELEMENTS
+###############################################################################
+
+:MusicKey a owl:Class ;
+    rdfs:subClassOf gist:Concept ;
+    rdfs:label "Music Key"@en ;
+    rdfs:comment "A group of pitches forming the basis of a music composition."@en ;
+    skos:definition "A music key is a group of pitches, or scale, that forms the basis of a music composition."@en ;
+    :exampleInstance :KeyC_Major, :KeyA_Minor, :KeyG_Major ;
+    .
+
+:TimeSignature a owl:Class ;
+    rdfs:subClassOf gist:Concept ;
+    rdfs:label "Time Signature"@en ;
+    rdfs:comment "A notational convention specifying the number and value of beats per measure."@en ;
+    skos:definition "A time signature is a notational convention used to specify how many beats are in each bar of music."@en ;
+    :exampleInstance :FourFourTime, :ThreeFourTime, :SixEightTime ;
+    .
+
+:Tempo a owl:Class ;
+    rdfs:subClassOf gist:Concept ;
+    rdfs:label "Tempo"@en ;
+    rdfs:comment "The speed at which a musical piece is played."@en ;
+    skos:definition "Tempo is the speed or pace of a given piece of music, typically measured in beats per minute (BPM)."@en ;
+    :exampleInstance :Andante, :Allegro, :Presto ;
+    .
+
+###############################################################################
+# PROPERTIES
+###############################################################################
+
+# --- Artist / Agent Properties ---
+
+:hasGenre a owl:ObjectProperty ;
+    rdfs:label "has genre"@en ;
+    rdfs:comment "Associates a musical artist or work with a music genre."@en ;
+    rdfs:domain [ owl:unionOf ( :MusicalArtist :MusicalWork ) ] ;
+    rdfs:subPropertyOf gist:isCategorizedBy ;
+    rdfs:range :MusicGenre ;
+    skos:definition "Relates a musical artist or work to the genre(s) it belongs to."@en ;
+    .
+
+:hasMember a owl:ObjectProperty ;
+    rdfs:label "has member"@en ;
+    rdfs:comment "Associates a band with its individual members."@en ;
+    rdfs:domain :Band ;
+    rdfs:range :Musician ;
+    owl:inverseOf :isMemberOf ;
+    skos:definition "Relates a band to the musicians who are members of it."@en ;
+    .
+
+:isMemberOf a owl:ObjectProperty ;
+    rdfs:label "is member of"@en ;
+    rdfs:comment "Associates a musician with a band they belong to."@en ;
+    rdfs:domain :Musician ;
+    rdfs:range :Band ;
+    owl:inverseOf :hasMember ;
+    .
+
+:collaboratesWith a owl:ObjectProperty, owl:SymmetricProperty ;
+    rdfs:label "collaborates with"@en ;
+    rdfs:comment "Associates two artists who have worked together."@en ;
+    rdfs:domain :MusicalArtist ;
+    rdfs:range :MusicalArtist ;
+    skos:definition "Relates a musical artist to another artist with whom they have collaborated."@en ;
+    .
+
+:isSignedTo a owl:ObjectProperty ;
+    rdfs:label "is signed to"@en ;
+    rdfs:comment "Associates a musical artist with their record label."@en ;
+    rdfs:domain :MusicalArtist ;
+    rdfs:range :RecordLabel ;
+    owl:inverseOf :hasSigned ;
+    skos:definition "Relates a musical artist to the record label they are contracted with."@en ;
+    .
+
+:hasSigned a owl:ObjectProperty ;
+    rdfs:label "has signed"@en ;
+    rdfs:comment "Associates a record label with an artist they have contracted."@en ;
+    rdfs:domain :RecordLabel ;
+    rdfs:range :MusicalArtist ;
+    owl:inverseOf :isSignedTo ;
+    .
+
+:hasAward a owl:ObjectProperty ;
+    rdfs:label "has award"@en ;
+    rdfs:comment "Associates an artist or work with an award they have received."@en ;
+    rdfs:domain [ owl:unionOf ( :MusicalArtist :MusicalWork ) ] ;
+    rdfs:range :MusicAward ;
+    skos:definition "Relates a musical artist or work to an award they have received."@en ;
+    .
+
+:originatesFrom a owl:ObjectProperty ;
+    rdfs:label "originates from"@en ;
+    rdfs:comment "The geographic location where the artist originates."@en ;
+    rdfs:domain gist:Agent ;
+    rdfs:range :Place ;
+    .
+
+:startsCareerIn a owl:DatatypeProperty ;
+    rdfs:label "starts career in"@en ;
+    rdfs:comment "The year in which the artist began their professional music career."@en ;
+    rdfs:domain :MusicalArtist ;
+    rdfs:range xsd:gYear ;
+    .
+
+:speaksLanguage a owl:DatatypeProperty ;
+    rdfs:label "speaks language"@en ;
+    rdfs:domain :MusicalArtist ;
+    rdfs:range xsd:string ;
+    .
+
+:hasInstrument a owl:ObjectProperty ;
+    rdfs:label "has instrument"@en ;
+    rdfs:comment "Associates a musician with an instrument they play."@en ;
+    rdfs:domain :Musician ;
+    rdfs:range :MusicalInstrument ;
+    skos:definition "Relates a musician to the instrument(s) they play."@en ;
+    .
+
+:nationalityOf a owl:DatatypeProperty ;
+    rdfs:label "nationality"@en ;
+    rdfs:domain :MusicalArtist ;
+    rdfs:range xsd:string ;
+    .
+
+# --- Musical Work Properties ---
+
+:performedBy a owl:ObjectProperty ;
+    rdfs:label "performed by"@en ;
+    rdfs:comment "Associates a musical work with the artist who performs it."@en ;
+    rdfs:domain :MusicalWork ;
+    rdfs:range :MusicalArtist ;
+    owl:inverseOf :performs ;
+    skos:definition "Relates a song or work to the artist who performs it."@en ;
+    .
+
+:performs a owl:ObjectProperty ;
+    rdfs:label "performs"@en ;
+    rdfs:comment "Associates an artist with a musical work they perform."@en ;
+    rdfs:domain :MusicalArtist ;
+    rdfs:range :MusicalWork ;
+    owl:inverseOf :performedBy ;
+    .
+
+:composedBy a owl:ObjectProperty ;
+    rdfs:label "composed by"@en ;
+    rdfs:comment "Associates a musical work with its composer."@en ;
+    rdfs:domain :MusicalWork ;
+    rdfs:range :Composer ;
+    skos:definition "Relates a musical work to the composer who created it."@en ;
+    .
+
+:writtenBy a owl:ObjectProperty ;
+    rdfs:label "written by"@en ;
+    rdfs:comment "Associates a song with its lyricist."@en ;
+    rdfs:domain :Song ;
+    rdfs:range :Lyricist ;
+    skos:definition "Relates a song to the lyricist who wrote its lyrics."@en ;
+    .
+
+:producedBy a owl:ObjectProperty ;
+    rdfs:label "produced by"@en ;
+    rdfs:comment "Associates a musical work with its producer."@en ;
+    rdfs:domain :MusicalWork ;
+    rdfs:range :MusicProducer ;
+    skos:definition "Relates a musical work to the producer who oversaw its production."@en ;
+    .
+
+:releasedBy a owl:ObjectProperty ;
+    rdfs:label "released by"@en ;
+    rdfs:comment "Associates a musical work with the record label that released it."@en ;
+    rdfs:domain :MusicalWork ;
+    rdfs:range :RecordLabel ;
+    skos:definition "Relates an album or song to the record label that released it."@en ;
+    .
+
+:hasTrack a owl:ObjectProperty ;
+    rdfs:label "has track"@en ;
+    rdfs:comment "Associates an album with the songs it contains."@en ;
+    rdfs:domain :Album ;
+    rdfs:range :Song ;
+    owl:inverseOf :belongsToAlbum ;
+    skos:definition "Relates an album to the tracks it contains."@en ;
+    .
+
+:belongsToAlbum a owl:ObjectProperty ;
+    rdfs:label "belongs to album"@en ;
+    rdfs:comment "Associates a song with the album it is on."@en ;
+    rdfs:domain :Song ;
+    rdfs:range :Album ;
+    owl:inverseOf :hasTrack ;
+    .
+
+:releasedIn a owl:DatatypeProperty ;
+    rdfs:label "released in"@en ;
+    rdfs:comment "The year a musical work was released."@en ;
+    rdfs:domain :MusicalWork ;
+    rdfs:range xsd:gYear ;
+    .
+
+:hasDuration a owl:DatatypeProperty ;
+    rdfs:label "has duration"@en ;
+    rdfs:comment "The duration of a musical work in seconds."@en ;
+    rdfs:domain :MusicalWork ;
+    rdfs:range xsd:decimal ;
+    .
+
+:hasTrackNumber a owl:DatatypeProperty ;
+    rdfs:label "has track number"@en ;
+    rdfs:domain :Song ;
+    rdfs:range xsd:integer ;
+    .
+
+:inKey a owl:ObjectProperty ;
+    rdfs:label "in key"@en ;
+    rdfs:comment "Associates a musical work with its key."@en ;
+    rdfs:domain :MusicalWork ;
+    rdfs:range :MusicKey ;
+    .
+
+:hasTempo a owl:ObjectProperty ;
+    rdfs:label "has tempo"@en ;
+    rdfs:domain :MusicalWork ;
+    rdfs:range :Tempo ;
+    .
+
+:hasTimeSignature a owl:ObjectProperty ;
+    rdfs:label "has time signature"@en ;
+    rdfs:domain :MusicalWork ;
+    rdfs:range :TimeSignature ;
+    .
+
+# --- Event Properties ---
+
+:headlinedBy a owl:ObjectProperty ;
+    rdfs:label "headlined by"@en ;
+    rdfs:comment "Associates an event with the headlining artist."@en ;
+    rdfs:domain :MusicEvent ;
+    rdfs:range :MusicalArtist ;
+    skos:definition "Relates a concert or festival to its headline performer."@en ;
+    .
+
+:heldAt a owl:ObjectProperty ;
+    rdfs:label "held at"@en ;
+    rdfs:comment "Associates a music event with its venue."@en ;
+    rdfs:domain :MusicEvent ;
+    rdfs:range :Venue ;
+    .
+
+:heldOn a owl:DatatypeProperty ;
+    rdfs:label "held on"@en ;
+    rdfs:comment "The date on which a music event occurred."@en ;
+    rdfs:domain :MusicEvent ;
+    rdfs:range xsd:date ;
+    .
+
+:hasAttendance a owl:DatatypeProperty ;
+    rdfs:label "has attendance"@en ;
+    rdfs:domain :MusicEvent ;
+    rdfs:range xsd:integer ;
+    .
+
+# --- Chart / Award Properties ---
+
+:peaksAt a owl:DatatypeProperty ;
+    rdfs:label "peaks at"@en ;
+    rdfs:comment "The peak chart position of a song or album."@en ;
+    rdfs:domain :MusicalWork ;
+    rdfs:range xsd:integer ;
+    .
+
+:chartedIn a owl:ObjectProperty ;
+    rdfs:label "charted in"@en ;
+    rdfs:domain :MusicalWork ;
+    rdfs:range :MusicChart ;
+    .
+
+:awardCategory a owl:DatatypeProperty ;
+    rdfs:label "award category"@en ;
+    rdfs:domain :MusicAward ;
+    rdfs:range xsd:string ;
+    .
+
+:awardYear a owl:DatatypeProperty ;
+    rdfs:label "award year"@en ;
+    rdfs:domain :MusicAward ;
+    rdfs:range xsd:gYear ;
+    .
+
+# --- Shared annotation property ---
+
+:exampleInstance a owl:AnnotationProperty ;
+    rdfs:label "example instance"@en ;
+    rdfs:comment "Links a class to an example individual of that class."@en ;
+    .
+
+###############################################################################
+# INSTANCES — INSTRUMENTS
+###############################################################################
+
+:Guitar a :PluckedString ;
+    rdfs:label "Guitar"@en ;
+    rdfs:comment "A plucked string instrument with a fretted neck."@en ;
+    .
+
+:Bass a :PluckedString ;
+    rdfs:label "Bass Guitar"@en ;
+    rdfs:comment "A lower-pitched plucked string instrument used in many music genres."@en ;
+    .
+
+:Violin a :BowedString ;
+    rdfs:label "Violin"@en ;
+    rdfs:comment "A bowed string instrument with four strings."@en ;
+    .
+
+:Cello a :BowedString ;
+    rdfs:label "Cello"@en ;
+    rdfs:comment "A bowed string instrument larger than a viola."@en ;
+    .
+
+:DoubleBass a :BowedString ;
+    rdfs:label "Double Bass"@en ;
+    rdfs:comment "The largest bowed string instrument in the modern symphony orchestra."@en ;
+    .
+
+:Banjo a :PluckedString ;
+    rdfs:label "Banjo"@en ;
+    rdfs:comment "A plucked string instrument with a circular frame and membrane."@en ;
+    .
+
+:Harp a :PluckedString ;
+    rdfs:label "Harp"@en ;
+    rdfs:comment "A multi-string plucked instrument with pedals to change pitch."@en ;
+    .
+
+:Trumpet a :BrassInstrument ;
+    rdfs:label "Trumpet"@en ;
+    rdfs:comment "A brass wind instrument with a flared bell and three valves."@en ;
+    .
+
+:Trombone a :BrassInstrument ;
+    rdfs:label "Trombone"@en ;
+    rdfs:comment "A brass instrument with a slide mechanism."@en ;
+    .
+
+:Tuba a :BrassInstrument ;
+    rdfs:label "Tuba"@en ;
+    rdfs:comment "The lowest-pitched brass instrument."@en ;
+    .
+
+:FrenchHorn a :BrassInstrument ;
+    rdfs:label "French Horn"@en ;
+    rdfs:comment "A brass instrument with a wide conical bore and flared bell."@en ;
+    .
+
+:Saxophone a :WoodwindInstrument ;
+    rdfs:label "Saxophone"@en ;
+    rdfs:comment "A woodwind instrument made of brass with a single-reed mouthpiece."@en ;
+    .
+
+:Flute a :WoodwindInstrument ;
+    rdfs:label "Flute"@en ;
+    rdfs:comment "A woodwind instrument played by blowing across an opening."@en ;
+    .
+
+:Clarinet a :WoodwindInstrument ;
+    rdfs:label "Clarinet"@en ;
+    rdfs:comment "A woodwind instrument with a single-reed mouthpiece."@en ;
+    .
+
+:Oboe a :WoodwindInstrument ;
+    rdfs:label "Oboe"@en ;
+    rdfs:comment "A woodwind instrument with a double-reed mouthpiece."@en ;
+    .
+
+:Drums a :PercussionInstrument ;
+    rdfs:label "Drums"@en ;
+    rdfs:comment "A set of percussion instruments played with sticks or hands."@en ;
+    .
+
+:Xylophone a :PercussionInstrument ;
+    rdfs:label "Xylophone"@en ;
+    rdfs:comment "A percussion instrument with wooden bars struck by mallets."@en ;
+    .
+
+:Tambourine a :PercussionInstrument ;
+    rdfs:label "Tambourine"@en ;
+    rdfs:comment "A small percussion instrument consisting of a frame with metal disks."@en ;
+    .
+
+:Piano a :KeyboardInstrument ;
+    rdfs:label "Piano"@en ;
+    rdfs:comment "A keyboard instrument in which hammers strike strings to produce sound."@en ;
+    .
+
+:Organ a :KeyboardInstrument ;
+    rdfs:label "Organ"@en ;
+    rdfs:comment "A keyboard instrument that produces sound by pushing air through pipes."@en ;
+    .
+
+:Harpsichord a :KeyboardInstrument ;
+    rdfs:label "Harpsichord"@en ;
+    rdfs:comment "A keyboard instrument that produces sound by plucking strings."@en ;
+    .
+
+:Synthesizer a :ElectronicInstrument, :KeyboardInstrument ;
+    rdfs:label "Synthesizer"@en ;
+    rdfs:comment "An electronic instrument that generates audio signals to create music."@en ;
+    .
+
+:DrumMachine a :ElectronicInstrument ;
+    rdfs:label "Drum Machine"@en ;
+    rdfs:comment "An electronic instrument that simulates percussion sounds."@en ;
+    .
+
+:Theremin a :ElectronicInstrument ;
+    rdfs:label "Theremin"@en ;
+    rdfs:comment "An electronic instrument controlled without physical contact."@en ;
+    .
+
+###############################################################################
+# INSTANCES — MUSICAL ELEMENTS
+###############################################################################
+
+:KeyC_Major a :MusicKey ;
+    rdfs:label "C Major"@en ;
+    .
+
+:KeyA_Minor a :MusicKey ;
+    rdfs:label "A Minor"@en ;
+    .
+
+:KeyG_Major a :MusicKey ;
+    rdfs:label "G Major"@en ;
+    .
+
+:FourFourTime a :TimeSignature ;
+    rdfs:label "4/4"@en ;
+    rdfs:comment "Four beats per measure; the most common time signature."@en ;
+    .
+
+:ThreeFourTime a :TimeSignature ;
+    rdfs:label "3/4"@en ;
+    rdfs:comment "Three beats per measure; used in waltzes."@en ;
+    .
+
+:SixEightTime a :TimeSignature ;
+    rdfs:label "6/8"@en ;
+    rdfs:comment "Six eighth-note beats per measure."@en ;
+    .
+
+:Andante a :Tempo ;
+    rdfs:label "Andante"@en ;
+    rdfs:comment "A moderate walking pace, approximately 76-108 BPM."@en ;
+    .
+
+:Allegro a :Tempo ;
+    rdfs:label "Allegro"@en ;
+    rdfs:comment "A fast, lively tempo, approximately 120-168 BPM."@en ;
+    .
+
+:Presto a :Tempo ;
+    rdfs:label "Presto"@en ;
+    rdfs:comment "An extremely fast tempo, typically above 168 BPM."@en ;
+    .
+
+:Largo a :Tempo ;
+    rdfs:label "Largo"@en ;
+    rdfs:comment "A very slow and broad tempo, approximately 40-60 BPM."@en ;
+    .
+
+###############################################################################
+# INSTANCES — RECORD LABELS
+###############################################################################
+
+:EMI a :RecordLabel ;
+    rdfs:label "EMI"@en ;
+    rdfs:comment "Electric and Musical Industries, a British multinational record label."@en ;
+    :locatedIn :London ;
+    .
+
+:SonyMusicEntertainment a :RecordLabel ;
+    rdfs:label "Sony Music Entertainment"@en ;
+    rdfs:comment "One of the 'Big Three' record labels, a subsidiary of Sony Group Corporation."@en ;
+    :locatedIn :NewYorkCity ;
+    .
+
+:UniversalMusicGroup a :RecordLabel ;
+    rdfs:label "Universal Music Group"@en ;
+    rdfs:comment "The world's largest music company by revenue."@en ;
+    :locatedIn :SantaMonica ;
+    .
+
+:WarnerMusicGroup a :RecordLabel ;
+    rdfs:label "Warner Music Group"@en ;
+    rdfs:comment "One of the 'Big Three' major record labels."@en ;
+    :locatedIn :NewYorkCity ;
+    .
+
+:DefJamRecordings a :RecordLabel ;
+    rdfs:label "Def Jam Recordings"@en ;
+    rdfs:comment "An American record label focused on hip-hop and urban music."@en ;
+    :locatedIn :NewYorkCity ;
+    .
+
+:IslandRecords a :RecordLabel ;
+    rdfs:label "Island Records"@en ;
+    rdfs:comment "A British record label founded in Jamaica in 1959."@en ;
+    :locatedIn :Kingston ;
+    .
+
+:ParlophonicRecords a :RecordLabel ;
+    rdfs:label "Parlophone Records"@en ;
+    rdfs:comment "A British record label best known as the label of The Beatles."@en ;
+    :locatedIn :London ;
+    .
+
+###############################################################################
+# INSTANCES — AWARDS
+###############################################################################
+
+:GrammyAward a :MusicAward ;
+    rdfs:label "Grammy Award"@en ;
+    rdfs:comment "Annual awards presented by the Recording Academy recognizing outstanding achievement in the music industry."@en ;
+    .
+
+:BritAward a :MusicAward ;
+    rdfs:label "BRIT Award"@en ;
+    rdfs:comment "Annual pop music awards presented by the British Phonographic Industry."@en ;
+    .
+
+:MercuryPrize a :MusicAward ;
+    rdfs:label "Mercury Prize"@en ;
+    rdfs:comment "An annual music prize awarded for the best album from the UK and Ireland."@en ;
+    .
+
+:MTV_VMA a :MusicAward ;
+    rdfs:label "MTV Video Music Award"@en ;
+    rdfs:comment "Annual awards presented by MTV honoring the best in music video."@en ;
+    .
+
+:Billboard_Music_Award a :MusicAward ;
+    rdfs:label "Billboard Music Award"@en ;
+    rdfs:comment "Annual awards based on Billboard chart performance."@en ;
+    .
+
+###############################################################################
+# INSTANCES — CHARTS
+###############################################################################
+
+:Billboard_Hot100 a :MusicChart ;
+    rdfs:label "Billboard Hot 100"@en ;
+    rdfs:comment "The music industry standard record chart in the United States."@en ;
+    .
+
+:UK_Singles_Chart a :MusicChart ;
+    rdfs:label "UK Singles Chart"@en ;
+    rdfs:comment "The official record chart for the United Kingdom."@en ;
+    .
+
+###############################################################################
+# INSTANCES — VENUES
+###############################################################################
+
+:Madison_Square_Garden a :Venue ;
+    rdfs:label "Madison Square Garden"@en ;
+    rdfs:comment "An indoor arena in New York City."@en ;
+    :locatedIn :NewYorkCity ;
+    .
+
+:RoyalAlbertHall a :Venue ;
+    rdfs:label "Royal Albert Hall"@en ;
+    rdfs:comment "A concert hall in London, England."@en ;
+    :locatedIn :London ;
+    .
+
+:CarnegieHall a :Venue ;
+    rdfs:label "Carnegie Hall"@en ;
+    rdfs:comment "A concert hall in Midtown Manhattan, New York City."@en ;
+    :locatedIn :NewYorkCity ;
+    .
+
+:GlastonburyFarmVenue a :Venue ;
+    rdfs:label "Worthy Farm, Pilton"@en ;
+    rdfs:comment "The venue for the Glastonbury Festival in Somerset, England."@en ;
+    :locatedIn :Somerset ;
+    .
+
+###############################################################################
+# INSTANCES — FESTIVALS
+###############################################################################
+
+:Glastonbury a :MusicFestival ;
+    rdfs:label "Glastonbury Festival"@en ;
+    rdfs:comment "A five-day festival of contemporary performing arts in Somerset, England."@en ;
+    :heldAt :GlastonburyFarmVenue ;
+    .
+
+:Coachella a :MusicFestival ;
+    rdfs:label "Coachella Valley Music and Arts Festival"@en ;
+    rdfs:comment "An annual music and arts festival held in the Colorado Desert, California."@en ;
+    :locatedIn :Indio ;
+    .
+
+:Woodstock a :MusicFestival ;
+    rdfs:label "Woodstock"@en ;
+    rdfs:comment "A music festival attracting over 400,000 people held in 1969 in Bethel, New York."@en ;
+    :heldOn "1969-08-15"^^xsd:date ;
+    :hasAttendance "400000"^^xsd:integer ;
+    .
+
+###############################################################################
+# INSTANCES — MUSICIANS (band members / notable instrumentalists)
+###############################################################################
+
+:JohnLennon a :Musician ;
+    rdfs:label "John Lennon"@en ;
+    rdfs:comment "English musician and singer-songwriter, co-founder of The Beatles."@en ;
+    :hasInstrument :Guitar ;
+    :isMemberOf :TheBeatles ;
+    :originatesFrom :Liverpool ;
+    :startsCareerIn "1956"^^xsd:gYear ;
+    .
+
+:GeorgeHarrison a :Musician ;
+    rdfs:label "George Harrison"@en ;
+    rdfs:comment "English musician and lead guitarist of The Beatles."@en ;
+    :hasInstrument :Guitar ;
+    :isMemberOf :TheBeatles ;
+    :originatesFrom :Liverpool ;
+    .
+
+:RingoStarr a :Musician ;
+    rdfs:label "Ringo Starr"@en ;
+    rdfs:comment "English musician and drummer of The Beatles."@en ;
+    :hasInstrument :Drums ;
+    :isMemberOf :TheBeatles ;
+    :originatesFrom :Liverpool ;
+    .
+
+:JimiHendrix a :Musician ;
+    rdfs:label "Jimi Hendrix"@en ;
+    rdfs:comment "American rock guitarist, singer, and songwriter."@en ;
+    :hasInstrument :Guitar ;
+    :hasGenre :Rock ;
+    :originatesFrom :Seattle ;
+    :startsCareerIn "1963"^^xsd:gYear ;
+    .
+
+:YoYoMa a :Musician ;
+    rdfs:label "Yo-Yo Ma"@en ;
+    rdfs:comment "American cellist of Chinese heritage, regarded as one of the greatest cellists of all time."@en ;
+    :hasInstrument :Cello ;
+    :hasGenre :Classical ;
+    :originatesFrom :Paris ;
+    :startsCareerIn "1962"^^xsd:gYear ;
+    .
+
+:HerbertVonKarajan a :Conductor ;
+    rdfs:label "Herbert von Karajan"@en ;
+    rdfs:comment "Austrian conductor, considered one of the greatest conductors of the 20th century."@en ;
+    :hasGenre :Classical ;
+    :originatesFrom :Salzburg ;
+    :startsCareerIn "1929"^^xsd:gYear ;
+    .
+
+:LeonardBernstein a :Conductor ;
+    rdfs:label "Leonard Bernstein"@en ;
+    rdfs:comment "American conductor, composer, pianist, music educator, and author."@en ;
+    :hasGenre :Classical ;
+    :originatesFrom :Lawrence_MA ;
+    :startsCareerIn "1942"^^xsd:gYear ;
+    .
+
+:QuincyJones a :MusicProducer ;
+    rdfs:label "Quincy Jones"@en ;
+    rdfs:comment "American record producer, conductor, and composer, known for producing Michael Jackson's Thriller."@en ;
+    :originatesFrom :Chicago ;
+    :startsCareerIn "1951"^^xsd:gYear ;
+    .
+
+:RickRubin a :MusicProducer ;
+    rdfs:label "Rick Rubin"@en ;
+    rdfs:comment "American record producer, co-founder of Def Jam Recordings."@en ;
+    :originatesFrom :LongBeach_NY ;
+    :startsCareerIn "1984"^^xsd:gYear ;
+    .
+
+:GeorgeMartin a :MusicProducer ;
+    rdfs:label "George Martin"@en ;
+    rdfs:comment "English record producer known for his work with The Beatles."@en ;
+    :originatesFrom :London ;
+    :startsCareerIn "1950"^^xsd:gYear ;
+    .
+
+###############################################################################
+# INSTANCES — COMPOSERS
+###############################################################################
+
+:LudwigVanBeethoven a :Composer, :SoloArtist ;
+    rdfs:label "Ludwig van Beethoven"@en ;
+    rdfs:comment "German composer and pianist, widely regarded as one of the greatest composers in Western music history."@en ;
+    :hasGenre :Classical ;
+    :hasGenre :Romantic ;
+    :hasInstrument :Piano ;
+    :originatesFrom :Bonn ;
+    :startsCareerIn "1782"^^xsd:gYear ;
+    .
+
+:WolfgangAmadeusMozart a :Composer, :SoloArtist ;
+    rdfs:label "Wolfgang Amadeus Mozart"@en ;
+    rdfs:comment "Austrian composer of the Classical period."@en ;
+    :hasGenre :Classical ;
+    :hasInstrument :Piano ;
+    :originatesFrom :Salzburg ;
+    :startsCareerIn "1761"^^xsd:gYear ;
+    .
+
+:JohannSebastianBach a :Composer, :SoloArtist ;
+    rdfs:label "Johann Sebastian Bach"@en ;
+    rdfs:comment "German composer and musician of the Baroque period."@en ;
+    :hasGenre :Classical ;
+    :hasGenre :Baroque ;
+    :hasInstrument :Organ ;
+    :originatesFrom :Eisenach ;
+    :startsCareerIn "1703"^^xsd:gYear ;
+    .
+
+:BobDylan a :Composer, :Lyricist, :SoloArtist ;
+    rdfs:label "Bob Dylan"@en ;
+    rdfs:comment "American singer-songwriter widely considered one of the greatest songwriters of all time."@en ;
+    :hasGenre :Folk ;
+    :hasGenre :Rock ;
+    :hasInstrument :Guitar ;
+    :originatesFrom :Duluth ;
+    :startsCareerIn "1961"^^xsd:gYear ;
+    :speaksLanguage "English" ;
+    :hasAward :GrammyAward ;
+    .
+
+###############################################################################
+# INSTANCES — SOLO ARTISTS
+###############################################################################
+
+:PaulMcCartney a :SoloArtist, :Lyricist ;
+    rdfs:label "Paul McCartney"@en ;
+    rdfs:comment "English singer-songwriter and musician, best known as a member of the Beatles."@en ;
+    :bornOn "1942-06-18"^^xsd:date ;
+    :startsCareerIn "1957"^^xsd:gYear ;
+    :originatesFrom :Liverpool ;
+    :speaksLanguage "English" ;
+    :hasGenre :Rock ;
+    :hasInstrument :Bass ;
+    :hasInstrument :Piano ;
+    :collaboratesWith :JohnLennon ;
+    :hasAward :GrammyAward ;
+    :isSignedTo :ParlophonicRecords ;
+    .
+
+:KanyeWest a :SoloArtist ;
+    rdfs:label "Kanye West"@en ;
+    rdfs:comment "American rapper, singer, songwriter, record producer, and fashion designer."@en ;
+    :bornOn "1977-06-08"^^xsd:date ;
+    :startsCareerIn "1996"^^xsd:gYear ;
+    :originatesFrom :Chicago ;
+    :speaksLanguage "English" ;
+    :hasGenre :HipHop ;
+    :isSignedTo :DefJamRecordings ;
+    :hasAward :GrammyAward ;
+    .
+
+:SadeAdu a :SoloArtist ;
+    rdfs:label "Sade Adu"@en ;
+    rdfs:comment "British-Nigerian singer, songwriter known for her smooth soulful voice."@en ;
+    :bornOn "1959-01-16"^^xsd:date ;
+    :startsCareerIn "1980"^^xsd:gYear ;
+    :originatesFrom :London ;
+    :speaksLanguage "English" ;
+    :hasGenre :Jazz ;
+    :hasGenre :Soul ;
+    :hasAward :BritAward ;
+    .
+
+:BeyonceKnowles a :SoloArtist ;
+    rdfs:label "Beyoncé Knowles"@en ;
+    rdfs:comment "American singer, songwriter, and actress, widely regarded as one of the greatest entertainers of all time."@en ;
+    :bornOn "1981-09-04"^^xsd:date ;
+    :startsCareerIn "1990"^^xsd:gYear ;
+    :originatesFrom :Houston ;
+    :speaksLanguage "English" ;
+    :hasGenre :RnB ;
+    :hasGenre :Pop ;
+    :isSignedTo :SonyMusicEntertainment ;
+    :hasAward :GrammyAward ;
+    .
+
+:MilesDavis a :SoloArtist ;
+    rdfs:label "Miles Davis"@en ;
+    rdfs:comment "American jazz trumpeter and bandleader, one of the most influential musicians in jazz history."@en ;
+    :bornOn "1926-05-26"^^xsd:date ;
+    :startsCareerIn "1944"^^xsd:gYear ;
+    :originatesFrom :Alton ;
+    :speaksLanguage "English" ;
+    :hasGenre :Jazz ;
+    :hasGenre :ModalJazz ;
+    :hasInstrument :Trumpet ;
+    :hasAward :GrammyAward ;
+    .
+
+:BobMarley a :SoloArtist ;
+    rdfs:label "Bob Marley"@en ;
+    rdfs:comment "Jamaican singer and musician, pioneer of reggae music."@en ;
+    :startsCareerIn "1962"^^xsd:gYear ;
+    :originatesFrom :NineMile ;
+    :speaksLanguage "English" ;
+    :hasGenre :Reggae ;
+    :hasInstrument :Guitar ;
+    :isSignedTo :IslandRecords ;
+    .
+
+:DavidBowie a :SoloArtist ;
+    rdfs:label "David Bowie"@en ;
+    rdfs:comment "English singer-songwriter, regarded as one of the most influential musicians of the 20th century."@en ;
+    :startsCareerIn "1963"^^xsd:gYear ;
+    :originatesFrom :London ;
+    :speaksLanguage "English" ;
+    :hasGenre :Rock ;
+    :hasGenre :Pop ;
+    :hasAward :GrammyAward ;
+    .
+
+:TaylorSwift a :SoloArtist, :Lyricist ;
+    rdfs:label "Taylor Swift"@en ;
+    rdfs:comment "American singer-songwriter known for her narrative songwriting."@en ;
+    :bornOn "1989-12-13"^^xsd:date ;
+    :startsCareerIn "2004"^^xsd:gYear ;
+    :originatesFrom :WestReading ;
+    :speaksLanguage "English" ;
+    :hasGenre :Country ;
+    :hasGenre :Pop ;
+    :hasInstrument :Guitar ;
+    :hasAward :GrammyAward ;
+    :hasAward :Billboard_Music_Award ;
+    .
+
+:MichaelJackson a :SoloArtist ;
+    rdfs:label "Michael Jackson"@en ;
+    rdfs:comment "American singer, songwriter, and dancer, known as the 'King of Pop'."@en ;
+    :startsCareerIn "1964"^^xsd:gYear ;
+    :originatesFrom :Gary ;
+    :speaksLanguage "English" ;
+    :hasGenre :Pop ;
+    :hasGenre :RnB ;
+    :isSignedTo :SonyMusicEntertainment ;
+    :hasAward :GrammyAward ;
+    .
+
+###############################################################################
+# INSTANCES — BANDS
+###############################################################################
+
+:TheBeatles a :RockBand ;
+    rdfs:label "The Beatles"@en ;
+    rdfs:comment "English rock band formed in Liverpool in 1960, widely regarded as the most influential band in history."@en ;
+    :hasGenre :Rock ;
+    :hasGenre :ClassicRock ;
+    :originatesFrom :Liverpool ;
+    :startsCareerIn "1960"^^xsd:gYear ;
+    :hasMember :JohnLennon ;
+    :hasMember :PaulMcCartney ;
+    :hasMember :GeorgeHarrison ;
+    :hasMember :RingoStarr ;
+    :isSignedTo :ParlophonicRecords ;
+    :hasAward :GrammyAward ;
+    .
+
+:Coldplay a :RockBand ;
+    rdfs:label "Coldplay"@en ;
+    rdfs:comment "British rock band formed in London in 1996."@en ;
+    :hasGenre :Rock ;
+    :hasGenre :Pop ;
+    :originatesFrom :London ;
+    :startsCareerIn "1996"^^xsd:gYear ;
+    :isSignedTo :ParlophonicRecords ;
+    :hasAward :GrammyAward ;
+    :hasAward :BritAward ;
+    .
+
+:Nirvana a :RockBand ;
+    rdfs:label "Nirvana"@en ;
+    rdfs:comment "American rock band formed in Aberdeen, Washington in 1987, pioneers of grunge."@en ;
+    :hasGenre :AlternativeRock ;
+    :hasGenre :PunkRock ;
+    :originatesFrom :Aberdeen_WA ;
+    :startsCareerIn "1987"^^xsd:gYear ;
+    .
+
+:LedZeppelin a :RockBand ;
+    rdfs:label "Led Zeppelin"@en ;
+    rdfs:comment "English rock band formed in London in 1968, considered one of the greatest rock bands of all time."@en ;
+    :hasGenre :HardRock ;
+    :hasGenre :ClassicRock ;
+    :originatesFrom :London ;
+    :startsCareerIn "1968"^^xsd:gYear ;
+    :isSignedTo :WarnerMusicGroup ;
+    .
+
+:Radiohead a :RockBand ;
+    rdfs:label "Radiohead"@en ;
+    rdfs:comment "English rock band formed in Oxford in 1985, known for their innovative sound."@en ;
+    :hasGenre :AlternativeRock ;
+    :hasGenre :IndieRock ;
+    :originatesFrom :Oxford ;
+    :startsCareerIn "1985"^^xsd:gYear ;
+    :hasAward :GrammyAward ;
+    :hasAward :MercuryPrize ;
+    .
+
+:TheRollingStones a :RockBand ;
+    rdfs:label "The Rolling Stones"@en ;
+    rdfs:comment "English rock band formed in London in 1962."@en ;
+    :hasGenre :ClassicRock ;
+    :hasGenre :Blues ;
+    :originatesFrom :London ;
+    :startsCareerIn "1962"^^xsd:gYear ;
+    .
+
+:BerlinPhilharmonic a :Orchestra ;
+    rdfs:label "Berlin Philharmonic"@en ;
+    rdfs:comment "One of the world's most prestigious orchestras, based in Berlin, Germany."@en ;
+    :hasGenre :Classical ;
+    :originatesFrom :Berlin ;
+    :startsCareerIn "1882"^^xsd:gYear ;
+    .
+
+:LondonSymphonyOrchestra a :Orchestra ;
+    rdfs:label "London Symphony Orchestra"@en ;
+    rdfs:comment "One of the world's most famous orchestras, based in London."@en ;
+    :hasGenre :Classical ;
+    :originatesFrom :London ;
+    :startsCareerIn "1904"^^xsd:gYear ;
+    .
+
+###############################################################################
+# INSTANCES — ALBUMS
+###############################################################################
+
+:AbbeyRoad a :StudioAlbum ;
+    rdfs:label "Abbey Road"@en ;
+    rdfs:comment "The eleventh studio album by The Beatles, released in 1969."@en ;
+    :performedBy :TheBeatles ;
+    :releasedIn "1969"^^xsd:gYear ;
+    :hasGenre :Rock ;
+    :releasedBy :ParlophonicRecords ;
+    :producedBy :GeorgeMartin ;
+    .
+
+:TheDarkSideOfTheMoon a :StudioAlbum ;
+    rdfs:label "The Dark Side of the Moon"@en ;
+    rdfs:comment "The eighth studio album by Pink Floyd, released in 1973."@en ;
+    :releasedIn "1973"^^xsd:gYear ;
+    :hasGenre :Rock ;
+    :releasedBy :EMI ;
+    .
+
+:Thriller a :StudioAlbum ;
+    rdfs:label "Thriller"@en ;
+    rdfs:comment "The sixth studio album by Michael Jackson, the best-selling album of all time."@en ;
+    :performedBy :MichaelJackson ;
+    :releasedIn "1982"^^xsd:gYear ;
+    :hasGenre :Pop ;
+    :hasGenre :RnB ;
+    :releasedBy :SonyMusicEntertainment ;
+    :producedBy :QuincyJones ;
+    :hasAward :GrammyAward ;
+    .
+
+:KindOfBlue a :StudioAlbum ;
+    rdfs:label "Kind of Blue"@en ;
+    rdfs:comment "A studio album by Miles Davis, the best-selling jazz album of all time."@en ;
+    :performedBy :MilesDavis ;
+    :releasedIn "1959"^^xsd:gYear ;
+    :hasGenre :Jazz ;
+    :hasGenre :ModalJazz ;
+    :releasedBy :SonyMusicEntertainment ;
+    .
+
+:Lemonade a :StudioAlbum ;
+    rdfs:label "Lemonade"@en ;
+    rdfs:comment "The sixth studio album by Beyoncé, a visual album released in 2016."@en ;
+    :performedBy :BeyonceKnowles ;
+    :releasedIn "2016"^^xsd:gYear ;
+    :hasGenre :RnB ;
+    :hasGenre :Pop ;
+    :releasedBy :SonyMusicEntertainment ;
+    :hasAward :GrammyAward ;
+    .
+
+:OkComputer a :StudioAlbum ;
+    rdfs:label "OK Computer"@en ;
+    rdfs:comment "The third studio album by Radiohead, released in 1997."@en ;
+    :performedBy :Radiohead ;
+    :releasedIn "1997"^^xsd:gYear ;
+    :hasGenre :AlternativeRock ;
+    :releasedBy :ParlophonicRecords ;
+    :hasAward :GrammyAward ;
+    :hasAward :MercuryPrize ;
+    .
+
+:Symphony9Beethoven a :Symphony ;
+    rdfs:label "Symphony No. 9 in D minor, Op. 125"@en ;
+    rdfs:comment "The final complete symphony by Ludwig van Beethoven, premiered in 1824."@en ;
+    :composedBy :LudwigVanBeethoven ;
+    :releasedIn "1824"^^xsd:gYear ;
+    :hasGenre :Classical ;
+    :hasGenre :Romantic ;
+    :inKey :KeyC_Major ;
+    .
+
+:RequiemMozart a :Composition ;
+    rdfs:label "Requiem in D minor, K. 626"@en ;
+    rdfs:comment "A requiem mass by Wolfgang Amadeus Mozart, left unfinished at his death in 1791."@en ;
+    :composedBy :WolfgangAmadeusMozart ;
+    :releasedIn "1791"^^xsd:gYear ;
+    :hasGenre :Classical ;
+    :hasTimeSignature :FourFourTime ;
+    .
+
+###############################################################################
+# INSTANCES — SONGS
+###############################################################################
+
+:HeyJude a :Song ;
+    rdfs:label "Hey Jude"@en ;
+    rdfs:comment "A song by The Beatles, written by Paul McCartney, released in 1968."@en ;
+    :performedBy :TheBeatles ;
+    :writtenBy :PaulMcCartney ;
+    :releasedIn "1968"^^xsd:gYear ;
+    :hasGenre :Rock ;
+    :hasDuration "431"^^xsd:decimal ;
+    :inKey :KeyF_Major ;
+    :hasTimeSignature :FourFourTime ;
+    :releasedBy :ParlophonicRecords ;
+    :peaksAt "1"^^xsd:integer ;
+    :chartedIn :UK_Singles_Chart ;
+    :chartedIn :Billboard_Hot100 ;
+    .
+
+:BohemianRhapsody a :Song ;
+    rdfs:label "Bohemian Rhapsody"@en ;
+    rdfs:comment "A song by the rock band Queen, written by Freddie Mercury, released in 1975."@en ;
+    :releasedIn "1975"^^xsd:gYear ;
+    :hasGenre :Rock ;
+    :hasDuration "354"^^xsd:decimal ;
+    :chartedIn :UK_Singles_Chart ;
+    :peaksAt "1"^^xsd:integer ;
+    .
+
+:BillieJean a :Song ;
+    rdfs:label "Billie Jean"@en ;
+    rdfs:comment "A song by Michael Jackson from the album Thriller, released in 1983."@en ;
+    :performedBy :MichaelJackson ;
+    :belongsToAlbum :Thriller ;
+    :releasedIn "1983"^^xsd:gYear ;
+    :hasGenre :Pop ;
+    :hasGenre :RnB ;
+    :hasDuration "294"^^xsd:decimal ;
+    :hasTimeSignature :FourFourTime ;
+    :peaksAt "1"^^xsd:integer ;
+    :chartedIn :Billboard_Hot100 ;
+    .
+
+:SmokeOnTheWater a :Song ;
+    rdfs:label "Smoke on the Water"@en ;
+    rdfs:comment "A song by the rock band Deep Purple from the album Machine Head, released in 1972."@en ;
+    :releasedIn "1972"^^xsd:gYear ;
+    :hasGenre :HardRock ;
+    :hasDuration "312"^^xsd:decimal ;
+    .
+
+:ImagineSong a :Song ;
+    rdfs:label "Imagine"@en ;
+    rdfs:comment "A song by John Lennon from his 1971 album Imagine."@en ;
+    :releasedIn "1971"^^xsd:gYear ;
+    :hasGenre :Rock ;
+    :hasDuration "187"^^xsd:decimal ;
+    :inKey :KeyC_Major ;
+    :hasTimeSignature :FourFourTime ;
+    :peaksAt "1"^^xsd:integer ;
+    :chartedIn :UK_Singles_Chart ;
+    .
+
+:NoWomanNoCry a :Song ;
+    rdfs:label "No Woman, No Cry"@en ;
+    rdfs:comment "A song by Bob Marley and the Wailers, released in 1974."@en ;
+    :performedBy :BobMarley ;
+    :releasedIn "1974"^^xsd:gYear ;
+    :hasGenre :Reggae ;
+    :hasDuration "233"^^xsd:decimal ;
+    .
+
+:CryMeARiver a :Song ;
+    rdfs:label "Cry Me a River"@en ;
+    rdfs:comment "Originally written by Arthur Hamilton in 1953, with notable versions by Julie London and many others."@en ;
+    :releasedIn "1953"^^xsd:gYear ;
+    :hasGenre :Jazz ;
+    :hasGenre :Blues ;
+    .
+
+:KeyF_Major a :MusicKey ;
+    rdfs:label "F Major"@en ;
+    .
+
+
+###############################################################################
+# STRUCTURAL-FIX ADDITIONS (Artefact 4 - Modeller Dialogue)
+###############################################################################
+
+# --- Genre: gist:Category pattern ---
+
+:TopLevelGenre a owl:Class ;
+    rdfs:subClassOf :MusicGenre ;
+    rdfs:label "Top-Level Genre"@en ;
+    skos:definition "A music genre that is a root of the genre hierarchy (no broader genre)."@en ;
+    .
+
+:hasBroaderGenre a owl:ObjectProperty, owl:TransitiveProperty ;
+    rdfs:label "has broader genre"@en ;
+    rdfs:domain :MusicGenre ;
+    rdfs:range :MusicGenre ;
+    skos:definition "Relates a subgenre to a broader genre; transitive, so closure reaches all ancestors."@en ;
+    .
+
+# --- Geography: structured place graph ---
+
+:Place a owl:Class ;
+    rdfs:subClassOf gist:Place ;
+    rdfs:label "Place"@en ;
+    skos:definition "A geographic location at which an agent originates or an organisation, venue, or event is situated."@en ;
+    .
+
+:City a owl:Class ;
+    rdfs:subClassOf :Place ;
+    rdfs:label "City"@en ;
+    skos:definition "A place that is a city or town."@en ;
+    .
+
+:Country a owl:Class ;
+    rdfs:subClassOf :Place ;
+    rdfs:label "Country"@en ;
+    skos:definition "A place that is a country or national-level region."@en ;
+    .
+
+:locatedIn a owl:ObjectProperty, owl:TransitiveProperty ;
+    rdfs:label "located in"@en ;
+    rdfs:range :Place ;
+    skos:definition "Relates an organisation, venue, event, or place to a containing place; transitive for regional roll-up."@en ;
+    .
+
+# --- Time: bornOn replaces the removed hasAge ---
+
+:bornOn a owl:DatatypeProperty ;
+    rdfs:label "born on"@en ;
+    rdfs:domain gist:Agent ;
+    rdfs:range xsd:date ;
+    skos:definition "The date on which an agent was born."@en ;
+    .
+
+###############################################################################
+# INSTANCES - PLACES
+###############################################################################
+
+:England a :Country ;
+    rdfs:label "England"@en ;
+    .
+
+:UnitedStates a :Country ;
+    rdfs:label "United States"@en ;
+    .
+
+:France a :Country ;
+    rdfs:label "France"@en ;
+    .
+
+:Austria a :Country ;
+    rdfs:label "Austria"@en ;
+    .
+
+:Germany a :Country ;
+    rdfs:label "Germany"@en ;
+    .
+
+:Jamaica a :Country ;
+    rdfs:label "Jamaica"@en ;
+    .
+
+:Liverpool a :City ;
+    rdfs:label "Liverpool"@en ;
+    :locatedIn :England ;
+    .
+
+:London a :City ;
+    rdfs:label "London"@en ;
+    :locatedIn :England ;
+    .
+
+:Oxford a :City ;
+    rdfs:label "Oxford"@en ;
+    :locatedIn :England ;
+    .
+
+:Somerset a :City ;
+    rdfs:label "Somerset"@en ;
+    :locatedIn :England ;
+    .
+
+:Seattle a :City ;
+    rdfs:label "Seattle, Washington"@en ;
+    :locatedIn :UnitedStates ;
+    .
+
+:Chicago a :City ;
+    rdfs:label "Chicago, Illinois"@en ;
+    :locatedIn :UnitedStates ;
+    .
+
+:LongBeach_NY a :City ;
+    rdfs:label "Long Beach, New York"@en ;
+    :locatedIn :UnitedStates ;
+    .
+
+:Lawrence_MA a :City ;
+    rdfs:label "Lawrence, Massachusetts"@en ;
+    :locatedIn :UnitedStates ;
+    .
+
+:Duluth a :City ;
+    rdfs:label "Duluth, Minnesota"@en ;
+    :locatedIn :UnitedStates ;
+    .
+
+:Houston a :City ;
+    rdfs:label "Houston, Texas"@en ;
+    :locatedIn :UnitedStates ;
+    .
+
+:Alton a :City ;
+    rdfs:label "Alton, Illinois"@en ;
+    :locatedIn :UnitedStates ;
+    .
+
+:WestReading a :City ;
+    rdfs:label "West Reading, Pennsylvania"@en ;
+    :locatedIn :UnitedStates ;
+    .
+
+:Gary a :City ;
+    rdfs:label "Gary, Indiana"@en ;
+    :locatedIn :UnitedStates ;
+    .
+
+:Aberdeen_WA a :City ;
+    rdfs:label "Aberdeen, Washington"@en ;
+    :locatedIn :UnitedStates ;
+    .
+
+:NewYorkCity a :City ;
+    rdfs:label "New York City"@en ;
+    :locatedIn :UnitedStates ;
+    .
+
+:SantaMonica a :City ;
+    rdfs:label "Santa Monica, California"@en ;
+    :locatedIn :UnitedStates ;
+    .
+
+:Indio a :City ;
+    rdfs:label "Indio, California"@en ;
+    :locatedIn :UnitedStates ;
+    .
+
+:Paris a :City ;
+    rdfs:label "Paris"@en ;
+    :locatedIn :France ;
+    .
+
+:Salzburg a :City ;
+    rdfs:label "Salzburg"@en ;
+    :locatedIn :Austria ;
+    .
+
+:Bonn a :City ;
+    rdfs:label "Bonn"@en ;
+    :locatedIn :Germany ;
+    .
+
+:Eisenach a :City ;
+    rdfs:label "Eisenach"@en ;
+    :locatedIn :Germany ;
+    .
+
+:Berlin a :City ;
+    rdfs:label "Berlin"@en ;
+    :locatedIn :Germany ;
+    .
+
+:NineMile a :City ;
+    rdfs:label "Nine Mile"@en ;
+    :locatedIn :Jamaica ;
+    .
+
+:Kingston a :City ;
+    rdfs:label "Kingston"@en ;
+    :locatedIn :Jamaica ;
+    .

@@ -1,0 +1,10 @@
+[project]
+name = "mc-1-project"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "pyshacl>=0.31.0",
+    "rdflib>=7.6.0",
+]
