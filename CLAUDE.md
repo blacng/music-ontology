@@ -89,11 +89,14 @@ over many hand-edits for bulk `.ttl` changes (see `apply_structural_fixes.py`).
 
 ## Commands
 
-- Validate model (parse + SPARQL): `uv run python scripts/validate_fixes.py`
-- Run CQ regression suite: `uv run python scripts/run_cq_tests.py`
-- Validate SHACL: `uv run pyshacl -s ontology/music_vocabulary_shapes.ttl -m -f human ontology/music_vocabulary_comprehensive.ttl`
-- Add a dependency: `uv add <package>` · Sync: `uv sync`
-- Python pinned to **3.14** (`.python-version`, `requires-python = ">=3.14"`)
+- **Full gate (what CI runs):** `make check` — model checks + CQ tests + SHACL.
+- Individually: `make validate` · `make test` · `make shacl` (or the underlying
+  `uv run python scripts/{validate_fixes,run_cq_tests,check_shacl}.py`).
+- SHACL gate fails only on **Violations**; the 19 completeness Warnings are advisory.
+- CI: `.github/workflows/ci.yml` runs `make check` on every push/PR (`uv sync --locked`).
+- Add a dependency: `uv add <package>` · Sync: `uv sync` · Python pinned to **3.14**.
+- **Docker is intentionally deferred** — revisit when a Java reasoner / triplestore lands
+  (see `sdd/plan.md` Decisions log).
 
 ## Working norms specific to this project
 

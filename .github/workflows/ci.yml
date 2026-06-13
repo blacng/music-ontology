@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Force JS actions onto Node 24 now (GitHub makes it the default on 2026-06-16).
+# Verifies the workflow survives the migration even though setup-uv still ships Node 20.
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  validate:
+    name: Validate ontology
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Sync dependencies (locked)
+        run: uv sync --locked
+
+      - name: Model checks (parse + SPARQL)
+        run: make validate
+
+      - name: CQ regression suite
+        run: make test
+
+      - name: SHACL conformance (fail on Violations)
+        run: make shacl

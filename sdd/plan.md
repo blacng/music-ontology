@@ -29,6 +29,12 @@ Each generation step is followed by adversarial critique (Artefact 2) — not op
 - **Testability stance:** full intended scope, each CQ has a measurable pass condition + flag.
 - **Genre traversal:** top-level genre = depth-1 child of `:MusicGenre`; semantic fix
   (`skos:broaderTransitive` / `:TopLevelGenre` / `:hasSubgenre`) deferred to Artefact 4.
+- **Infrastructure (2026-06):** adopted a `Makefile` (thin task runner over `uv`) + GitHub
+  Actions CI (`make check` on every push/PR) as the validation gate. **Docker deliberately
+  deferred** — the stack is pure-Python with no deploy target, and `uv` + the lockfile already
+  give reproducibility, so a container would be ceremony now. **Revisit Docker when Artefact 7
+  introduces a Java reasoner (HermiT/Pellet/ELK)** or a triplestore (Fuseki/GraphDB) — that's
+  where containerising the JVM toolchain solves a real problem.
 
 ## Next action
 
