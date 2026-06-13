@@ -21,7 +21,7 @@ beyond key/tempo/time-signature.
 ## Contract: competency questions
 
 The ontology's functional contract is the competency-question set in
-[`docs/competency-questions.md`](docs/competency-questions.md) — 12 CQs oriented to discovery
+[`docs/competency-questions.md`](../docs/competency-questions.md) — 12 CQs oriented to discovery
 and recommendation. "Done" for the ontology means every CQ has a passing SPARQL test against
 canonical instance data (Production Readiness Checklist item 1).
 
@@ -47,7 +47,7 @@ production use. Scope is **content-based candidate generation**, not personalise
   transitive) point to `:Place`/`:City`/`:Country`, enabling regional roll-up.
 - **Personal attrs:** `:hasHeight` removed; `:hasAge` replaced by `:bornOn` (`xsd:date`).
 
-Applied via `scripts/apply_structural_fixes.py`; verified by `scripts/validate_fixes.py`
+Applied via `music_ontology/scripts/apply_structural_fixes.py`; verified by `music_ontology/scripts/validate_fixes.py`
 (parse + SPARQL checks all pass).
 
 ## Known issues / decisions pending

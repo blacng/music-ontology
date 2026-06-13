@@ -12,7 +12,7 @@ wheels = [
 ]
 
 [[package]]
-name = "mc-1-project"
+name = "music-ontology"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [

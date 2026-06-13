@@ -16,12 +16,12 @@ Fix 3 - Personal attributes.
   * :hasHeight removed (property def + all instance triples).
   * :hasAge removed; replaced by :bornOn (xsd:date) populated with real birth dates.
 
-Run: uv run python scripts/apply_structural_fixes.py
+Run: uv run python music_ontology/scripts/apply_structural_fixes.py
 """
 import re
 from pathlib import Path
 
-TTL = Path("ontology/music_vocabulary_comprehensive.ttl")
+TTL = Path("music_ontology/music_vocabulary_comprehensive.ttl")
 
 # free-text origin literal -> city IRI
 ORIGIN_MAP = {

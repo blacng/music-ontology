@@ -1,7 +1,7 @@
 [project]
-name = "mc-1-project"
+name = "music-ontology"
 version = "0.1.0"
-description = "Add your description here"
+description = "A gist-aligned OWL 2 music ontology for discovery/recommendation, built with the GRL Workshop methodology."
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [

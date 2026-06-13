@@ -4,11 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repository is
 
-This is an **ontology-engineering project**, not a conventional application. The Python
-package (`main.py`, `pyproject.toml`) is an empty `uv` scaffold and carries no real logic —
-do not treat it as the center of gravity. The actual deliverables are:
+This is an **ontology-engineering project**, not a conventional application. The `uv`/
+`pyproject.toml` setup exists only to run the validation tooling — there is no application
+code. The actual deliverables are:
 
-1. **`ontology/music_vocabulary_comprehensive.ttl`** — a ~50-class, ~38-property OWL 2 ontology
+1. **`music_ontology/music_vocabulary_comprehensive.ttl`** — a ~50-class, ~38-property OWL 2 ontology
    of music concepts (artists, works, instruments, genres, relationships), aligned to the
    **gist** upper ontology (`gist:` = `https://w3id.org/semanticarts/ontology/gistCore#`).
    Its own namespace is `:` = `https://www.somusicvocabulary.org/music#`.
@@ -69,14 +69,22 @@ No build pipeline exists yet. When validating ontology work, the methodology exp
 - **Reasoner** checks (HermiT / Pellet / ELK) for consistency and unsatisfiable classes.
 - **SPARQL** CQ tests run against canonical synthetic data.
 
-`rdflib` is installed (`uv add`ed) and used by `scripts/validate_fixes.py` (parse + SPARQL
-checks). `pyshacl` is not yet added. The `scripts/` dir holds reusable, reviewable ontology
-transforms — prefer a deterministic, validated script over many hand-edits for bulk `.ttl`
-changes (see `apply_structural_fixes.py`).
+Both `rdflib` and `pyshacl` are installed. `music_ontology/scripts/validate_fixes.py` does
+parse + SPARQL checks; SHACL is validated with `pyshacl`. The `music_ontology/scripts/` dir
+holds reusable, reviewable ontology transforms — prefer a deterministic, validated script
+over many hand-edits for bulk `.ttl` changes (see `apply_structural_fixes.py`).
 
-## Python scaffold commands
+## Repository layout
 
-- Run: `uv run main.py` (currently prints a placeholder)
+- `music_ontology/` — the ontology (`*.ttl`) and its transform/validation `scripts/`.
+- `sdd/` — spec-driven-development control docs (`spec.md`, `plan.md`).
+- `docs/` — engineering deliverables (`competency-questions.md`, `shacl-report.md`).
+- `prompt_library/`, `docs/prompt-library-summary.md` — local-only (git-ignored).
+
+## Commands
+
+- Validate model (parse + SPARQL): `uv run python music_ontology/scripts/validate_fixes.py`
+- Validate SHACL: `uv run pyshacl -s music_ontology/music_vocabulary_shapes.ttl -m -f human music_ontology/music_vocabulary_comprehensive.ttl`
 - Add a dependency: `uv add <package>` · Sync: `uv sync`
 - Python pinned to **3.14** (`.python-version`, `requires-python = ">=3.14"`)
 
