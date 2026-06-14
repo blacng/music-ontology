@@ -22,15 +22,15 @@
 ###############################################################################
 
 :MusicalAgent a owl:Class ;
-    rdfs:label "Musical Agent"@en ;
-    rdfs:comment "Any agent — person or group — that creates or performs music."@en ;
+    skos:prefLabel "Musical Agent"@en ;
+    skos:scopeNote "Any agent — person or group — that creates or performs music."@en ;
     skos:definition "Any person or group that creates or performs music; the common parent of musical artists and musicians."@en ;
     .
 
 :MusicalArtist a owl:Class ;
     rdfs:subClassOf :MusicalAgent ;
-    rdfs:label "Musical Artist"@en ;
-    rdfs:comment "An individual or group that performs music."@en ;
+    skos:prefLabel "Musical Artist"@en ;
+    skos:scopeNote "An individual or group that performs music."@en ;
     skos:broader :Artist ;
     skos:related :MusicGenre ;
     skos:narrower :SoloArtist, :Band ;
@@ -41,8 +41,8 @@
 :SoloArtist a owl:Class ;
     rdfs:subClassOf :MusicalArtist ;
     rdfs:subClassOf :Musician ;
-    rdfs:label "Solo Artist"@en ;
-    rdfs:comment "An individual musical artist who performs or records under their own name."@en ;
+    skos:prefLabel "Solo Artist"@en ;
+    skos:scopeNote "An individual musical artist who performs or records under their own name."@en ;
     skos:broader :MusicalArtist ;
     skos:definition "A solo artist is an individual who performs or records music independently."@en ;
     :exampleInstance :PaulMcCartney, :KanyeWest, :SadeAdu, :BeyonceKnowles, :MilesDavis, :BobMarley, :DavidBowie, :TaylorSwift, :MichaelJackson, :LudwigVanBeethoven ;
@@ -51,8 +51,8 @@
 :Band a owl:Class ;
     rdfs:subClassOf :MusicalArtist ;
     rdfs:subClassOf gist:Organization ;
-    rdfs:label "Band"@en ;
-    rdfs:comment "A group of musicians who perform together under a collective name."@en ;
+    skos:prefLabel "Band"@en ;
+    skos:scopeNote "A group of musicians who perform together under a collective name."@en ;
     skos:broader :MusicalArtist ;
     skos:narrower :RockBand, :JazzEnsemble, :Orchestra, :Choir ;
     skos:definition "A band is a group of musicians who perform or record together."@en ;
@@ -61,8 +61,8 @@
 
 :RockBand a owl:Class ;
     rdfs:subClassOf :Band ;
-    rdfs:label "Rock Band"@en ;
-    rdfs:comment "A band whose primary genre is rock music."@en ;
+    skos:prefLabel "Rock Band"@en ;
+    skos:scopeNote "A band whose primary genre is rock music."@en ;
     skos:broader :Band ;
     skos:definition "A rock band is a musical group specializing in rock music."@en ;
     :exampleInstance :TheBeatles, :Nirvana, :LedZeppelin, :Radiohead, :TheRollingStones ;
@@ -70,8 +70,8 @@
 
 :JazzEnsemble a owl:Class ;
     rdfs:subClassOf :Band ;
-    rdfs:label "Jazz Ensemble"@en ;
-    rdfs:comment "A group of musicians performing jazz music."@en ;
+    skos:prefLabel "Jazz Ensemble"@en ;
+    skos:scopeNote "A group of musicians performing jazz music."@en ;
     skos:broader :Band ;
     skos:definition "A jazz ensemble is a group of musicians performing jazz music."@en ;
     :exampleInstance :MilesDavisTrio ;
@@ -79,8 +79,8 @@
 
 :Orchestra a owl:Class ;
     rdfs:subClassOf :Band ;
-    rdfs:label "Orchestra"@en ;
-    rdfs:comment "A large ensemble of musicians, typically performing classical music."@en ;
+    skos:prefLabel "Orchestra"@en ;
+    skos:scopeNote "A large ensemble of musicians, typically performing classical music."@en ;
     skos:broader :Band ;
     skos:definition "An orchestra is a large instrumental ensemble composed of strings, winds, brass, and percussion."@en ;
     :exampleInstance :BerlinPhilharmonic, :LondonSymphonyOrchestra ;
@@ -88,8 +88,8 @@
 
 :Choir a owl:Class ;
     rdfs:subClassOf :Band ;
-    rdfs:label "Choir"@en ;
-    rdfs:comment "An organized group of singers."@en ;
+    skos:prefLabel "Choir"@en ;
+    skos:scopeNote "An organized group of singers."@en ;
     skos:broader :Band ;
     skos:definition "A choir is an organized group of singers who perform together."@en ;
     .
@@ -97,8 +97,8 @@
 :Musician a owl:Class ;
     rdfs:subClassOf :MusicalAgent ;
     rdfs:subClassOf gist:Person ;
-    rdfs:label "Musician"@en ;
-    rdfs:comment "A person who plays a musical instrument or sings."@en ;
+    skos:prefLabel "Musician"@en ;
+    skos:scopeNote "A person who plays a musical instrument or sings."@en ;
     skos:related :MusicalInstrument, :Band ;
     skos:definition "A musician is a person who practices music, either as a performer or composer."@en ;
     :exampleInstance :JohnLennon, :JimiHendrix, :YoYoMa ;
@@ -106,8 +106,8 @@
 
 :Composer a owl:Class ;
     rdfs:subClassOf :Musician ;
-    rdfs:label "Composer"@en ;
-    rdfs:comment "A person who writes original music."@en ;
+    skos:prefLabel "Composer"@en ;
+    skos:scopeNote "A person who writes original music."@en ;
     skos:broader :Musician ;
     skos:definition "A composer is a musician who creates original musical works."@en ;
     :exampleInstance :LudwigVanBeethoven, :WolfgangAmadeusMozart, :JohannSebastianBach ;
@@ -115,8 +115,8 @@
 
 :Lyricist a owl:Class ;
     rdfs:subClassOf gist:Person ;
-    rdfs:label "Lyricist"@en ;
-    rdfs:comment "A person who writes the words (lyrics) for songs."@en ;
+    skos:prefLabel "Lyricist"@en ;
+    skos:scopeNote "A person who writes the words (lyrics) for songs."@en ;
     skos:related :Song ;
     skos:definition "A lyricist is a writer who specializes in writing song lyrics."@en ;
     :exampleInstance :BobDylan, :PaulMcCartney ;
@@ -124,8 +124,8 @@
 
 :MusicProducer a owl:Class ;
     rdfs:subClassOf gist:Person ;
-    rdfs:label "Music Producer"@en ;
-    rdfs:comment "A person who oversees and manages the recording and production of music."@en ;
+    skos:prefLabel "Music Producer"@en ;
+    skos:scopeNote "A person who oversees and manages the recording and production of music."@en ;
     skos:related :Album, :RecordLabel ;
     skos:definition "A music producer is responsible for overseeing the recording, mixing, and production of musical recordings."@en ;
     :exampleInstance :QuincyJones, :RickRubin, :GeorgeMartin ;
@@ -133,8 +133,8 @@
 
 :Conductor a owl:Class ;
     rdfs:subClassOf :Musician ;
-    rdfs:label "Conductor"@en ;
-    rdfs:comment "A person who directs the performance of an orchestra or choir."@en ;
+    skos:prefLabel "Conductor"@en ;
+    skos:scopeNote "A person who directs the performance of an orchestra or choir."@en ;
     skos:broader :Musician ;
     skos:related :Orchestra ;
     skos:definition "A conductor is a musician who leads an orchestra, choir, or other musical ensemble."@en ;
@@ -143,8 +143,8 @@
 
 :RecordLabel a owl:Class ;
     rdfs:subClassOf gist:Organization ;
-    rdfs:label "Record Label"@en ;
-    rdfs:comment "A company that manages the production and distribution of music recordings."@en ;
+    skos:prefLabel "Record Label"@en ;
+    skos:scopeNote "A company that manages the production and distribution of music recordings."@en ;
     skos:related :Album, :MusicalArtist ;
     skos:definition "A record label is a brand or trademark of a music recording company."@en ;
     :exampleInstance :EMI, :SonyMusicEntertainment, :UniversalMusicGroup, :WarnerMusicGroup, :DefJamRecordings ;
@@ -156,16 +156,16 @@
 
 :MusicalWork a owl:Class ;
     rdfs:subClassOf gist:Content ;
-    rdfs:label "Musical Work"@en ;
-    rdfs:comment "A creative work in the medium of music."@en ;
+    skos:prefLabel "Musical Work"@en ;
+    skos:scopeNote "A creative work in the medium of music."@en ;
     skos:narrower :Song, :Album, :EP, :Composition, :Soundtrack ;
     skos:definition "A musical work is any creative work expressed in the form of music."@en ;
     .
 
 :Song a owl:Class ;
     rdfs:subClassOf :MusicalWork ;
-    rdfs:label "Song"@en ;
-    rdfs:comment "A short musical composition with vocals."@en ;
+    skos:prefLabel "Song"@en ;
+    skos:scopeNote "A short musical composition with vocals."@en ;
     skos:broader :MusicalWork ;
     skos:related :Album, :MusicalArtist, :Lyricist ;
     skos:definition "A song is a short musical composition intended to be sung, typically combining melody and lyrics."@en ;
@@ -174,8 +174,8 @@
 
 :Album a owl:Class ;
     rdfs:subClassOf :MusicalWork ;
-    rdfs:label "Album"@en ;
-    rdfs:comment "A collection of songs released as a single unit."@en ;
+    skos:prefLabel "Album"@en ;
+    skos:scopeNote "A collection of songs released as a single unit."@en ;
     skos:broader :MusicalWork ;
     skos:narrower :StudioAlbum, :LiveAlbum, :CompilationAlbum ;
     skos:related :Song, :MusicalArtist, :RecordLabel ;
@@ -185,8 +185,8 @@
 
 :StudioAlbum a owl:Class ;
     rdfs:subClassOf :Album ;
-    rdfs:label "Studio Album"@en ;
-    rdfs:comment "An album of original recordings made in a recording studio."@en ;
+    skos:prefLabel "Studio Album"@en ;
+    skos:scopeNote "An album of original recordings made in a recording studio."@en ;
     skos:broader :Album ;
     skos:definition "A studio album consists of original material recorded in a professional recording studio."@en ;
     :exampleInstance :AbbeyRoad, :Thriller, :KindOfBlue, :Lemonade, :OkComputer ;
@@ -194,32 +194,32 @@
 
 :LiveAlbum a owl:Class ;
     rdfs:subClassOf :Album ;
-    rdfs:label "Live Album"@en ;
-    rdfs:comment "An album recorded during a live performance."@en ;
+    skos:prefLabel "Live Album"@en ;
+    skos:scopeNote "An album recorded during a live performance."@en ;
     skos:broader :Album ;
     skos:definition "A live album is a recording made during a live performance rather than in a studio."@en ;
     .
 
 :CompilationAlbum a owl:Class ;
     rdfs:subClassOf :Album ;
-    rdfs:label "Compilation Album"@en ;
-    rdfs:comment "An album of songs drawn from multiple sources or artists."@en ;
+    skos:prefLabel "Compilation Album"@en ;
+    skos:scopeNote "An album of songs drawn from multiple sources or artists."@en ;
     skos:broader :Album ;
     skos:definition "A compilation album consists of songs chosen from earlier releases or from various artists."@en ;
     .
 
 :EP a owl:Class ;
     rdfs:subClassOf :MusicalWork ;
-    rdfs:label "Extended Play (EP)"@en ;
-    rdfs:comment "A musical recording that contains more than a single but fewer tracks than a full album."@en ;
+    skos:prefLabel "Extended Play (EP)"@en ;
+    skos:scopeNote "A musical recording that contains more than a single but fewer tracks than a full album."@en ;
     skos:broader :MusicalWork ;
     skos:definition "An EP (Extended Play) is a music release that contains more tracks than a single but fewer than an album."@en ;
     .
 
 :Composition a owl:Class ;
     rdfs:subClassOf :MusicalWork ;
-    rdfs:label "Musical Composition"@en ;
-    rdfs:comment "A formal musical work, typically in the classical tradition."@en ;
+    skos:prefLabel "Musical Composition"@en ;
+    skos:scopeNote "A formal musical work, typically in the classical tradition."@en ;
     skos:broader :MusicalWork ;
     skos:narrower :Symphony, :Concerto, :Sonata, :Opera ;
     skos:related :Composer ;
@@ -229,8 +229,8 @@
 
 :Symphony a owl:Class ;
     rdfs:subClassOf :Composition ;
-    rdfs:label "Symphony"@en ;
-    rdfs:comment "An extended musical composition for full orchestra."@en ;
+    skos:prefLabel "Symphony"@en ;
+    skos:scopeNote "An extended musical composition for full orchestra."@en ;
     skos:broader :Composition ;
     skos:definition "A symphony is an extended musical composition in Western classical music, scored for orchestra."@en ;
     :exampleInstance :Symphony9Beethoven ;
@@ -238,32 +238,32 @@
 
 :Concerto a owl:Class ;
     rdfs:subClassOf :Composition ;
-    rdfs:label "Concerto"@en ;
-    rdfs:comment "A composition for a solo instrument and orchestra."@en ;
+    skos:prefLabel "Concerto"@en ;
+    skos:scopeNote "A composition for a solo instrument and orchestra."@en ;
     skos:broader :Composition ;
     skos:definition "A concerto is a composition for one or more solo instruments and an orchestral ensemble."@en ;
     .
 
 :Sonata a owl:Class ;
     rdfs:subClassOf :Composition ;
-    rdfs:label "Sonata"@en ;
-    rdfs:comment "A composition for one or two instruments, typically in several movements."@en ;
+    skos:prefLabel "Sonata"@en ;
+    skos:scopeNote "A composition for one or two instruments, typically in several movements."@en ;
     skos:broader :Composition ;
     skos:definition "A sonata is a composition for solo instrument, typically structured in multiple movements."@en ;
     .
 
 :Opera a owl:Class ;
     rdfs:subClassOf :Composition ;
-    rdfs:label "Opera"@en ;
-    rdfs:comment "A dramatic work set to music for singers and orchestra."@en ;
+    skos:prefLabel "Opera"@en ;
+    skos:scopeNote "A dramatic work set to music for singers and orchestra."@en ;
     skos:broader :Composition ;
     skos:definition "An opera is a form of theater in which music has a leading role, combining vocal and orchestral music with drama."@en ;
     .
 
 :Soundtrack a owl:Class ;
     rdfs:subClassOf :MusicalWork ;
-    rdfs:label "Soundtrack"@en ;
-    rdfs:comment "Music composed and recorded for a film, television show, or other media."@en ;
+    skos:prefLabel "Soundtrack"@en ;
+    skos:scopeNote "Music composed and recorded for a film, television show, or other media."@en ;
     skos:broader :MusicalWork ;
     skos:definition "A soundtrack is the recorded music accompanying and synchronized to a film, television show, or other visual media."@en ;
     .
@@ -274,8 +274,8 @@
 
 :MusicGenre a owl:Class ;
     rdfs:subClassOf gist:Category ;
-    rdfs:label "Music Genre"@en ;
-    rdfs:comment "A category of music characterized by a particular style, form, or content."@en ;
+    skos:prefLabel "Music Genre"@en ;
+    skos:scopeNote "A category of music characterized by a particular style, form, or content."@en ;
     skos:definition "A music genre is a conventional category that identifies musical compositions as belonging to a shared tradition or set of conventions."@en ;
     :exampleInstance :Rock, :Jazz, :Classical, :HipHop, :Blues, :Soul, :Pop, :Reggae ;
     .
@@ -508,8 +508,8 @@
 
 :MusicalInstrument a owl:Class ;
     rdfs:subClassOf gist:Equipment ;
-    rdfs:label "Musical Instrument"@en ;
-    rdfs:comment "A device constructed or modified for the purpose of making music."@en ;
+    skos:prefLabel "Musical Instrument"@en ;
+    skos:scopeNote "A device constructed or modified for the purpose of making music."@en ;
     skos:narrower :StringInstrument, :WindInstrument, :PercussionInstrument, :KeyboardInstrument, :ElectronicInstrument ;
     skos:definition "A musical instrument is a device created or adapted to make musical sounds."@en ;
     :exampleInstance :Guitar, :Piano, :Drums, :Violin, :Trumpet, :Saxophone, :Bass ;
@@ -517,8 +517,8 @@
 
 :StringInstrument a owl:Class ;
     rdfs:subClassOf :MusicalInstrument ;
-    rdfs:label "String Instrument"@en ;
-    rdfs:comment "An instrument that produces sound through vibrating strings."@en ;
+    skos:prefLabel "String Instrument"@en ;
+    skos:scopeNote "An instrument that produces sound through vibrating strings."@en ;
     skos:broader :MusicalInstrument ;
     skos:narrower :PluckedString, :BowedString ;
     skos:definition "A string instrument is a musical instrument that produces sound by vibrating strings."@en ;
@@ -527,8 +527,8 @@
 
 :PluckedString a owl:Class ;
     rdfs:subClassOf :StringInstrument ;
-    rdfs:label "Plucked String Instrument"@en ;
-    rdfs:comment "A string instrument played by plucking or strumming the strings."@en ;
+    skos:prefLabel "Plucked String Instrument"@en ;
+    skos:scopeNote "A string instrument played by plucking or strumming the strings."@en ;
     skos:broader :StringInstrument ;
     skos:definition "A plucked string instrument is played by plucking or strumming."@en ;
     :exampleInstance :Guitar, :Banjo, :Harp ;
@@ -536,8 +536,8 @@
 
 :BowedString a owl:Class ;
     rdfs:subClassOf :StringInstrument ;
-    rdfs:label "Bowed String Instrument"@en ;
-    rdfs:comment "A string instrument played with a bow."@en ;
+    skos:prefLabel "Bowed String Instrument"@en ;
+    skos:scopeNote "A string instrument played with a bow."@en ;
     skos:broader :StringInstrument ;
     skos:definition "A bowed string instrument is played using a bow drawn across the strings."@en ;
     :exampleInstance :Violin, :Cello, :DoubleBass ;
@@ -545,8 +545,8 @@
 
 :WindInstrument a owl:Class ;
     rdfs:subClassOf :MusicalInstrument ;
-    rdfs:label "Wind Instrument"@en ;
-    rdfs:comment "An instrument that produces sound through vibrating air in a tube."@en ;
+    skos:prefLabel "Wind Instrument"@en ;
+    skos:scopeNote "An instrument that produces sound through vibrating air in a tube."@en ;
     skos:broader :MusicalInstrument ;
     skos:narrower :BrassInstrument, :WoodwindInstrument ;
     skos:definition "A wind instrument is a musical instrument that produces sound by causing a body of air to vibrate."@en ;
@@ -555,8 +555,8 @@
 
 :BrassInstrument a owl:Class ;
     rdfs:subClassOf :WindInstrument ;
-    rdfs:label "Brass Instrument"@en ;
-    rdfs:comment "A wind instrument made of brass or similar metal."@en ;
+    skos:prefLabel "Brass Instrument"@en ;
+    skos:scopeNote "A wind instrument made of brass or similar metal."@en ;
     skos:broader :WindInstrument ;
     skos:definition "A brass instrument is a musical instrument that produces sound by sympathetic vibration of air in a tubular resonator."@en ;
     :exampleInstance :Trumpet, :Trombone, :Tuba, :FrenchHorn ;
@@ -564,8 +564,8 @@
 
 :WoodwindInstrument a owl:Class ;
     rdfs:subClassOf :WindInstrument ;
-    rdfs:label "Woodwind Instrument"@en ;
-    rdfs:comment "A wind instrument in which sound is produced by blowing against an edge or through a reed."@en ;
+    skos:prefLabel "Woodwind Instrument"@en ;
+    skos:scopeNote "A wind instrument in which sound is produced by blowing against an edge or through a reed."@en ;
     skos:broader :WindInstrument ;
     skos:definition "A woodwind instrument is a musical instrument in which sound is produced by the vibration of a reed or the player's lips."@en ;
     :exampleInstance :Saxophone, :Flute, :Clarinet, :Oboe ;
@@ -573,8 +573,8 @@
 
 :PercussionInstrument a owl:Class ;
     rdfs:subClassOf :MusicalInstrument ;
-    rdfs:label "Percussion Instrument"@en ;
-    rdfs:comment "An instrument that produces sound by being struck, shaken, or scraped."@en ;
+    skos:prefLabel "Percussion Instrument"@en ;
+    skos:scopeNote "An instrument that produces sound by being struck, shaken, or scraped."@en ;
     skos:broader :MusicalInstrument ;
     skos:definition "A percussion instrument is a musical instrument that produces sound by being struck or scraped by a beater, scraped by hand, or struck against another instrument."@en ;
     :exampleInstance :Drums, :Xylophone, :Marimba, :Tambourine ;
@@ -582,8 +582,8 @@
 
 :KeyboardInstrument a owl:Class ;
     rdfs:subClassOf :MusicalInstrument ;
-    rdfs:label "Keyboard Instrument"@en ;
-    rdfs:comment "An instrument played using a keyboard of keys."@en ;
+    skos:prefLabel "Keyboard Instrument"@en ;
+    skos:scopeNote "An instrument played using a keyboard of keys."@en ;
     skos:broader :MusicalInstrument ;
     skos:definition "A keyboard instrument is a musical instrument played using a keyboard, a row of levers which are pressed by the fingers."@en ;
     :exampleInstance :Piano, :Organ, :Harpsichord, :Synthesizer ;
@@ -591,8 +591,8 @@
 
 :ElectronicInstrument a owl:Class ;
     rdfs:subClassOf :MusicalInstrument ;
-    rdfs:label "Electronic Instrument"@en ;
-    rdfs:comment "An instrument that produces or modifies sound electronically."@en ;
+    skos:prefLabel "Electronic Instrument"@en ;
+    skos:scopeNote "An instrument that produces or modifies sound electronically."@en ;
     skos:broader :MusicalInstrument ;
     skos:definition "An electronic musical instrument uses electronic circuits to produce or modify sound."@en ;
     :exampleInstance :Synthesizer, :DrumMachine, :Theremin ;
@@ -604,16 +604,16 @@
 
 :MusicEvent a owl:Class ;
     rdfs:subClassOf gist:Event ;
-    rdfs:label "Music Event"@en ;
-    rdfs:comment "A scheduled occasion at which music is performed."@en ;
+    skos:prefLabel "Music Event"@en ;
+    skos:scopeNote "A scheduled occasion at which music is performed."@en ;
     skos:narrower :Concert, :MusicFestival, :RecordingSession ;
     skos:definition "A music event is any organized occasion involving the performance or creation of music."@en ;
     .
 
 :Concert a owl:Class ;
     rdfs:subClassOf :MusicEvent ;
-    rdfs:label "Concert"@en ;
-    rdfs:comment "A live performance of music before an audience."@en ;
+    skos:prefLabel "Concert"@en ;
+    skos:scopeNote "A live performance of music before an audience."@en ;
     skos:broader :MusicEvent ;
     skos:related :MusicalArtist, :Venue ;
     skos:definition "A concert is a live performance of music before an audience."@en ;
@@ -622,8 +622,8 @@
 
 :MusicFestival a owl:Class ;
     rdfs:subClassOf :MusicEvent ;
-    rdfs:label "Music Festival"@en ;
-    rdfs:comment "A community event with performances by multiple artists over multiple days."@en ;
+    skos:prefLabel "Music Festival"@en ;
+    skos:scopeNote "A community event with performances by multiple artists over multiple days."@en ;
     skos:broader :MusicEvent ;
     skos:related :MusicalArtist, :Venue ;
     skos:definition "A music festival is a community event oriented towards live music performances."@en ;
@@ -632,8 +632,8 @@
 
 :RecordingSession a owl:Class ;
     rdfs:subClassOf :MusicEvent ;
-    rdfs:label "Recording Session"@en ;
-    rdfs:comment "A period of time during which music is recorded in a studio."@en ;
+    skos:prefLabel "Recording Session"@en ;
+    skos:scopeNote "A period of time during which music is recorded in a studio."@en ;
     skos:broader :MusicEvent ;
     skos:related :Album, :MusicProducer ;
     skos:definition "A recording session is a period of time used in a recording studio to record music."@en ;
@@ -641,8 +641,8 @@
 
 :Venue a owl:Class ;
     rdfs:subClassOf :Place ;
-    rdfs:label "Venue"@en ;
-    rdfs:comment "A place where music events are held."@en ;
+    skos:prefLabel "Venue"@en ;
+    skos:scopeNote "A place where music events are held."@en ;
     skos:related :Concert, :MusicFestival ;
     skos:definition "A venue is a place where a music event is held."@en ;
     :exampleInstance :Madison_Square_Garden, :RoyalAlbertHall, :CarnegieHall ;
@@ -653,8 +653,8 @@
 ###############################################################################
 
 :MusicAward a owl:Class ;
-    rdfs:label "Music Award"@en ;
-    rdfs:comment "An honor given in recognition of musical achievement."@en ;
+    skos:prefLabel "Music Award"@en ;
+    skos:scopeNote "An honor given in recognition of musical achievement."@en ;
     skos:related :MusicalArtist, :Album, :Song ;
     skos:definition "A music award is a recognition given to a musician, group, album, or song for musical excellence or commercial success."@en ;
     :exampleInstance :GrammyAward, :BritAward, :MercuryPrize, :MTV_VMA ;
@@ -662,8 +662,8 @@
 
 :MusicChart a owl:Class ;
     rdfs:subClassOf gist:Collection ;
-    rdfs:label "Music Chart"@en ;
-    rdfs:comment "A ranked list of the most popular songs or albums for a given period."@en ;
+    skos:prefLabel "Music Chart"@en ;
+    skos:scopeNote "A ranked list of the most popular songs or albums for a given period."@en ;
     skos:related :Song, :Album ;
     skos:definition "A music chart is a ranked list of the most popular songs or albums based on various criteria such as sales, airplay, or streaming."@en ;
     :exampleInstance :Billboard_Hot100, :UK_Singles_Chart ;
@@ -671,8 +671,8 @@
 
 :Playlist a owl:Class ;
     rdfs:subClassOf gist:Collection ;
-    rdfs:label "Playlist"@en ;
-    rdfs:comment "A curated collection of songs."@en ;
+    skos:prefLabel "Playlist"@en ;
+    skos:scopeNote "A curated collection of songs."@en ;
     skos:related :Song, :MusicalArtist ;
     skos:definition "A playlist is a list of songs or other audio tracks that are grouped together and played in sequence."@en ;
     .
@@ -683,24 +683,24 @@
 
 :MusicKey a owl:Class ;
     rdfs:subClassOf gist:Aspect ;
-    rdfs:label "Music Key"@en ;
-    rdfs:comment "A group of pitches forming the basis of a music composition."@en ;
+    skos:prefLabel "Music Key"@en ;
+    skos:scopeNote "A group of pitches forming the basis of a music composition."@en ;
     skos:definition "A music key is a group of pitches, or scale, that forms the basis of a music composition."@en ;
     :exampleInstance :KeyC_Major, :KeyA_Minor, :KeyG_Major ;
     .
 
 :TimeSignature a owl:Class ;
     rdfs:subClassOf gist:Aspect ;
-    rdfs:label "Time Signature"@en ;
-    rdfs:comment "A notational convention specifying the number and value of beats per measure."@en ;
+    skos:prefLabel "Time Signature"@en ;
+    skos:scopeNote "A notational convention specifying the number and value of beats per measure."@en ;
     skos:definition "A time signature is a notational convention used to specify how many beats are in each bar of music."@en ;
     :exampleInstance :FourFourTime, :ThreeFourTime, :SixEightTime ;
     .
 
 :Tempo a owl:Class ;
     rdfs:subClassOf gist:Aspect ;
-    rdfs:label "Tempo"@en ;
-    rdfs:comment "The speed at which a musical piece is played."@en ;
+    skos:prefLabel "Tempo"@en ;
+    skos:scopeNote "The speed at which a musical piece is played."@en ;
     skos:definition "Tempo is the speed or pace of a given piece of music, typically measured in beats per minute (BPM)."@en ;
     :exampleInstance :Andante, :Allegro, :Presto ;
     .
@@ -712,8 +712,8 @@
 # --- Artist / Agent Properties ---
 
 :hasGenre a owl:ObjectProperty ;
-    rdfs:label "has genre"@en ;
-    rdfs:comment "Associates a musical artist or work with a music genre."@en ;
+    skos:prefLabel "has genre"@en ;
+    skos:scopeNote "Associates a musical artist or work with a music genre."@en ;
     rdfs:domain [ owl:unionOf ( :MusicalArtist :MusicalWork ) ] ;
     rdfs:subPropertyOf gist:isCategorizedBy ;
     rdfs:range :MusicGenre ;
@@ -721,8 +721,8 @@
     .
 
 :hasMember a owl:ObjectProperty ;
-    rdfs:label "has member"@en ;
-    rdfs:comment "Associates a band with its individual members."@en ;
+    skos:prefLabel "has member"@en ;
+    skos:scopeNote "Associates a band with its individual members."@en ;
     rdfs:domain :Band ;
     rdfs:range :Musician ;
     owl:inverseOf :isMemberOf ;
@@ -730,24 +730,24 @@
     .
 
 :isMemberOf a owl:ObjectProperty ;
-    rdfs:label "is member of"@en ;
-    rdfs:comment "Associates a musician with a band they belong to."@en ;
+    skos:prefLabel "is member of"@en ;
+    skos:scopeNote "Associates a musician with a band they belong to."@en ;
     rdfs:domain :Musician ;
     rdfs:range :Band ;
     owl:inverseOf :hasMember ;
     .
 
 :collaboratesWith a owl:ObjectProperty, owl:SymmetricProperty ;
-    rdfs:label "collaborates with"@en ;
-    rdfs:comment "Associates two music-making agents who have worked together."@en ;
+    skos:prefLabel "collaborates with"@en ;
+    skos:scopeNote "Associates two music-making agents who have worked together."@en ;
     rdfs:domain :MusicalAgent ;
     rdfs:range :MusicalAgent ;
     skos:definition "Relates a musical agent to another agent with whom they have collaborated."@en ;
     .
 
 :isSignedTo a owl:ObjectProperty ;
-    rdfs:label "is signed to"@en ;
-    rdfs:comment "Associates a musical artist with their record label."@en ;
+    skos:prefLabel "is signed to"@en ;
+    skos:scopeNote "Associates a musical artist with their record label."@en ;
     rdfs:domain :MusicalArtist ;
     rdfs:range :RecordLabel ;
     owl:inverseOf :hasSigned ;
@@ -755,51 +755,51 @@
     .
 
 :hasSigned a owl:ObjectProperty ;
-    rdfs:label "has signed"@en ;
-    rdfs:comment "Associates a record label with an artist they have contracted."@en ;
+    skos:prefLabel "has signed"@en ;
+    skos:scopeNote "Associates a record label with an artist they have contracted."@en ;
     rdfs:domain :RecordLabel ;
     rdfs:range :MusicalArtist ;
     owl:inverseOf :isSignedTo ;
     .
 
 :hasAward a owl:ObjectProperty ;
-    rdfs:label "has award"@en ;
-    rdfs:comment "Associates an artist or work with an award they have received."@en ;
+    skos:prefLabel "has award"@en ;
+    skos:scopeNote "Associates an artist or work with an award they have received."@en ;
     rdfs:domain [ owl:unionOf ( :MusicalArtist :MusicalWork ) ] ;
     rdfs:range :MusicAward ;
     skos:definition "Relates a musical artist or work to an award they have received."@en ;
     .
 
 :originatesFrom a owl:ObjectProperty ;
-    rdfs:label "originates from"@en ;
-    rdfs:comment "The geographic location where the artist originates."@en ;
+    skos:prefLabel "originates from"@en ;
+    skos:scopeNote "The geographic location where the artist originates."@en ;
     rdfs:domain :MusicalAgent ;
     rdfs:range :Place ;
     .
 
 :startsCareerIn a owl:DatatypeProperty ;
-    rdfs:label "starts career in"@en ;
-    rdfs:comment "The year in which the artist began their professional music career."@en ;
+    skos:prefLabel "starts career in"@en ;
+    skos:scopeNote "The year in which the artist began their professional music career."@en ;
     rdfs:domain :MusicalArtist ;
     rdfs:range xsd:gYear ;
     .
 
 :speaksLanguage a owl:DatatypeProperty ;
-    rdfs:label "speaks language"@en ;
+    skos:prefLabel "speaks language"@en ;
     rdfs:domain :MusicalArtist ;
     rdfs:range xsd:string ;
     .
 
 :hasInstrument a owl:ObjectProperty ;
-    rdfs:label "has instrument"@en ;
-    rdfs:comment "Associates a musician with an instrument they play."@en ;
+    skos:prefLabel "has instrument"@en ;
+    skos:scopeNote "Associates a musician with an instrument they play."@en ;
     rdfs:domain :Musician ;
     rdfs:range :MusicalInstrument ;
     skos:definition "Relates a musician to the instrument(s) they play."@en ;
     .
 
 :nationalityOf a owl:DatatypeProperty ;
-    rdfs:label "nationality"@en ;
+    skos:prefLabel "nationality"@en ;
     rdfs:domain :MusicalArtist ;
     rdfs:range xsd:string ;
     .
@@ -807,8 +807,8 @@
 # --- Musical Work Properties ---
 
 :performedBy a owl:ObjectProperty ;
-    rdfs:label "performed by"@en ;
-    rdfs:comment "Associates a musical work with the artist who performs it."@en ;
+    skos:prefLabel "performed by"@en ;
+    skos:scopeNote "Associates a musical work with the artist who performs it."@en ;
     rdfs:domain :MusicalWork ;
     rdfs:range :MusicalArtist ;
     owl:inverseOf :performs ;
@@ -816,48 +816,48 @@
     .
 
 :performs a owl:ObjectProperty ;
-    rdfs:label "performs"@en ;
-    rdfs:comment "Associates an artist with a musical work they perform."@en ;
+    skos:prefLabel "performs"@en ;
+    skos:scopeNote "Associates an artist with a musical work they perform."@en ;
     rdfs:domain :MusicalArtist ;
     rdfs:range :MusicalWork ;
     owl:inverseOf :performedBy ;
     .
 
 :composedBy a owl:ObjectProperty ;
-    rdfs:label "composed by"@en ;
-    rdfs:comment "Associates a musical work with its composer."@en ;
+    skos:prefLabel "composed by"@en ;
+    skos:scopeNote "Associates a musical work with its composer."@en ;
     rdfs:domain :MusicalWork ;
     rdfs:range :Composer ;
     skos:definition "Relates a musical work to the composer who created it."@en ;
     .
 
 :writtenBy a owl:ObjectProperty ;
-    rdfs:label "written by"@en ;
-    rdfs:comment "Associates a song with its lyricist."@en ;
+    skos:prefLabel "written by"@en ;
+    skos:scopeNote "Associates a song with its lyricist."@en ;
     rdfs:domain :Song ;
     rdfs:range :Lyricist ;
     skos:definition "Relates a song to the lyricist who wrote its lyrics."@en ;
     .
 
 :producedBy a owl:ObjectProperty ;
-    rdfs:label "produced by"@en ;
-    rdfs:comment "Associates a musical work with its producer."@en ;
+    skos:prefLabel "produced by"@en ;
+    skos:scopeNote "Associates a musical work with its producer."@en ;
     rdfs:domain :MusicalWork ;
     rdfs:range :MusicProducer ;
     skos:definition "Relates a musical work to the producer who oversaw its production."@en ;
     .
 
 :releasedBy a owl:ObjectProperty ;
-    rdfs:label "released by"@en ;
-    rdfs:comment "Associates a musical work with the record label that released it."@en ;
+    skos:prefLabel "released by"@en ;
+    skos:scopeNote "Associates a musical work with the record label that released it."@en ;
     rdfs:domain :MusicalWork ;
     rdfs:range :RecordLabel ;
     skos:definition "Relates an album or song to the record label that released it."@en ;
     .
 
 :hasTrack a owl:ObjectProperty ;
-    rdfs:label "has track"@en ;
-    rdfs:comment "Associates an album with the songs it contains."@en ;
+    skos:prefLabel "has track"@en ;
+    skos:scopeNote "Associates an album with the songs it contains."@en ;
     rdfs:domain :Album ;
     rdfs:range :Song ;
     owl:inverseOf :belongsToAlbum ;
@@ -865,48 +865,48 @@
     .
 
 :belongsToAlbum a owl:ObjectProperty ;
-    rdfs:label "belongs to album"@en ;
-    rdfs:comment "Associates a song with the album it is on."@en ;
+    skos:prefLabel "belongs to album"@en ;
+    skos:scopeNote "Associates a song with the album it is on."@en ;
     rdfs:domain :Song ;
     rdfs:range :Album ;
     owl:inverseOf :hasTrack ;
     .
 
 :releasedIn a owl:DatatypeProperty ;
-    rdfs:label "released in"@en ;
-    rdfs:comment "The year a musical work was released."@en ;
+    skos:prefLabel "released in"@en ;
+    skos:scopeNote "The year a musical work was released."@en ;
     rdfs:domain :MusicalWork ;
     rdfs:range xsd:gYear ;
     .
 
 :hasDuration a owl:DatatypeProperty ;
-    rdfs:label "has duration"@en ;
-    rdfs:comment "The duration of a musical work in seconds."@en ;
+    skos:prefLabel "has duration"@en ;
+    skos:scopeNote "The duration of a musical work in seconds."@en ;
     rdfs:domain :MusicalWork ;
     rdfs:range xsd:decimal ;
     .
 
 :hasTrackNumber a owl:DatatypeProperty ;
-    rdfs:label "has track number"@en ;
+    skos:prefLabel "has track number"@en ;
     rdfs:domain :Song ;
     rdfs:range xsd:integer ;
     .
 
 :inKey a owl:ObjectProperty ;
-    rdfs:label "in key"@en ;
-    rdfs:comment "Associates a musical work with its key."@en ;
+    skos:prefLabel "in key"@en ;
+    skos:scopeNote "Associates a musical work with its key."@en ;
     rdfs:domain :MusicalWork ;
     rdfs:range :MusicKey ;
     .
 
 :hasTempo a owl:ObjectProperty ;
-    rdfs:label "has tempo"@en ;
+    skos:prefLabel "has tempo"@en ;
     rdfs:domain :MusicalWork ;
     rdfs:range :Tempo ;
     .
 
 :hasTimeSignature a owl:ObjectProperty ;
-    rdfs:label "has time signature"@en ;
+    skos:prefLabel "has time signature"@en ;
     rdfs:domain :MusicalWork ;
     rdfs:range :TimeSignature ;
     .
@@ -914,29 +914,29 @@
 # --- Event Properties ---
 
 :headlinedBy a owl:ObjectProperty ;
-    rdfs:label "headlined by"@en ;
-    rdfs:comment "Associates an event with the headlining artist."@en ;
+    skos:prefLabel "headlined by"@en ;
+    skos:scopeNote "Associates an event with the headlining artist."@en ;
     rdfs:domain :MusicEvent ;
     rdfs:range :MusicalArtist ;
     skos:definition "Relates a concert or festival to its headline performer."@en ;
     .
 
 :heldAt a owl:ObjectProperty ;
-    rdfs:label "held at"@en ;
-    rdfs:comment "Associates a music event with its venue."@en ;
+    skos:prefLabel "held at"@en ;
+    skos:scopeNote "Associates a music event with its venue."@en ;
     rdfs:domain :MusicEvent ;
     rdfs:range :Venue ;
     .
 
 :heldOn a owl:DatatypeProperty ;
-    rdfs:label "held on"@en ;
-    rdfs:comment "The date on which a music event occurred."@en ;
+    skos:prefLabel "held on"@en ;
+    skos:scopeNote "The date on which a music event occurred."@en ;
     rdfs:domain :MusicEvent ;
     rdfs:range xsd:date ;
     .
 
 :hasAttendance a owl:DatatypeProperty ;
-    rdfs:label "has attendance"@en ;
+    skos:prefLabel "has attendance"@en ;
     rdfs:domain :MusicEvent ;
     rdfs:range xsd:integer ;
     .
@@ -944,26 +944,26 @@
 # --- Chart / Award Properties ---
 
 :peaksAt a owl:DatatypeProperty ;
-    rdfs:label "peaks at"@en ;
-    rdfs:comment "The peak chart position of a song or album."@en ;
+    skos:prefLabel "peaks at"@en ;
+    skos:scopeNote "The peak chart position of a song or album."@en ;
     rdfs:domain :MusicalWork ;
     rdfs:range xsd:integer ;
     .
 
 :chartedIn a owl:ObjectProperty ;
-    rdfs:label "charted in"@en ;
+    skos:prefLabel "charted in"@en ;
     rdfs:domain :MusicalWork ;
     rdfs:range :MusicChart ;
     .
 
 :awardCategory a owl:DatatypeProperty ;
-    rdfs:label "award category"@en ;
+    skos:prefLabel "award category"@en ;
     rdfs:domain :MusicAward ;
     rdfs:range xsd:string ;
     .
 
 :awardYear a owl:DatatypeProperty ;
-    rdfs:label "award year"@en ;
+    skos:prefLabel "award year"@en ;
     rdfs:domain :MusicAward ;
     rdfs:range xsd:gYear ;
     .
@@ -971,14 +971,18 @@
 # --- Shared annotation property ---
 
 :exampleInstance a owl:AnnotationProperty ;
-    rdfs:label "example instance"@en ;
-    rdfs:comment "Links a class to an example individual of that class."@en ;
+    skos:prefLabel "example instance"@en ;
+    skos:scopeNote "Links a class to an example individual of that class."@en ;
     .
 
 # Declared as an annotation property so its associative use on classes stays within OWL 2 DL.
 skos:related a owl:AnnotationProperty ;
-    rdfs:label "related"@en ;
+    skos:prefLabel "related"@en ;
     .
+
+skos:prefLabel a owl:AnnotationProperty .
+skos:definition a owl:AnnotationProperty .
+skos:scopeNote a owl:AnnotationProperty .
 
 ###############################################################################
 # INSTANCES — INSTRUMENTS
@@ -1805,12 +1809,12 @@ skos:related a owl:AnnotationProperty ;
 
 :TopLevelGenre a owl:Class ;
     rdfs:subClassOf :MusicGenre ;
-    rdfs:label "Top-Level Genre"@en ;
+    skos:prefLabel "Top-Level Genre"@en ;
     skos:definition "A music genre that is a root of the genre hierarchy (no broader genre)."@en ;
     .
 
 :hasBroaderGenre a owl:ObjectProperty, owl:TransitiveProperty ;
-    rdfs:label "has broader genre"@en ;
+    skos:prefLabel "has broader genre"@en ;
     rdfs:domain :MusicGenre ;
     rdfs:range :MusicGenre ;
     skos:definition "Relates a subgenre to a broader genre; transitive, so closure reaches all ancestors."@en ;
@@ -1820,24 +1824,24 @@ skos:related a owl:AnnotationProperty ;
 
 :Place a owl:Class ;
     rdfs:subClassOf gist:GeoRegion ;
-    rdfs:label "Place"@en ;
+    skos:prefLabel "Place"@en ;
     skos:definition "A geographic location at which an agent originates or an organisation, venue, or event is situated."@en ;
     .
 
 :City a owl:Class ;
     rdfs:subClassOf :Place ;
-    rdfs:label "City"@en ;
+    skos:prefLabel "City"@en ;
     skos:definition "A place that is a city or town."@en ;
     .
 
-:Country a owl:Class ;
+:Nation a owl:Class ;
     rdfs:subClassOf :Place ;
-    rdfs:label "Country"@en ;
+    skos:prefLabel "Country (nation)"@en ;
     skos:definition "A place that is a country or national-level region."@en ;
     .
 
 :locatedIn a owl:ObjectProperty, owl:TransitiveProperty ;
-    rdfs:label "located in"@en ;
+    skos:prefLabel "located in"@en ;
     rdfs:range :Place ;
     skos:definition "Relates an organisation, venue, event, or place to a containing place; transitive for regional roll-up."@en ;
     .
@@ -1845,7 +1849,7 @@ skos:related a owl:AnnotationProperty ;
 # --- Time: bornOn replaces the removed hasAge ---
 
 :bornOn a owl:DatatypeProperty ;
-    rdfs:label "born on"@en ;
+    skos:prefLabel "born on"@en ;
     rdfs:domain :MusicalAgent ;
     rdfs:range xsd:date ;
     skos:definition "The date on which an agent was born."@en ;
@@ -1855,27 +1859,27 @@ skos:related a owl:AnnotationProperty ;
 # INSTANCES - PLACES
 ###############################################################################
 
-:England a :Country ;
+:England a :Nation ;
     rdfs:label "England"@en ;
     .
 
-:UnitedStates a :Country ;
+:UnitedStates a :Nation ;
     rdfs:label "United States"@en ;
     .
 
-:France a :Country ;
+:France a :Nation ;
     rdfs:label "France"@en ;
     .
 
-:Austria a :Country ;
+:Austria a :Nation ;
     rdfs:label "Austria"@en ;
     .
 
-:Germany a :Country ;
+:Germany a :Nation ;
     rdfs:label "Germany"@en ;
     .
 
-:Jamaica a :Country ;
+:Jamaica a :Nation ;
     rdfs:label "Jamaica"@en ;
     .
 

@@ -66,7 +66,7 @@ Key decision points along the way:
   albums, and songs; subclassing it wouldn't deliver transitivity through `:hasGenre` and would
   fight the team style guide. The chosen pattern gives sound transitive traversal via the
   `owl:TransitiveProperty` `:hasBroaderGenre`, with top genres marked `:TopLevelGenre`.
-- **Structure beats free text** — geography became a `:Place`/`:City`/`:Country` graph with
+- **Structure beats free text** — geography became a `:Place`/`:City`/`:Nation` graph with
   transitive `:locatedIn` (enabling "artists from England"), and the time-varying `:hasAge` became
   a stable `:bornOn` date.
 
@@ -88,7 +88,7 @@ graph LR
   MusicalArtist -->|isSignedTo| RecordLabel
   MusicalAgent -->|collaboratesWith| MusicalAgent
   MusicalArtist -->|originatesFrom| Place
-  City -->|locatedIn*| Country
+  City -->|locatedIn*| Nation
   Song & Album -->|performedBy| MusicalArtist
   Album -->|producedBy| MusicProducer
   Album -->|hasTrack| Song
@@ -144,7 +144,7 @@ that applied the structural fixes is preserved and re-runnable at `scripts/apply
 | SHACL generation | ✅ done — `docs/shacl-report.md` |
 | Resolve `:Musician` ↔ `:MusicalArtist` boundary | ✅ done — `:MusicalAgent` superclass; **0 Violations** |
 | Test data + CQ tests | ✅ done — **12/12 CQs pass** (`tests/`, `scripts/run_cq_tests.py`) |
-| Production readiness (12-pt gate) | 🔄 in progress — `docs/production-readiness.md` (reasoner ✅ consistent; gist-namespace decision open) |
+| Production readiness (12-pt gate) | 🔄 near done — **10/12 green** (`docs/production-readiness.md`); item 4 waived, item 12 = PR sign-off |
 
 See [`sdd/plan.md`](sdd/plan.md) for the live lifecycle tracker and [`sdd/spec.md`](sdd/spec.md)
 for the specification.

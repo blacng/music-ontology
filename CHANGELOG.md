@@ -6,6 +6,9 @@ All notable changes to the Comprehensive Music Vocabulary. Versions follow the o
 ## [Unreleased]
 
 ### Added
+- **SKOS-only vocabulary** — classes & properties use `skos:prefLabel`/`skos:definition`/
+  `skos:scopeNote` (instances keep `rdfs:label`); SKOS annotation properties declared
+  (`scripts/migrate_skos_labels.py`). Formal **Y-statement** decision records in `sdd/decisions.md`.
 - **gist alignment migrated to current gist v14.1.0** (`gist:` → `…/ns/ontology/gist/`), vendored
   locally (`ontology/imports/gistCore.ttl` + `ontology/catalog-v001.xml`) and reasoner-validated
   (0 unsatisfiable classes). Classes re-parented to real gist terms (the old `gistCore#` alignment

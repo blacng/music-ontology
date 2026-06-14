@@ -16,7 +16,7 @@
 ###############################################################################
 
 # --- Places ---
-:TST_CountryZ a :Country ; rdfs:label "Testland"@en ; .
+:TST_CountryZ a :Nation ; rdfs:label "Testland"@en ; .
 :TST_CityX a :City ; rdfs:label "Test City X"@en ; :locatedIn :TST_CountryZ ; .
 :TST_CityY a :City ; rdfs:label "Test City Y"@en ; :locatedIn :TST_CountryZ ; .
 
