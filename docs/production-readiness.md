@@ -13,15 +13,15 @@
 | 3 | Every NodeShape validates (pyshacl) | ✅ pass (0 Violations) |
 | 4 | OWL 2 profile declared, no violations | ⚠ not strict DL (datatypes) — waived |
 | 5 | No undeclared classes / properties / annotation props | ✅ pass (gist re-aligned) |
-| 6 | Every class has `skos:prefLabel` + `skos:definition` | 🔧 fix-needed (no prefLabel) |
+| 6 | Every class has `skos:prefLabel` + `skos:definition` | ✅ pass (53/53, SKOS-only) |
 | 7 | `owl:versionIRI` set | ✅ fixed |
 | 8 | Change-log | ✅ fixed (`CHANGELOG.md`) |
-| 9 | Modelling decisions documented (Y-statements) | ⚠ partial |
+| 9 | Modelling decisions documented (Y-statements) | ✅ pass (`sdd/decisions.md`) |
 | 10 | Downstream artefacts regenerated & tested | ✅ pass (N/A: JSON-LD/OpenAPI/SQL) |
 | 11 | ≥3 adversarial perspectives critiqued & actioned | ✅ pass |
 | 12 | Peer reviewer sign-off | ⏳ pending (human) |
 
-**8 green, 3 partial/fix-needed, 1 human sign-off.**
+**10 green, 1 waived (item 4), 1 human sign-off (item 12).**
 
 ---
 
@@ -46,13 +46,19 @@ import → vendored `gistCore.ttl`, and classes re-parented to valid current-gis
 instruments, `gist:Aspect` for musical features, `gist:GeoRegion` for places). All our gist refs
 now resolve in the imports closure. Applied via `scripts/migrate_gist.py`.
 
-**6 — Labels & definitions 🔧** `skos:definition` 53/53 ✅; **`skos:prefLabel` 0/53** (classes use `rdfs:label`). Mechanical migration pending (add `skos:prefLabel`, retire `rdfs:label`/`rdfs:comment` per the style guide's SKOS-only target).
+**6 — Labels & definitions ✅** All 53 classes have `skos:prefLabel` + `skos:definition`. Migrated
+classes & properties to **SKOS-only** (`rdfs:label`→`skos:prefLabel`, `rdfs:comment`→`skos:scopeNote`;
+instances keep `rdfs:label` as data) via `scripts/migrate_skos_labels.py`. Also fixed a surfaced IRI
+collision — `:Country` was both the geographic class and the Country-music genre; the class is now
+`:Nation`. SKOS annotation properties declared (DL-clean).
 
 **7 — versionIRI ✅** Added `owl:versionIRI <https://www.somusicvocabulary.org/music/2.0.0>` (`owl:versionInfo "2.0.0"`).
 
 **8 — Change-log ✅** `CHANGELOG.md` created.
 
-**9 — Decisions documented ⚠** Captured in `sdd/plan.md` → Decisions log (use case, maturity, genre pattern, agent boundary, infra/Docker). Not yet in the formal **Y-statement** template ("In the context of… facing… we decided… to achieve… accepting…"). Light doc work to formalize.
+**9 — Decisions documented ✅** Nine formal **Y-statements** in `sdd/decisions.md` (RDF/OWL, single
+upper ontology, gist migration, genre pattern, agent boundary, geography, prototype maturity,
+tooling, SKOS labels), cross-linked to the informal `sdd/plan.md` log.
 
 **10 — Downstream artefacts ✅** SHACL, CQ tests, and docs are regenerated at each step (the methodology's regeneration discipline). JSON-LD context / OpenAPI / SQL DDL are **N/A** — a research prototype has no serving layer.
 
@@ -70,11 +76,11 @@ now resolve in the imports closure. Applied via `scripts/migrate_gist.py`.
    vendored + imported locally and the ontology re-parents to real gist terms — **0 unsatisfiable
    classes**. BFO/DOLCE were considered and rejected (mixing upper ontologies is an anti-pattern;
    current gist covers every concept).
-2. **`skos:prefLabel` migration** (item 6) — mechanical.
-3. **OWL 2 DL datatypes** (item 4) — waive (prototype) or migrate `gYear`/`date` (production).
-4. **Y-statement formalization** (item 9).
+2. ~~`skos:prefLabel` migration~~ **DONE** (item 6) — classes & properties are SKOS-only.
+3. ~~Y-statement formalization~~ **DONE** (item 9) — `sdd/decisions.md`.
+4. **OWL 2 DL datatypes** (item 4) — **waived** for the prototype; production fix = `gYear`/`date` → `xsd:dateTime`/integer.
 5. **Carried follow-ups:** vocalist `:Voice` (the 5 instrument Warnings); complete the real catalog so its 19 SHACL completeness Warnings clear.
-6. **Peer sign-off** (item 12).
+6. **Peer sign-off** (item 12) — the PR review.
 
 Reproduce the automated checks: `make check` (items 1, 3) · `make reason` (item 2, needs Docker) ·
 `docker run --rm -v "$PWD":/work -w /work obolibrary/robot robot validate-profile --profile DL --input ontology/music_vocabulary_comprehensive.ttl` (item 4).

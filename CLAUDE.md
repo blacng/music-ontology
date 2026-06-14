@@ -48,9 +48,10 @@ These come from `style_guide_system_prompt.md` and are reflected in the existing
   Do **not** reintroduce the old `gistCore#` namespace. Stay single-upper (no BFO/DOLCE mixing).
 - **Naming:** Classes = PascalCase singular nouns (`MusicalArtist`, `RockBand`).
   Properties = camelCase verbs/relationships.
-- **Annotations:** Every class needs `skos:prefLabel` + `skos:definition`, written in
-  Aristotelian form ("A `<Genus>` that `<differentia>`."). Note: the current `.ttl` mixes
-  `rdfs:label`/`rdfs:comment` with SKOS — the style guide's target is SKOS-only.
+- **Annotations:** Classes & properties are **SKOS-only** — `skos:prefLabel` + `skos:definition`
+  (Aristotelian form "A `<Genus>` that `<differentia>`."), `skos:scopeNote` for usage notes; do
+  **not** add `rdfs:label`/`rdfs:comment` to vocabulary terms. Instances keep `rdfs:label` (data).
+  Geographic country class is `:Nation` (`:Country` is the Country-music genre — don't conflate).
 - **Type discrimination:** prefer `gist:isCategorizedBy` over subclassing for type variation.
 - **Genre (gist:Category pattern, set in Artefact 4):** genres are `gist:Category` instances;
   `:hasGenre rdfs:subPropertyOf gist:isCategorizedBy`; hierarchy via transitive

@@ -15,7 +15,7 @@ Each generation step is followed by adversarial critique (Artefact 2) — not op
 | 5 | **SHACL Generation** (Artefact 3) | ✅ Done | `ontology/music_vocabulary_shapes.ttl` + `docs/shacl-report.md`; pyshacl-validated |
 | 5b | **Modeller Dialogue loop-back** (Artefact 4) | ✅ Done | `:Musician`↔`:MusicalArtist` boundary fixed via `:MusicalAgent` superclass + `:SoloArtist ⊑ :Musician` + `:collaboratesWith`→`:MusicalAgent`; **0 Violations** |
 | 6 | **Test Data + CQ Tests** (Artefact 5) | ✅ Done | `tests/test_data.ttl` + `tests/cq_test_manifest.json` + `scripts/run_cq_tests.py`; **12/12 CQs pass**. Caught & fixed CQ-2's non-standard `{1,2}` path quantifier |
-| 7 | **Production Readiness** (Artefact 7) | 🔄 In progress | `docs/production-readiness.md` — **8 green**, 3 partial, 1 sign-off. HermiT via `make reason` consistent (gist v14.1.0 imported). **gist alignment migrated** (`scripts/migrate_gist.py`); `owl:versionIRI`, `CHANGELOG.md`, `skos:related` |
+| 7 | **Production Readiness** (Artefact 7) | 🔄 Near done | `docs/production-readiness.md` — **10 green**, 1 waived (item 4 datatypes), 1 sign-off (item 12). gist migrated; SKOS-only labels (item 6); Y-statements `sdd/decisions.md` (item 9); reasoner consistent |
 
 > **Sequencing rationale:** structural fixes precede SHACL and test data because both sit
 > downstream of the schema (regeneration discipline) — fix the schema → constrain it →
@@ -44,9 +44,8 @@ Each generation step is followed by adversarial critique (Artefact 2) — not op
 
 ## Next action
 
-Finish the remaining Artefact 7 items: **`skos:prefLabel` migration** (item 6), **Y-statement
-formalization** (item 9), and the carried follow-ups (vocalist `:Voice`; real-catalog completeness).
-gist re-alignment is **done**; the DL-datatype deviation (`gYear`/`date`) is **waived** for the
-prototype; peer sign-off (item 12) is the PR review.
+Production Readiness is essentially complete (10/12 green; item 4 waived, item 12 = PR sign-off).
+Remaining optional polish: the carried follow-ups (vocalist `:Voice` for the 5 instrument Warnings;
+complete the real catalog to clear the 19 SHACL completeness Warnings). Then **Release** (tag).
 
 > Living document — update before completing each feature/development task.
