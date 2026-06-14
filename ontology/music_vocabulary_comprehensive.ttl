@@ -1,5 +1,5 @@
 @prefix : <https://www.somusicvocabulary.org/music#> .
-@prefix gist: <https://w3id.org/semanticarts/ontology/gistCore#> .
+@prefix gist: <https://w3id.org/semanticarts/ns/ontology/gist/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -15,17 +15,16 @@
     rdfs:comment "A comprehensive vocabulary for describing music concepts, works, artists, instruments, and relationships."@en ;
     owl:versionInfo "2.0.0" ;
     owl:versionIRI <https://www.somusicvocabulary.org/music/2.0.0> ;
-    owl:imports gist: .
+    owl:imports <https://w3id.org/semanticarts/ontology/gistCore> .
 
 ###############################################################################
 # CLASSES — AGENTS & PEOPLE
 ###############################################################################
 
 :MusicalAgent a owl:Class ;
-    rdfs:subClassOf gist:Agent ;
     rdfs:label "Musical Agent"@en ;
     rdfs:comment "Any agent — person or group — that creates or performs music."@en ;
-    skos:definition "A gist:Agent that creates or performs music; the common parent of musical artists and musicians."@en ;
+    skos:definition "Any person or group that creates or performs music; the common parent of musical artists and musicians."@en ;
     .
 
 :MusicalArtist a owl:Class ;
@@ -51,6 +50,7 @@
 
 :Band a owl:Class ;
     rdfs:subClassOf :MusicalArtist ;
+    rdfs:subClassOf gist:Organization ;
     rdfs:label "Band"@en ;
     rdfs:comment "A group of musicians who perform together under a collective name."@en ;
     skos:broader :MusicalArtist ;
@@ -96,6 +96,7 @@
 
 :Musician a owl:Class ;
     rdfs:subClassOf :MusicalAgent ;
+    rdfs:subClassOf gist:Person ;
     rdfs:label "Musician"@en ;
     rdfs:comment "A person who plays a musical instrument or sings."@en ;
     skos:related :MusicalInstrument, :Band ;
@@ -113,7 +114,7 @@
     .
 
 :Lyricist a owl:Class ;
-    rdfs:subClassOf gist:Agent ;
+    rdfs:subClassOf gist:Person ;
     rdfs:label "Lyricist"@en ;
     rdfs:comment "A person who writes the words (lyrics) for songs."@en ;
     skos:related :Song ;
@@ -122,7 +123,7 @@
     .
 
 :MusicProducer a owl:Class ;
-    rdfs:subClassOf gist:Agent ;
+    rdfs:subClassOf gist:Person ;
     rdfs:label "Music Producer"@en ;
     rdfs:comment "A person who oversees and manages the recording and production of music."@en ;
     skos:related :Album, :RecordLabel ;
@@ -154,7 +155,7 @@
 ###############################################################################
 
 :MusicalWork a owl:Class ;
-    rdfs:subClassOf gist:Artifact ;
+    rdfs:subClassOf gist:Content ;
     rdfs:label "Musical Work"@en ;
     rdfs:comment "A creative work in the medium of music."@en ;
     skos:narrower :Song, :Album, :EP, :Composition, :Soundtrack ;
@@ -506,7 +507,7 @@
 ###############################################################################
 
 :MusicalInstrument a owl:Class ;
-    rdfs:subClassOf gist:PhysicalThing ;
+    rdfs:subClassOf gist:Equipment ;
     rdfs:label "Musical Instrument"@en ;
     rdfs:comment "A device constructed or modified for the purpose of making music."@en ;
     skos:narrower :StringInstrument, :WindInstrument, :PercussionInstrument, :KeyboardInstrument, :ElectronicInstrument ;
@@ -639,7 +640,7 @@
     .
 
 :Venue a owl:Class ;
-    rdfs:subClassOf gist:Place ;
+    rdfs:subClassOf :Place ;
     rdfs:label "Venue"@en ;
     rdfs:comment "A place where music events are held."@en ;
     skos:related :Concert, :MusicFestival ;
@@ -652,7 +653,6 @@
 ###############################################################################
 
 :MusicAward a owl:Class ;
-    rdfs:subClassOf gist:Artifact ;
     rdfs:label "Music Award"@en ;
     rdfs:comment "An honor given in recognition of musical achievement."@en ;
     skos:related :MusicalArtist, :Album, :Song ;
@@ -661,7 +661,7 @@
     .
 
 :MusicChart a owl:Class ;
-    rdfs:subClassOf gist:Artifact ;
+    rdfs:subClassOf gist:Collection ;
     rdfs:label "Music Chart"@en ;
     rdfs:comment "A ranked list of the most popular songs or albums for a given period."@en ;
     skos:related :Song, :Album ;
@@ -682,7 +682,7 @@
 ###############################################################################
 
 :MusicKey a owl:Class ;
-    rdfs:subClassOf gist:Concept ;
+    rdfs:subClassOf gist:Aspect ;
     rdfs:label "Music Key"@en ;
     rdfs:comment "A group of pitches forming the basis of a music composition."@en ;
     skos:definition "A music key is a group of pitches, or scale, that forms the basis of a music composition."@en ;
@@ -690,7 +690,7 @@
     .
 
 :TimeSignature a owl:Class ;
-    rdfs:subClassOf gist:Concept ;
+    rdfs:subClassOf gist:Aspect ;
     rdfs:label "Time Signature"@en ;
     rdfs:comment "A notational convention specifying the number and value of beats per measure."@en ;
     skos:definition "A time signature is a notational convention used to specify how many beats are in each bar of music."@en ;
@@ -698,7 +698,7 @@
     .
 
 :Tempo a owl:Class ;
-    rdfs:subClassOf gist:Concept ;
+    rdfs:subClassOf gist:Aspect ;
     rdfs:label "Tempo"@en ;
     rdfs:comment "The speed at which a musical piece is played."@en ;
     skos:definition "Tempo is the speed or pace of a given piece of music, typically measured in beats per minute (BPM)."@en ;
@@ -773,7 +773,7 @@
 :originatesFrom a owl:ObjectProperty ;
     rdfs:label "originates from"@en ;
     rdfs:comment "The geographic location where the artist originates."@en ;
-    rdfs:domain gist:Agent ;
+    rdfs:domain :MusicalAgent ;
     rdfs:range :Place ;
     .
 
@@ -1797,7 +1797,6 @@ skos:related a owl:AnnotationProperty ;
     rdfs:label "F Major"@en ;
     .
 
-
 ###############################################################################
 # STRUCTURAL-FIX ADDITIONS (Artefact 4 - Modeller Dialogue)
 ###############################################################################
@@ -1820,7 +1819,7 @@ skos:related a owl:AnnotationProperty ;
 # --- Geography: structured place graph ---
 
 :Place a owl:Class ;
-    rdfs:subClassOf gist:Place ;
+    rdfs:subClassOf gist:GeoRegion ;
     rdfs:label "Place"@en ;
     skos:definition "A geographic location at which an agent originates or an organisation, venue, or event is situated."@en ;
     .
@@ -1847,7 +1846,7 @@ skos:related a owl:AnnotationProperty ;
 
 :bornOn a owl:DatatypeProperty ;
     rdfs:label "born on"@en ;
-    rdfs:domain gist:Agent ;
+    rdfs:domain :MusicalAgent ;
     rdfs:range xsd:date ;
     skos:definition "The date on which an agent was born."@en ;
     .

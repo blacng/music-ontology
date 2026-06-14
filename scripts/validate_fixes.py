@@ -8,7 +8,7 @@ from rdflib import Graph
 
 PRE = """
 PREFIX : <https://www.somusicvocabulary.org/music#>
-PREFIX gist: <https://w3id.org/semanticarts/ontology/gistCore#>
+PREFIX gist: <https://w3id.org/semanticarts/ns/ontology/gist/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 """
 

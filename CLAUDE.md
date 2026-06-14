@@ -10,7 +10,8 @@ code. The actual deliverables are:
 
 1. **`ontology/music_vocabulary_comprehensive.ttl`** — a ~50-class, ~38-property OWL 2 ontology
    of music concepts (artists, works, instruments, genres, relationships), aligned to the
-   **gist** upper ontology (`gist:` = `https://w3id.org/semanticarts/ontology/gistCore#`).
+   **gist** upper ontology (`gist:` = `https://w3id.org/semanticarts/ns/ontology/gist/`, current
+   v14.1.0, vendored at `ontology/imports/gistCore.ttl` + `ontology/catalog-v001.xml`).
    Its own namespace is `:` = `https://www.somusicvocabulary.org/music#`.
    (`.bak` is the pre-Artefact-4 snapshot.)
 2. **`prompt_library/`** — seven reusable LLM prompts implementing the **GRL Workshop**
@@ -39,8 +40,12 @@ rather than improvising:
 
 These come from `style_guide_system_prompt.md` and are reflected in the existing `.ttl`:
 
-- **Alignment:** Reuse gist classes by IRI (`rdfs:subClassOf gist:Agent`); never redefine
-  upper-ontology classes. Check for an existing gist class before creating a new one.
+- **Alignment:** Aligned to **current gist v14.1.0** (`gist:` = `…/ns/ontology/gist/`), reused by
+  IRI; never redefine upper classes. Current gist has **no** Agent/Concept/PhysicalThing/Place/
+  Artifact — use: agents → `gist:Person` (people) / `gist:Organization` (bands); works →
+  `gist:Content`; instruments → `gist:Equipment`; key/tempo/time-sig → `gist:Aspect`; places →
+  `gist:GeoRegion`. `:MusicalAgent` and `:MusicAward` are domain roots (no gist parent — fine).
+  Do **not** reintroduce the old `gistCore#` namespace. Stay single-upper (no BFO/DOLCE mixing).
 - **Naming:** Classes = PascalCase singular nouns (`MusicalArtist`, `RockBand`).
   Properties = camelCase verbs/relationships.
 - **Annotations:** Every class needs `skos:prefLabel` + `skos:definition`, written in

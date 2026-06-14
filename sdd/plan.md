@@ -15,7 +15,7 @@ Each generation step is followed by adversarial critique (Artefact 2) — not op
 | 5 | **SHACL Generation** (Artefact 3) | ✅ Done | `ontology/music_vocabulary_shapes.ttl` + `docs/shacl-report.md`; pyshacl-validated |
 | 5b | **Modeller Dialogue loop-back** (Artefact 4) | ✅ Done | `:Musician`↔`:MusicalArtist` boundary fixed via `:MusicalAgent` superclass + `:SoloArtist ⊑ :Musician` + `:collaboratesWith`→`:MusicalAgent`; **0 Violations** |
 | 6 | **Test Data + CQ Tests** (Artefact 5) | ✅ Done | `tests/test_data.ttl` + `tests/cq_test_manifest.json` + `scripts/run_cq_tests.py`; **12/12 CQs pass**. Caught & fixed CQ-2's non-standard `{1,2}` path quantifier |
-| 7 | **Production Readiness** (Artefact 7) | 🔄 In progress | `docs/production-readiness.md` — 6 green, 4 partial, 1 decision, 1 sign-off. Containerized HermiT (`make reason`): **consistent, 0 unsatisfiable**. Added `owl:versionIRI`, `CHANGELOG.md`, declared `skos:related` |
+| 7 | **Production Readiness** (Artefact 7) | 🔄 In progress | `docs/production-readiness.md` — **8 green**, 3 partial, 1 sign-off. HermiT via `make reason` consistent (gist v14.1.0 imported). **gist alignment migrated** (`scripts/migrate_gist.py`); `owl:versionIRI`, `CHANGELOG.md`, `skos:related` |
 
 > **Sequencing rationale:** structural fixes precede SHACL and test data because both sit
 > downstream of the schema (regeneration discipline) — fix the schema → constrain it →
@@ -29,6 +29,12 @@ Each generation step is followed by adversarial critique (Artefact 2) — not op
 - **Testability stance:** full intended scope, each CQ has a measurable pass condition + flag.
 - **Genre traversal:** top-level genre = depth-1 child of `:MusicGenre`; semantic fix
   (`skos:broaderTransitive` / `:TopLevelGenre` / `:hasSubgenre`) deferred to Artefact 4.
+- **gist alignment (2026-06):** the original `gistCore#` alignment was **invalid** (matched no gist
+  release; Agent/Concept/PhysicalThing exist in no gist version). **Migrated to current gist
+  v14.1.0** (path (a)) — prefix `…/ns/ontology/gist/`, vendored + imported locally, classes
+  re-parented (agents→Person/Organization, works→Content, instruments→Equipment, features→Aspect,
+  places→GeoRegion; `:MusicalAgent`/`:MusicAward` are domain roots). **BFO/DOLCE rejected** — mixing
+  upper ontologies is an anti-pattern and gist covers every concept. Stay single-upper.
 - **Infrastructure (2026-06):** adopted a `Makefile` (thin task runner over `uv`) + GitHub
   Actions CI (`make check` on every push/PR) as the validation gate. **Docker deliberately
   deferred** — the stack is pure-Python with no deploy target, and `uv` + the lockfile already
@@ -38,11 +44,9 @@ Each generation step is followed by adversarial critique (Artefact 2) — not op
 
 ## Next action
 
-Finish Artefact 7 outstanding items (`docs/production-readiness.md`). The blocking **decision**
-is the **gist namespace drift** (our `gistCore#` IRIs don't resolve against current gist at
-`…/ns/ontology/gist/` — 133 dangling refs): migrate / pin a version / drop the import. Then the
-mechanical items: `skos:prefLabel` migration, Y-statement formalization, and the carried
-follow-ups (vocalist `:Voice`; real-catalog completeness). DL-datatype deviation (`gYear`/`date`)
-is waived for the prototype.
+Finish the remaining Artefact 7 items: **`skos:prefLabel` migration** (item 6), **Y-statement
+formalization** (item 9), and the carried follow-ups (vocalist `:Voice`; real-catalog completeness).
+gist re-alignment is **done**; the DL-datatype deviation (`gYear`/`date`) is **waived** for the
+prototype; peer sign-off (item 12) is the PR review.
 
 > Living document — update before completing each feature/development task.
