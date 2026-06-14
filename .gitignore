@@ -15,6 +15,10 @@ wheels/
 # Ontology snapshots (git history is the record)
 *.bak
 
+# ROBOT reasoner scratch output
+.robot_*
+.profile.txt
+
 # Prompt library (kept local, not version-controlled)
 prompt_library/
 docs/prompt-library-summary.md

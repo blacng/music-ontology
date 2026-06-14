@@ -19,7 +19,14 @@ test: ## CQ regression suite (one SPARQL test per competency question)
 shacl: ## SHACL conformance gate (fails only on Violations; Warnings advisory)
 	uv run python scripts/check_shacl.py
 
-check: validate test shacl ## Run the full validation gate
+reason: ## Reasoner consistency check (HermiT via containerized ROBOT; needs Docker)
+	docker run --rm -v "$$PWD":/work -w /work obolibrary/robot robot reason \
+		--reasoner hermit --input ontology/music_vocabulary_comprehensive.ttl \
+		--output /work/.robot_reasoned.ttl
+	@rm -f .robot_reasoned.ttl
+	@echo "OK — ontology is consistent, no unsatisfiable classes."
+
+check: validate test shacl ## Run the full validation gate (CI; reasoner is separate, needs Docker)
 
 clean: ## Remove the virtual environment
 	rm -rf .venv

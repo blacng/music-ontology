@@ -144,7 +144,7 @@ that applied the structural fixes is preserved and re-runnable at `scripts/apply
 | SHACL generation | ✅ done — `docs/shacl-report.md` |
 | Resolve `:Musician` ↔ `:MusicalArtist` boundary | ✅ done — `:MusicalAgent` superclass; **0 Violations** |
 | Test data + CQ tests | ✅ done — **12/12 CQs pass** (`tests/`, `scripts/run_cq_tests.py`) |
-| Production readiness (12-pt gate) | ⏳ next |
+| Production readiness (12-pt gate) | 🔄 in progress — `docs/production-readiness.md` (reasoner ✅ consistent; gist-namespace decision open) |
 
 See [`sdd/plan.md`](sdd/plan.md) for the live lifecycle tracker and [`sdd/spec.md`](sdd/spec.md)
 for the specification.

@@ -13,7 +13,8 @@
 :MusicVocabulary a owl:Ontology ;
     rdfs:label "Comprehensive Music Vocabulary"@en ;
     rdfs:comment "A comprehensive vocabulary for describing music concepts, works, artists, instruments, and relationships."@en ;
-    owl:versionInfo "2.0" ;
+    owl:versionInfo "2.0.0" ;
+    owl:versionIRI <https://www.somusicvocabulary.org/music/2.0.0> ;
     owl:imports gist: .
 
 ###############################################################################
@@ -972,6 +973,11 @@
 :exampleInstance a owl:AnnotationProperty ;
     rdfs:label "example instance"@en ;
     rdfs:comment "Links a class to an example individual of that class."@en ;
+    .
+
+# Declared as an annotation property so its associative use on classes stays within OWL 2 DL.
+skos:related a owl:AnnotationProperty ;
+    rdfs:label "related"@en ;
     .
 
 ###############################################################################

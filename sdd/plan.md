@@ -15,7 +15,7 @@ Each generation step is followed by adversarial critique (Artefact 2) — not op
 | 5 | **SHACL Generation** (Artefact 3) | ✅ Done | `ontology/music_vocabulary_shapes.ttl` + `docs/shacl-report.md`; pyshacl-validated |
 | 5b | **Modeller Dialogue loop-back** (Artefact 4) | ✅ Done | `:Musician`↔`:MusicalArtist` boundary fixed via `:MusicalAgent` superclass + `:SoloArtist ⊑ :Musician` + `:collaboratesWith`→`:MusicalAgent`; **0 Violations** |
 | 6 | **Test Data + CQ Tests** (Artefact 5) | ✅ Done | `tests/test_data.ttl` + `tests/cq_test_manifest.json` + `scripts/run_cq_tests.py`; **12/12 CQs pass**. Caught & fixed CQ-2's non-standard `{1,2}` path quantifier |
-| 7 | **Production Readiness** (Artefact 7) | ⏳ Next | 12-point gate |
+| 7 | **Production Readiness** (Artefact 7) | 🔄 In progress | `docs/production-readiness.md` — 6 green, 4 partial, 1 decision, 1 sign-off. Containerized HermiT (`make reason`): **consistent, 0 unsatisfiable**. Added `owl:versionIRI`, `CHANGELOG.md`, declared `skos:related` |
 
 > **Sequencing rationale:** structural fixes precede SHACL and test data because both sit
 > downstream of the schema (regeneration discipline) — fix the schema → constrain it →
@@ -38,10 +38,11 @@ Each generation step is followed by adversarial critique (Artefact 2) — not op
 
 ## Next action
 
-Artefact 7 — Production Readiness (12-point gate): CQ tests pass ✅, reasoner check (consistency /
-unsatisfiable classes), SHACL on canonical data, OWL profile declaration, `owl:versionIRI`,
-change-log. Open follow-ups: (a) the 5 vocalist "no instrument" warnings (model `:Voice` or relax
-to "sings or plays"); (b) completing the real catalog so its 19 SHACL completeness Warnings clear
-(distinct from the synthetic test fixture).
+Finish Artefact 7 outstanding items (`docs/production-readiness.md`). The blocking **decision**
+is the **gist namespace drift** (our `gistCore#` IRIs don't resolve against current gist at
+`…/ns/ontology/gist/` — 133 dangling refs): migrate / pin a version / drop the import. Then the
+mechanical items: `skos:prefLabel` migration, Y-statement formalization, and the carried
+follow-ups (vocalist `:Voice`; real-catalog completeness). DL-datatype deviation (`gYear`/`date`)
+is waived for the prototype.
 
 > Living document — update before completing each feature/development task.
