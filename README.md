@@ -53,7 +53,9 @@ flowchart TB
   td --> gist[gist v14.1.0 re-align · reasoner-validated]
   gist --> skos[SKOS-only labels · Y-statements]
   skos --> pr[Production Readiness · 10/12 green]
-  pr --> rel([Released v2.0.0])
+  pr --> v20([Released v2.0.0])
+  v20 --> v21[v2.1 · :Voice + real catalog completeness]
+  v21 --> rel([Released v2.1.0 · SHACL fully conforms 0/0])
 ```
 
 Key decision points along the way:
@@ -94,10 +96,11 @@ graph LR
   Composition -->|composedBy| Composer
 ```
 
-~53 classes / ~38 properties across agents, works, a genre taxonomy, instruments,
-events/venues, awards/charts, places, and musical features (key, tempo, time signature). Agents
-re-parent to `gist:Person`/`gist:Organization`, works to `gist:Content`, instruments to
-`gist:Equipment`, features to `gist:Aspect`, places to `gist:GeoRegion`.
+~54 classes / ~38 properties across agents, works, a genre taxonomy, instruments (incl. the
+`:Voice`/`:VocalInstrument` for singing), events/venues, awards/charts, places, and musical
+features (key, tempo, time signature). Agents re-parent to `gist:Person`/`gist:Organization`,
+works to `gist:Content`, instruments to `gist:Equipment`, features to `gist:Aspect`, places to
+`gist:GeoRegion`. The instance catalog holds ~40 musicians with real band line-ups.
 
 ---
 
@@ -138,7 +141,7 @@ transforms that produced the current model are preserved and re-runnable in `scr
 
 ## Status
 
-Lifecycle complete — **released [v2.0.0](https://github.com/blacng/music-ontology/releases/tag/v2.0.0)**.
+Lifecycle complete — **released [v2.1.0](https://github.com/blacng/music-ontology/releases/tag/v2.1.0)** · SHACL **fully conforms (0/0)**.
 
 | Phase | State |
 |-------|-------|
