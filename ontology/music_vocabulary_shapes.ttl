@@ -58,8 +58,10 @@
     sh:targetClass :Musician ;
     sh:property [ sh:path :hasInstrument ; sh:class :MusicalInstrument ;
         sh:message "hasInstrument must point to a :MusicalInstrument." ] ;
-    sh:property [ sh:path :hasInstrument ; sh:minCount 1 ; sh:severity sh:Warning ;
-        sh:message "A musician should play at least one instrument (enables instrument discovery, CQ-5)." ] ;
+    # A musician should play an instrument (singing counts via :Voice), unless they conduct.
+    sh:or ( [ sh:path :hasInstrument ; sh:minCount 1 ] [ sh:class :Conductor ] ) ;
+    sh:severity sh:Warning ;
+    sh:message "A musician should play at least one instrument — singing counts via :Voice — unless they are a conductor (CQ-5)." ;
     .
 
 :SongShape a sh:NodeShape ;

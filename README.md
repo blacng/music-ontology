@@ -10,7 +10,7 @@ LLMs as disciplined pair-modellers.
 - **Namespace:** `:` → `https://www.somusicvocabulary.org/music#`
 - **Upper ontology:** **gist v14.1.0** — `gist:` → `https://w3id.org/semanticarts/ns/ontology/gist/` (vendored at `ontology/imports/`, reasoner-validated)
 - **Scope:** content-based candidate generation (no user/interaction/rating is modelled)
-- **Maturity:** research prototype · **released v2.0.0**
+- **Maturity:** research prototype · **released v2.1.0** (SHACL fully conforms)
 
 ---
 
@@ -149,10 +149,8 @@ Lifecycle complete — **released [v2.0.0](https://github.com/blacng/music-ontol
 | gist v14.1.0 re-alignment | ✅ done — vendored, reasoner-validated |
 | SKOS-only labels + Y-statements | ✅ done — `sdd/decisions.md` |
 | Production readiness (12-pt gate) | ✅ **10/12 green** (item 4 waived, item 12 = PR sign-off) |
-| **Release** | ✅ **v2.0.0** |
-
-**Optional polish (un-blocking, tracked in `sdd/plan.md`):** model a `:Voice` instrument and
-complete the illustrative catalog to clear the 19 SHACL *completeness* warnings.
+| Vocals + catalog completeness (v2.1) | ✅ done — SHACL **fully conforms (0/0)** |
+| **Release** | ✅ **v2.0.0** → **v2.1.0** |
 
 See [`sdd/plan.md`](sdd/plan.md) for the live lifecycle tracker and [`sdd/spec.md`](sdd/spec.md)
 for the specification.

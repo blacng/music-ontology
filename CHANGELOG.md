@@ -3,6 +3,20 @@
 All notable changes to the Comprehensive Music Vocabulary. Versions follow the ontology's
 `owl:versionInfo` / `owl:versionIRI`.
 
+## [2.1.0] — 2026-06-14
+
+### Added
+- **`:Voice`** modelling — `:VocalInstrument ⊑ :MusicalInstrument` + the `:Voice` individual
+  (the `:MusicalInstrument` definition broadened to include the human voice). The 5 vocalist solo
+  artists now `:hasInstrument :Voice`; `MusicianShape` exempts conductors via `sh:or`.
+- **Catalog completeness (real data)** — real line-ups for Coldplay, Nirvana, Led Zeppelin,
+  Radiohead, the Rolling Stones (+ orchestra principals); performing bands **Queen**, **Deep
+  Purple**, **Pink Floyd** (with members) plus **John Lennon** and **Julie London** for songs/album
+  that lacked a performer. ~30 new individuals.
+
+### Changed
+- SHACL now **fully conforms: 0 Violations, 0 Warnings** (was 19 completeness warnings in 2.0.0).
+
 ## [2.0.0] — 2026-06-14
 
 First engineered release — a gist-aligned OWL 2 music ontology for discovery/recommendation,
