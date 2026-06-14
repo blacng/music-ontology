@@ -56,11 +56,15 @@
 
 ## Outstanding work (prioritized)
 
-1. **Decide gist alignment** (items 2, 5) — options:
-   (a) migrate `gist:` to current `…/ns/ontology/gist/`, verifying each term still exists/keeps its meaning;
-   (b) pin to the gist release that matches `gistCore#` and import *that* artifact;
-   (c) drop the `owl:imports` and treat gist as external alignment only.
-   *This is a modelling decision, not auto-applied.*
+1. **gist alignment — DEFERRED (decided 2026-06-13, path (b) "for now").** Investigation showed the
+   alignment was **never valid**: our `gist:` prefix (`…/ontology/gistCore#`) matches no gist release,
+   and `Agent`/`Concept`/`PhysicalThing` exist in **no** gist version (FOAF/SKOS/BFO terms mis-prefixed).
+   Current gist (v14) also dropped Agent/Place/Artifact/Concept/PhysicalThing. So "pin the matching
+   version" is impossible — no single version resolves all 10 references. **Holding state:** documented
+   and deferred as tech debt; the ontology remains consistent (the 133 dangling refs are warnings, not
+   errors). The proper **re-alignment to current gist** (with a class mapping) is tracked in
+   `sdd/plan.md` → *Deferred / tech debt*. *Open sub-question: whether to also drop the misleading
+   `owl:imports` now (it redirect-resolves to the wrong gist) or leave it until the re-alignment.*
 2. **`skos:prefLabel` migration** (item 6) — mechanical.
 3. **OWL 2 DL datatypes** (item 4) — waive (prototype) or migrate `gYear`/`date` (production).
 4. **Y-statement formalization** (item 9).

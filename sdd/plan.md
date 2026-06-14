@@ -36,13 +36,29 @@ Each generation step is followed by adversarial critique (Artefact 2) — not op
   introduces a Java reasoner (HermiT/Pellet/ELK)** or a triplestore (Fuseki/GraphDB) — that's
   where containerising the JVM toolchain solves a real problem.
 
+## Deferred / tech debt
+
+- **gist re-alignment (deferred 2026-06-13; decision: path (b) "for now").** The reasoner audit
+  showed the gist alignment was **never valid**, not merely outdated:
+  - our `gist:` prefix `…/ontology/gistCore#` matches **no** gist release (v7–v11 use
+    `…/ontologies.semanticarts.com/gist/`; v12+ use `…/ns/ontology/gist/`);
+  - of our 10 referenced terms, **`Agent`, `Concept`, `PhysicalThing` exist in no gist version**
+    (FOAF/SKOS/BFO terms mis-prefixed `gist:`); the other 7 exist in v11.1.0;
+  - current gist (v14) **dropped** Agent/Place/Artifact/Concept/PhysicalThing, so moving forward is
+    a re-modelling, not a swap.
+  - So a clean "pin the matching version" is **impossible** — there is no single version that
+    resolves all references. Holding state: documented + deferred (`owl:imports` left as-is unless
+    decided otherwise; ontology stays consistent, dangling refs are known/accepted tech debt).
+  - **Future task — re-align to current gist**, proposed mapping: `MusicalInstrument`→`gist:Equipment`,
+    `MusicalWork`→`gist:Content`, `MusicChart`→`gist:Collection`, `MusicKey`/`TimeSignature`/`Tempo`→
+    `gist:Aspect`, `Place`/`City`/`Country`→`gist:GeoRegion`, `Venue`→`gist:Building`, `MusicalAgent`
+    (+`Lyricist`,`MusicProducer`)→domain root, `MusicAward`→domain root or `gist:Category`; keep 1:1:
+    Category, Collection, Event, isCategorizedBy, Organization. See `docs/production-readiness.md` §2/§5.
+
 ## Next action
 
-Finish Artefact 7 outstanding items (`docs/production-readiness.md`). The blocking **decision**
-is the **gist namespace drift** (our `gistCore#` IRIs don't resolve against current gist at
-`…/ns/ontology/gist/` — 133 dangling refs): migrate / pin a version / drop the import. Then the
-mechanical items: `skos:prefLabel` migration, Y-statement formalization, and the carried
-follow-ups (vocalist `:Voice`; real-catalog completeness). DL-datatype deviation (`gYear`/`date`)
-is waived for the prototype.
+Finish the remaining Artefact 7 items that *are* actionable now: `skos:prefLabel` migration (item 6),
+Y-statement formalization (item 9), and the carried follow-ups (vocalist `:Voice`; real-catalog
+completeness). DL-datatype deviation (`gYear`/`date`) and the gist re-alignment are **deferred** (above).
 
 > Living document — update before completing each feature/development task.

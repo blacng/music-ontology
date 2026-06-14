@@ -15,8 +15,10 @@ All notable changes to the Comprehensive Music Vocabulary. Versions follow the o
 ### Known limitations (see `docs/production-readiness.md`)
 - Not strictly OWL 2 DL: `xsd:gYear` / `xsd:date` are outside the OWL 2 datatype map
   (accepted for the prototype).
-- `gist:` IRIs use the legacy `…/ontology/gistCore#` namespace; current gist publishes under
-  `…/ns/ontology/gist/`, so the alignment is dangling at the IRI level — pending a decision.
+- **gist alignment is broken and its re-alignment is deferred** (tracked in `sdd/plan.md`): our
+  `…/ontology/gistCore#` namespace matches no gist release, and `Agent`/`Concept`/`PhysicalThing`
+  exist in no gist version. A clean version-pin is impossible; proper re-alignment to current gist
+  is future work.
 - Classes carry `rdfs:label`, not `skos:prefLabel` (style guide targets SKOS-only).
 
 ## [2.0.0]

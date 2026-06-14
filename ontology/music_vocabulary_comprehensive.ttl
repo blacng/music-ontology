@@ -15,7 +15,11 @@
     rdfs:comment "A comprehensive vocabulary for describing music concepts, works, artists, instruments, and relationships."@en ;
     owl:versionInfo "2.0.0" ;
     owl:versionIRI <https://www.somusicvocabulary.org/music/2.0.0> ;
-    owl:imports gist: .
+    # owl:imports removed: the legacy gist: namespace (gistCore#) matches no gist release and
+    # several referenced terms exist in no gist version, so the import resolved to the wrong
+    # ontology (133 dangling refs) and provided no axioms. gist: IRIs are kept as external
+    # references pending proper re-alignment. See sdd/plan.md → Deferred / tech debt.
+    .
 
 ###############################################################################
 # CLASSES — AGENTS & PEOPLE
