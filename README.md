@@ -8,9 +8,9 @@ the **GRL Workshop methodology** (Graph Research Labs, KGC 2026) for engineering
 LLMs as disciplined pair-modellers.
 
 - **Namespace:** `:` → `https://www.somusicvocabulary.org/music#`
-- **Upper ontology:** `gist:` → `https://w3id.org/semanticarts/ontology/gistCore#`
+- **Upper ontology:** **gist v14.1.0** — `gist:` → `https://w3id.org/semanticarts/ns/ontology/gist/` (vendored at `ontology/imports/`, reasoner-validated)
 - **Scope:** content-based candidate generation (no user/interaction/rating is modelled)
-- **Maturity:** research prototype
+- **Maturity:** research prototype · **released v2.0.0**
 
 ---
 
@@ -19,7 +19,7 @@ LLMs as disciplined pair-modellers.
 Rather than hand-authoring the ontology and hoping it's right, the model is driven through a
 disciplined lifecycle: **every requirement is a testable competency question, every generated
 artefact is adversarially critiqued, every fix enumerates its downstream regenerations, and the
-result is validated by machine (`rdflib` + `pyshacl`) rather than by assertion.**
+result is validated by machine (`rdflib`, `pyshacl`, and a HermiT reasoner) rather than by assertion.**
 
 ### High-level — the methodology arc
 
@@ -37,26 +37,23 @@ flowchart LR
 
 ```mermaid
 flowchart TB
-  subgraph done [Completed]
-    cq1[CQ v1 · 12 discovery CQs] --> crit[Critique · 5 findings, 2 blockers]
-    crit --> cq2[CQ v2 · measurable + genre-root fix]
-    cq2 --> dlg{Modeller Dialogue · structural fixes}
-    dlg -->|genre| g[gist:Category · hasBroaderGenre · TopLevelGenre]
-    dlg -->|geography| pl[structured Place · locatedIn roll-up]
-    dlg -->|time| bd[bornOn replaces hasAge]
-    g --> ttl[(ontology · post-fix)]
-    pl --> ttl
-    bd --> ttl
-    ttl --> cq3[CQ v3 · SPARQL regenerated]
-    ttl --> shacl[SHACL shapes]
-    shacl --> rep[pyshacl · 2 Violations surfaced]
-    rep --> dlg2[Artefact 4 loop-back · MusicalAgent superclass]
-    dlg2 --> ok[0 Violations · 19 completeness Warnings]
-    ok --> td[Test Data · 12/12 CQ tests pass]
-  end
-  subgraph pending [Pending]
-    td --> pr[Production Readiness · 12-pt gate]
-  end
+  cq1[CQ v1 · 12 discovery CQs] --> crit[Critique · 5 findings, 2 blockers]
+  crit --> cq2[CQ v2/v3 · measurable + genre-root fix]
+  cq2 --> dlg{Modeller Dialogue · structural fixes}
+  dlg -->|genre| g[gist:Category · hasBroaderGenre · TopLevelGenre]
+  dlg -->|geography| pl[structured Place · locatedIn roll-up]
+  dlg -->|time| bd[bornOn replaces hasAge]
+  g --> ttl[(ontology · post-fix)]
+  pl --> ttl
+  bd --> ttl
+  ttl --> shacl[SHACL shapes]
+  shacl --> rep[pyshacl · 2 Violations surfaced]
+  rep --> dlg2[loop-back · MusicalAgent superclass · 0 Violations]
+  dlg2 --> td[Test Data · 12/12 CQ tests]
+  td --> gist[gist v14.1.0 re-align · reasoner-validated]
+  gist --> skos[SKOS-only labels · Y-statements]
+  skos --> pr[Production Readiness · 10/12 green]
+  pr --> rel([Released v2.0.0])
 ```
 
 Key decision points along the way:
@@ -97,8 +94,10 @@ graph LR
   Composition -->|composedBy| Composer
 ```
 
-~50 classes / ~38 properties across agents, works, a genre taxonomy, instruments,
-events/venues, awards/charts, places, and musical features (key, tempo, time signature).
+~53 classes / ~38 properties across agents, works, a genre taxonomy, instruments,
+events/venues, awards/charts, places, and musical features (key, tempo, time signature). Agents
+re-parent to `gist:Person`/`gist:Organization`, works to `gist:Content`, instruments to
+`gist:Equipment`, features to `gist:Aspect`, places to `gist:GeoRegion`.
 
 ---
 
@@ -106,12 +105,12 @@ events/venues, awards/charts, places, and musical features (key, tempo, time sig
 
 | Path | Contents |
 |------|----------|
-| `ontology/` | the `.ttl` files: `music_vocabulary_comprehensive.ttl` (model + instances), `music_vocabulary_shapes.ttl` (SHACL) |
-| `scripts/` | transform + validation scripts |
+| `ontology/` | `music_vocabulary_comprehensive.ttl` (model + instances), `music_vocabulary_shapes.ttl` (SHACL), `imports/gistCore.ttl` (vendored gist v14.1.0) + `catalog-v001.xml` |
+| `scripts/` | transform + validation scripts (`validate_fixes`, `run_cq_tests`, `check_shacl`, `migrate_*`) |
 | `tests/` | CQ regression suite: `test_data.ttl` (synthetic fixtures) + `cq_test_manifest.json` |
-| `sdd/` | spec-driven-development control docs: `spec.md`, `plan.md` |
-| `docs/` | engineering deliverables: `competency-questions.md`, `shacl-report.md` |
-| `CLAUDE.md` | guidance for Claude Code working in this repo |
+| `sdd/` | spec-driven-development control docs: `spec.md`, `plan.md`, `decisions.md` (Y-statements) |
+| `docs/` | engineering deliverables: `competency-questions.md`, `shacl-report.md`, `production-readiness.md` |
+| `CHANGELOG.md`, `CLAUDE.md` | release notes; guidance for Claude Code in this repo |
 | `prompt_library/` *(local-only)* | the seven GRL Workshop prompts — git-ignored |
 
 ---
@@ -128,23 +127,32 @@ make check     # the full gate: model checks + CQ tests + SHACL (run by CI on ev
 make validate  # parse + SPARQL (genre traversal, place roll-up, …)
 make test      # CQ regression suite (12/12)
 make shacl     # SHACL conformance — fails only on Violations; Warnings are advisory
+make reason    # HermiT consistency check, gist imported (needs Docker; not in the CI gate)
 ```
 
-`make check` is exactly what GitHub Actions runs on every push and pull request. The transform
-that applied the structural fixes is preserved and re-runnable at `scripts/apply_structural_fixes.py`.
+`make check` is exactly what GitHub Actions runs on every push and pull request. The one-shot
+transforms that produced the current model are preserved and re-runnable in `scripts/`
+(`apply_structural_fixes.py`, `migrate_gist.py`, `migrate_skos_labels.py`).
 
 ---
 
-## Status & next steps
+## Status
+
+Lifecycle complete — **released [v2.0.0](https://github.com/blacng/music-ontology/releases/tag/v2.0.0)**.
 
 | Phase | State |
 |-------|-------|
-| CQ generation → critique → revision (v3) | ✅ done |
-| Modeller Dialogue — structural fixes | ✅ done (validated) |
+| CQ generation → critique → revision (v4) | ✅ done |
+| Modeller Dialogue — structural fixes + `:MusicalAgent` boundary | ✅ done — **0 Violations** |
 | SHACL generation | ✅ done — `docs/shacl-report.md` |
-| Resolve `:Musician` ↔ `:MusicalArtist` boundary | ✅ done — `:MusicalAgent` superclass; **0 Violations** |
-| Test data + CQ tests | ✅ done — **12/12 CQs pass** (`tests/`, `scripts/run_cq_tests.py`) |
-| Production readiness (12-pt gate) | 🔄 near done — **10/12 green** (`docs/production-readiness.md`); item 4 waived, item 12 = PR sign-off |
+| Test data + CQ tests | ✅ done — **12/12 CQs pass** |
+| gist v14.1.0 re-alignment | ✅ done — vendored, reasoner-validated |
+| SKOS-only labels + Y-statements | ✅ done — `sdd/decisions.md` |
+| Production readiness (12-pt gate) | ✅ **10/12 green** (item 4 waived, item 12 = PR sign-off) |
+| **Release** | ✅ **v2.0.0** |
+
+**Optional polish (un-blocking, tracked in `sdd/plan.md`):** model a `:Voice` instrument and
+complete the illustrative catalog to clear the 19 SHACL *completeness* warnings.
 
 See [`sdd/plan.md`](sdd/plan.md) for the live lifecycle tracker and [`sdd/spec.md`](sdd/spec.md)
 for the specification.
