@@ -6,6 +6,10 @@ All notable changes to the Comprehensive Music Vocabulary. Versions follow the o
 ## [Unreleased]
 
 ### Added
+- **gist alignment migrated to current gist v14.1.0** (`gist:` → `…/ns/ontology/gist/`), vendored
+  locally (`ontology/imports/gistCore.ttl` + `ontology/catalog-v001.xml`) and reasoner-validated
+  (0 unsatisfiable classes). Classes re-parented to real gist terms (the old `gistCore#` alignment
+  was invalid). Applied via `scripts/migrate_gist.py`.
 - `owl:versionIRI` on the ontology; `skos:related` declared as an `owl:AnnotationProperty`.
 - Production Readiness audit (`docs/production-readiness.md`) + `make reason` (containerized
   HermiT consistency check).
@@ -15,8 +19,6 @@ All notable changes to the Comprehensive Music Vocabulary. Versions follow the o
 ### Known limitations (see `docs/production-readiness.md`)
 - Not strictly OWL 2 DL: `xsd:gYear` / `xsd:date` are outside the OWL 2 datatype map
   (accepted for the prototype).
-- `gist:` IRIs use the legacy `…/ontology/gistCore#` namespace; current gist publishes under
-  `…/ns/ontology/gist/`, so the alignment is dangling at the IRI level — pending a decision.
 - Classes carry `rdfs:label`, not `skos:prefLabel` (style guide targets SKOS-only).
 
 ## [2.0.0]

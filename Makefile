@@ -19,12 +19,13 @@ test: ## CQ regression suite (one SPARQL test per competency question)
 shacl: ## SHACL conformance gate (fails only on Violations; Warnings advisory)
 	uv run python scripts/check_shacl.py
 
-reason: ## Reasoner consistency check (HermiT via containerized ROBOT; needs Docker)
+reason: ## Reasoner consistency check (HermiT via containerized ROBOT, gist imported; needs Docker)
 	docker run --rm -v "$$PWD":/work -w /work obolibrary/robot robot reason \
-		--reasoner hermit --input ontology/music_vocabulary_comprehensive.ttl \
+		--reasoner hermit --catalog ontology/catalog-v001.xml \
+		--input ontology/music_vocabulary_comprehensive.ttl \
 		--output /work/.robot_reasoned.ttl
 	@rm -f .robot_reasoned.ttl
-	@echo "OK — ontology is consistent, no unsatisfiable classes."
+	@echo "OK — ontology is consistent, no unsatisfiable classes (gist v14.1.0 imported locally)."
 
 check: validate test shacl ## Run the full validation gate (CI; reasoner is separate, needs Docker)
 

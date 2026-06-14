@@ -18,6 +18,7 @@ wheels/
 # ROBOT reasoner scratch output
 .robot_*
 .profile.txt
+.merged.ttl
 
 # Prompt library (kept local, not version-controlled)
 prompt_library/
