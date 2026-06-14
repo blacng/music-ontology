@@ -13,8 +13,8 @@
 :MusicVocabulary a owl:Ontology ;
     rdfs:label "Comprehensive Music Vocabulary"@en ;
     rdfs:comment "A comprehensive vocabulary for describing music concepts, works, artists, instruments, and relationships."@en ;
-    owl:versionInfo "2.0.0" ;
-    owl:versionIRI <https://www.somusicvocabulary.org/music/2.0.0> ;
+    owl:versionInfo "2.1.0" ;
+    owl:versionIRI <https://www.somusicvocabulary.org/music/2.1.0> ;
     owl:imports <https://w3id.org/semanticarts/ontology/gistCore> .
 
 ###############################################################################
@@ -509,9 +509,9 @@
 :MusicalInstrument a owl:Class ;
     rdfs:subClassOf gist:Equipment ;
     skos:prefLabel "Musical Instrument"@en ;
-    skos:scopeNote "A device constructed or modified for the purpose of making music."@en ;
-    skos:narrower :StringInstrument, :WindInstrument, :PercussionInstrument, :KeyboardInstrument, :ElectronicInstrument ;
-    skos:definition "A musical instrument is a device created or adapted to make musical sounds."@en ;
+    skos:scopeNote "A device — or the human voice — used for the purpose of making music."@en ;
+    skos:narrower :StringInstrument, :WindInstrument, :PercussionInstrument, :KeyboardInstrument, :ElectronicInstrument, :VocalInstrument ;
+    skos:definition "A musical instrument is a device, or the human voice, created or used to make musical sounds."@en ;
     :exampleInstance :Guitar, :Piano, :Drums, :Violin, :Trumpet, :Saxophone, :Bass ;
     .
 
@@ -2002,3 +2002,121 @@ skos:scopeNote a owl:AnnotationProperty .
     rdfs:label "Kingston"@en ;
     :locatedIn :Jamaica ;
     .
+
+
+###############################################################################
+# v2.1 — VOCALS + CATALOG COMPLETENESS
+###############################################################################
+
+# --- Voice as an instrument (the body's natural instrument) ---
+:VocalInstrument a owl:Class ;
+    rdfs:subClassOf :MusicalInstrument ;
+    skos:prefLabel "Vocal Instrument"@en ;
+    skos:definition "A musical instrument that is the human singing voice."@en ;
+    .
+
+:Voice a :VocalInstrument ;
+    rdfs:label "Voice"@en ;
+    rdfs:comment "The human voice used as a musical instrument (singing)."@en ;
+    .
+
+# --- Vocalist solo artists sing (hasInstrument :Voice) ---
+:BeyonceKnowles :hasInstrument :Voice .
+:DavidBowie :hasInstrument :Voice .
+:KanyeWest :hasInstrument :Voice .
+:MichaelJackson :hasInstrument :Voice .
+:SadeAdu :hasInstrument :Voice .
+
+# --- John Lennon also a solo artist (performs Imagine); Julie London (Cry Me a River) ---
+:JohnLennon a :SoloArtist ;
+    :hasGenre :Rock .
+
+:LosAngeles a :City ;
+    rdfs:label "Los Angeles, California"@en ;
+    :locatedIn :UnitedStates ;
+    .
+
+:JulieLondon a :SoloArtist ;
+    rdfs:label "Julie London"@en ;
+    :hasGenre :Jazz ;
+    :hasInstrument :Voice ;
+    :originatesFrom :LosAngeles ;
+    .
+
+# --- Band line-ups (real members) ---
+:Coldplay :hasMember :ChrisMartin, :JonnyBuckland, :GuyBerryman, :WillChampion .
+:ChrisMartin a :Musician ; rdfs:label "Chris Martin"@en ; :hasInstrument :Voice, :Piano .
+:JonnyBuckland a :Musician ; rdfs:label "Jonny Buckland"@en ; :hasInstrument :Guitar .
+:GuyBerryman a :Musician ; rdfs:label "Guy Berryman"@en ; :hasInstrument :Bass .
+:WillChampion a :Musician ; rdfs:label "Will Champion"@en ; :hasInstrument :Drums .
+
+:Nirvana :hasMember :KurtCobain, :KristNovoselic, :DaveGrohl .
+:KurtCobain a :Musician ; rdfs:label "Kurt Cobain"@en ; :hasInstrument :Voice, :Guitar .
+:KristNovoselic a :Musician ; rdfs:label "Krist Novoselic"@en ; :hasInstrument :Bass .
+:DaveGrohl a :Musician ; rdfs:label "Dave Grohl"@en ; :hasInstrument :Drums .
+
+:LedZeppelin :hasMember :RobertPlant, :JimmyPage, :JohnPaulJones, :JohnBonham .
+:RobertPlant a :Musician ; rdfs:label "Robert Plant"@en ; :hasInstrument :Voice .
+:JimmyPage a :Musician ; rdfs:label "Jimmy Page"@en ; :hasInstrument :Guitar .
+:JohnPaulJones a :Musician ; rdfs:label "John Paul Jones"@en ; :hasInstrument :Bass .
+:JohnBonham a :Musician ; rdfs:label "John Bonham"@en ; :hasInstrument :Drums .
+
+:Radiohead :hasMember :ThomYorke, :JonnyGreenwood, :ColinGreenwood, :EdOBrien, :PhilSelway .
+:ThomYorke a :Musician ; rdfs:label "Thom Yorke"@en ; :hasInstrument :Voice, :Guitar .
+:JonnyGreenwood a :Musician ; rdfs:label "Jonny Greenwood"@en ; :hasInstrument :Guitar .
+:ColinGreenwood a :Musician ; rdfs:label "Colin Greenwood"@en ; :hasInstrument :Bass .
+:EdOBrien a :Musician ; rdfs:label "Ed O'Brien"@en ; :hasInstrument :Guitar .
+:PhilSelway a :Musician ; rdfs:label "Phil Selway"@en ; :hasInstrument :Drums .
+
+:TheRollingStones :hasMember :MickJagger, :KeithRichards, :RonnieWood, :CharlieWatts .
+:MickJagger a :Musician ; rdfs:label "Mick Jagger"@en ; :hasInstrument :Voice .
+:KeithRichards a :Musician ; rdfs:label "Keith Richards"@en ; :hasInstrument :Guitar .
+:RonnieWood a :Musician ; rdfs:label "Ronnie Wood"@en ; :hasInstrument :Guitar .
+:CharlieWatts a :Musician ; rdfs:label "Charlie Watts"@en ; :hasInstrument :Drums .
+
+# Orchestras — a representative principal each
+:BerlinPhilharmonic :hasMember :EmmanuelPahud .
+:EmmanuelPahud a :Musician ; rdfs:label "Emmanuel Pahud"@en ; :hasInstrument :Flute .
+:LondonSymphonyOrchestra :hasMember :MauriceMurphy .
+:MauriceMurphy a :Musician ; rdfs:label "Maurice Murphy"@en ; :hasInstrument :Trumpet .
+
+# --- Performer bands added for songs/albums that lacked a performer ---
+:Queen a :RockBand ;
+    rdfs:label "Queen"@en ;
+    :hasGenre :Rock ;
+    :originatesFrom :London ;
+    :hasMember :FreddieMercury, :BrianMay, :RogerTaylor, :JohnDeacon ;
+    .
+:FreddieMercury a :Musician ; rdfs:label "Freddie Mercury"@en ; :hasInstrument :Voice, :Piano .
+:BrianMay a :Musician ; rdfs:label "Brian May"@en ; :hasInstrument :Guitar .
+:RogerTaylor a :Musician ; rdfs:label "Roger Taylor"@en ; :hasInstrument :Drums .
+:JohnDeacon a :Musician ; rdfs:label "John Deacon"@en ; :hasInstrument :Bass .
+
+:DeepPurple a :RockBand ;
+    rdfs:label "Deep Purple"@en ;
+    :hasGenre :HardRock ;
+    :hasMember :IanGillan, :RitchieBlackmore, :RogerGlover, :JonLord, :IanPaice ;
+    .
+:IanGillan a :Musician ; rdfs:label "Ian Gillan"@en ; :hasInstrument :Voice .
+:RitchieBlackmore a :Musician ; rdfs:label "Ritchie Blackmore"@en ; :hasInstrument :Guitar .
+:RogerGlover a :Musician ; rdfs:label "Roger Glover"@en ; :hasInstrument :Bass .
+:JonLord a :Musician ; rdfs:label "Jon Lord"@en ; :hasInstrument :Organ .
+:IanPaice a :Musician ; rdfs:label "Ian Paice"@en ; :hasInstrument :Drums .
+
+:PinkFloyd a :RockBand ;
+    rdfs:label "Pink Floyd"@en ;
+    :hasGenre :Rock ;
+    :originatesFrom :London ;
+    :hasMember :DavidGilmour, :RogerWaters, :RichardWright, :NickMason ;
+    .
+:DavidGilmour a :Musician ; rdfs:label "David Gilmour"@en ; :hasInstrument :Guitar, :Voice .
+:RogerWaters a :Musician ; rdfs:label "Roger Waters"@en ; :hasInstrument :Bass, :Voice .
+:RichardWright a :Musician ; rdfs:label "Richard Wright"@en ; :hasInstrument :Synthesizer .
+:NickMason a :Musician ; rdfs:label "Nick Mason"@en ; :hasInstrument :Drums .
+
+# --- Performers for the works that lacked one ---
+:BohemianRhapsody :performedBy :Queen .
+:SmokeOnTheWater :performedBy :DeepPurple .
+:TheDarkSideOfTheMoon :performedBy :PinkFloyd .
+:ImagineSong :performedBy :JohnLennon .
+:CryMeARiver :performedBy :JulieLondon .

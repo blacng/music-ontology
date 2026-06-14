@@ -10,7 +10,7 @@
 |---|-------|--------|
 | 1 | All CQs have passing SPARQL tests | ✅ pass |
 | 2 | Reasoner: no inconsistency / unsatisfiable classes | ✅ pass (gist v14.1.0 imported) |
-| 3 | Every NodeShape validates (pyshacl) | ✅ pass (0 Violations) |
+| 3 | Every NodeShape validates (pyshacl) | ✅ pass — **fully conforms** (0 Violations, 0 Warnings, v2.1.0) |
 | 4 | OWL 2 profile declared, no violations | ⚠ not strict DL (datatypes) — waived |
 | 5 | No undeclared classes / properties / annotation props | ✅ pass (gist re-aligned) |
 | 6 | Every class has `skos:prefLabel` + `skos:definition` | ✅ pass (53/53, SKOS-only) |
@@ -79,7 +79,7 @@ tooling, SKOS labels), cross-linked to the informal `sdd/plan.md` log.
 2. ~~`skos:prefLabel` migration~~ **DONE** (item 6) — classes & properties are SKOS-only.
 3. ~~Y-statement formalization~~ **DONE** (item 9) — `sdd/decisions.md`.
 4. **OWL 2 DL datatypes** (item 4) — **waived** for the prototype; production fix = `gYear`/`date` → `xsd:dateTime`/integer.
-5. **Carried follow-ups:** vocalist `:Voice` (the 5 instrument Warnings); complete the real catalog so its 19 SHACL completeness Warnings clear.
+5. ~~Carried follow-ups~~ **DONE (v2.1.0)** — modelled `:Voice` (+ conductor shape exemption) and completed the real catalog (band line-ups, performing bands). SHACL now **fully conforms (0/0)**.
 6. **Peer sign-off** (item 12) — the PR review.
 
 Reproduce the automated checks: `make check` (items 1, 3) · `make reason` (item 2, needs Docker) ·

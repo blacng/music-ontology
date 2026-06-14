@@ -44,8 +44,7 @@ Each generation step is followed by adversarial critique (Artefact 2) — not op
 
 ## Next action
 
-Production Readiness is essentially complete (10/12 green; item 4 waived, item 12 = PR sign-off).
-Remaining optional polish: the carried follow-ups (vocalist `:Voice` for the 5 instrument Warnings;
-complete the real catalog to clear the 19 SHACL completeness Warnings). Then **Release** (tag).
+**v2.1.0** done: modelled `:Voice` and completed the catalog with real data — SHACL now **fully
+conforms (0/0)**. Tag **v2.1.0**. The lifecycle is complete; no blocking work remains.
 
 > Living document — update before completing each feature/development task.
