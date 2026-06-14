@@ -93,10 +93,11 @@ over many hand-edits for bulk `.ttl` changes (see `apply_structural_fixes.py`).
 - Individually: `make validate` · `make test` · `make shacl` (or the underlying
   `uv run python scripts/{validate_fixes,run_cq_tests,check_shacl}.py`).
 - SHACL gate fails only on **Violations**; the 19 completeness Warnings are advisory.
+- Reasoner consistency (HermiT via containerized ROBOT, needs Docker): `make reason`.
 - CI: `.github/workflows/ci.yml` runs `make check` on every push/PR (`uv sync --locked`).
+  The reasoner is a separate target (Docker), not in the CI gate.
 - Add a dependency: `uv add <package>` · Sync: `uv sync` · Python pinned to **3.14**.
-- **Docker is intentionally deferred** — revisit when a Java reasoner / triplestore lands
-  (see `sdd/plan.md` Decisions log).
+- Docker is now used for the **reasoner** only (`make reason`); see `docs/production-readiness.md`.
 
 ## Working norms specific to this project
 
