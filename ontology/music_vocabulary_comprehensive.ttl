@@ -2120,3 +2120,15 @@ skos:scopeNote a owl:AnnotationProperty .
 :TheDarkSideOfTheMoon :performedBy :PinkFloyd .
 :ImagineSong :performedBy :JohnLennon .
 :CryMeARiver :performedBy :JulieLondon .
+
+# --- Cross-artist collaborations (collaboratesWith, CQ-2) ---
+# Documented real-world collaborations between agents already in the catalog.
+# :collaboratesWith is owl:SymmetricProperty, so each pairing is asserted once;
+# queries traverse both directions via :collaboratesWith|^:collaboratesWith.
+# (:PaulMcCartney :collaboratesWith :JohnLennon is already asserted above.)
+:DavidBowie :collaboratesWith :FreddieMercury .      # "Under Pressure" (1981)
+:DavidBowie :collaboratesWith :JohnLennon .          # "Fame" (1975)
+:DavidBowie :collaboratesWith :MickJagger .          # "Dancing in the Street" (1985)
+:MichaelJackson :collaboratesWith :PaulMcCartney .   # "Say Say Say" / "The Girl Is Mine" (1982–83)
+:MichaelJackson :collaboratesWith :MickJagger .      # "State of Shock" (1984)
+:PaulMcCartney :collaboratesWith :KanyeWest .        # "FourFiveSeconds" / "Only One" (2015)
