@@ -11,6 +11,14 @@
       "sample_row": "TST_SoloB shares the Rock root with TST_SoloA"
     },
     {
+      "id": "CQ-1b",
+      "question": "Which musical agents (artists/bands only, not their songs or albums) share a top-level genre with a seed artist, and which genre name(s) are shared? (Presentation refinement of CQ-1: restricts ?other to :MusicalAgent and emits genre rdfs:labels via GROUP_CONCAT instead of a count.)",
+      "var": "other",
+      "sparql": "SELECT ?other (GROUP_CONCAT(DISTINCT ?genreName; SEPARATOR=\", \") AS ?Shared_Genres) WHERE { :TST_SoloA :hasGenre/:hasBroaderGenre* ?root . ?root a :TopLevelGenre ; rdfs:label ?genreName . ?other a/rdfs:subClassOf* :MusicalAgent ; :hasGenre/:hasBroaderGenre* ?root ; rdfs:label ?label . FILTER(?other != :TST_SoloA) } GROUP BY ?other",
+      "expect": { "contains": ["TST_SoloB", "TST_MusM", "TST_BandX", "TST_BandAlt"], "excludes": ["TST_SoloC", "TST_SoloEmpty", "TST_MusN", "TST_Album1", "TST_Song1"] },
+      "sample_row": "TST_BandAlt (AlternativeRock -> Rock) shares Shared_Genres=\"Rock\"; the Rock-genre works TST_Album1/TST_Song1 are excluded by the :MusicalAgent restriction, proving agents-only behaviour"
+    },
+    {
       "id": "CQ-2",
       "question": "Which agents are within two hops via collaboratesWith or shared band membership?",
       "var": "reachable",
