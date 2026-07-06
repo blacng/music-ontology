@@ -13,7 +13,11 @@ code. The actual deliverables are:
    **gist** upper ontology (`gist:` = `https://w3id.org/semanticarts/ns/ontology/gist/`, current
    v14.1.0, vendored at `ontology/imports/gistCore.ttl` + `ontology/catalog-v001.xml`).
    Its own namespace is `:` = `https://www.somusicvocabulary.org/music#`.
-   (`.bak` is the pre-Artefact-4 snapshot.)
+   (`.bak` is the pre-Artefact-4 snapshot.) **This file is the TBox** (model only) since the
+   TBox/ABox split — the instance catalogue lives in **`ontology/music_catalog_data.ttl`** (the
+   ABox). The split is destined for named graphs in a triplestore (`:…/music/tbox`, `:…/music/abox`,
+   `:…/music/shapes`, gist); `scripts/split_tbox_abox.py` performs the split and
+   `scripts/load_graphs.py` (`make dataset`) assembles the named-graph dataset for ingest.
 2. **`prompt_library/`** — seven reusable LLM prompts implementing the **GRL Workshop**
    methodology (Graph Research Labs, KGC 2026) for using LLMs as pair-modellers in ontology
    engineering. `docs/prompt-library-summary.md` is the canonical index of all seven.
@@ -87,8 +91,11 @@ over many hand-edits for bulk `.ttl` changes (see `apply_structural_fixes.py`).
 
 ## Repository layout
 
-- `ontology/` — the `*.ttl` files (model + instances, and SHACL shapes).
-- `scripts/` — transform/validation scripts.
+- `ontology/` — `music_vocabulary_comprehensive.ttl` (**TBox** — model), `music_catalog_data.ttl`
+  (**ABox** — instances), `music_vocabulary_shapes.ttl` (SHACL), `imports/gistCore.ttl` (vendored gist).
+- `scripts/` — transform/validation scripts (`split_tbox_abox.py` splits TBox/ABox; `load_graphs.py`
+  assembles the named-graph dataset).
+- `dist/` — generated triplestore-ingest artifacts (`music_dataset.trig`, `load.ru`, `graph_manifest.json`); git-ignored, rebuilt by `make dataset`.
 - `tests/` — CQ regression suite: `test_data.ttl` (synthetic `:TST_*` fixtures) + `cq_test_manifest.json`; run via `scripts/run_cq_tests.py`.
 - `sdd/` — spec-driven-development control docs (`spec.md`, `plan.md`).
 - `docs/` — engineering deliverables (`competency-questions.md`, `shacl-report.md`).
@@ -100,7 +107,8 @@ over many hand-edits for bulk `.ttl` changes (see `apply_structural_fixes.py`).
 - Individually: `make validate` · `make test` · `make shacl` (or the underlying
   `uv run python scripts/{validate_fixes,run_cq_tests,check_shacl}.py`).
 - SHACL gate fails only on **Violations**; the 19 completeness Warnings are advisory.
-- Reasoner consistency (HermiT via containerized ROBOT, needs Docker): `make reason`.
+- Assemble the named-graph dataset for triplestore ingest: `make dataset` → `dist/`.
+- Reasoner consistency (HermiT via containerized ROBOT, needs Docker): `make reason` (merges TBox+ABox).
 - CI: `.github/workflows/ci.yml` runs `make check` on every push/PR (`uv sync --locked`).
   The reasoner is a separate target (Docker), not in the CI gate.
 - Add a dependency: `uv add <package>` · Sync: `uv sync` · Python pinned to **3.14**.

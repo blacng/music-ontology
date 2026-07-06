@@ -12,8 +12,12 @@ PREFIX gist: <https://w3id.org/semanticarts/ns/ontology/gist/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 """
 
+# Model checks exercise both the TBox (genre/place/time modelling) and the ABox
+# (real instances they traverse), so load both files — they are separate since the
+# TBox/ABox split.
 g = Graph()
-g.parse("ontology/music_vocabulary_comprehensive.ttl", format="turtle")
+g.parse("ontology/music_vocabulary_comprehensive.ttl", format="turtle")  # TBox
+g.parse("ontology/music_catalog_data.ttl", format="turtle")              # ABox
 print(f"parsed OK: {len(g)} triples\n")
 
 checks = []

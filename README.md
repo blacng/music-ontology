@@ -108,8 +108,9 @@ works to `gist:Content`, instruments to `gist:Equipment`, features to `gist:Aspe
 
 | Path | Contents |
 |------|----------|
-| `ontology/` | `music_vocabulary_comprehensive.ttl` (model + instances), `music_vocabulary_shapes.ttl` (SHACL), `imports/gistCore.ttl` (vendored gist v14.1.0) + `catalog-v001.xml` |
-| `scripts/` | transform + validation scripts (`validate_fixes`, `run_cq_tests`, `check_shacl`, `migrate_*`) |
+| `ontology/` | `music_vocabulary_comprehensive.ttl` (**TBox** — model), `music_catalog_data.ttl` (**ABox** — instances), `music_vocabulary_shapes.ttl` (SHACL), `imports/gistCore.ttl` (vendored gist v14.1.0) + `catalog-v001.xml` |
+| `scripts/` | transform + validation scripts (`validate_fixes`, `run_cq_tests`, `check_shacl`, `split_tbox_abox`, `load_graphs`, `migrate_*`) |
+| `dist/` *(generated)* | named-graph dataset for triplestore ingest: `music_dataset.trig`, `load.ru`, `graph_manifest.json` — git-ignored, rebuilt by `make dataset` |
 | `tests/` | CQ regression suite: `test_data.ttl` (synthetic fixtures) + `cq_test_manifest.json` |
 | `sdd/` | spec-driven-development control docs: `spec.md`, `plan.md`, `decisions.md` (Y-statements) |
 | `docs/` | engineering deliverables: `competency-questions.md`, `shacl-report.md`, `production-readiness.md` |
@@ -131,7 +132,24 @@ make validate  # parse + SPARQL (genre traversal, place roll-up, …)
 make test      # CQ regression suite (12/12)
 make shacl     # SHACL conformance — fails only on Violations; Warnings are advisory
 make reason    # HermiT consistency check, gist imported (needs Docker; not in the CI gate)
+
+make dataset   # assemble the named-graph dataset (TBox/ABox/SHACL/gist) → dist/*.trig for a triplestore
 ```
+
+### Named-graph layout (for triplestore ingest)
+
+The source stays as per-layer Turtle files (git-friendly; what the file-based gate validates).
+`make dataset` assigns each file to a named graph and emits `dist/music_dataset.trig` (+ a SPARQL
+`LOAD` script and a JSON manifest) for loading into a triplestore:
+
+| Named graph | Source file | Layer |
+|-------------|-------------|-------|
+| `…/music/tbox` | `music_vocabulary_comprehensive.ttl` | TBox (model) |
+| `…/music/abox` | `music_catalog_data.ttl` | ABox (instances) |
+| `…/music/shapes` | `music_vocabulary_shapes.ttl` | SHACL |
+| `…/ontology/gistCore` | `imports/gistCore.ttl` | gist v14.1.0 |
+
+The default graph carries a SPARQL Service Description (`sd:`) naming the graphs.
 
 `make check` is exactly what GitHub Actions runs on every push and pull request. The one-shot
 transforms that produced the current model are preserved and re-runnable in `scripts/`
