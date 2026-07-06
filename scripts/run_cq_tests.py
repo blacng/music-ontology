@@ -19,8 +19,9 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 """
 
-ONTOLOGY = "ontology/music_vocabulary_comprehensive.ttl"
-TEST_DATA = "tests/test_data.ttl"
+ONTOLOGY = "ontology/music_vocabulary_comprehensive.ttl"  # TBox (model)
+CATALOG = "ontology/music_catalog_data.ttl"               # ABox (real instances)
+TEST_DATA = "tests/test_data.ttl"                          # synthetic :TST_* fixtures
 MANIFEST = "tests/cq_test_manifest.json"
 
 
@@ -31,6 +32,7 @@ def local(term):
 def main():
     g = Graph()
     g.parse(ONTOLOGY, format="turtle")
+    g.parse(CATALOG, format="turtle")
     g.parse(TEST_DATA, format="turtle")
     manifest = json.loads(Path(MANIFEST).read_text())
 
@@ -49,7 +51,7 @@ def main():
         ok = not missing and not leaked
         results.append((t["id"], ok, missing, leaked, len(got)))
 
-    print(f"CQ regression suite — {ONTOLOGY} + {TEST_DATA}\n")
+    print(f"CQ regression suite — {ONTOLOGY} + {CATALOG} + {TEST_DATA}\n")
     width = max(len(r[0]) for r in results)
     for cid, ok, missing, leaked, n in results:
         status = "PASS" if ok else "FAIL"
