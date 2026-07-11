@@ -1057,146 +1057,146 @@
 # INSTANCES - PLACES
 ###############################################################################
 
-:England a :Nation ;
+:England a :Place ; :hasPlaceType :Nation ;
     rdfs:label "England"@en ;
     .
 
-:UnitedStates a :Nation ;
+:UnitedStates a :Place ; :hasPlaceType :Nation ;
     rdfs:label "United States"@en ;
     .
 
-:France a :Nation ;
+:France a :Place ; :hasPlaceType :Nation ;
     rdfs:label "France"@en ;
     .
 
-:Austria a :Nation ;
+:Austria a :Place ; :hasPlaceType :Nation ;
     rdfs:label "Austria"@en ;
     .
 
-:Germany a :Nation ;
+:Germany a :Place ; :hasPlaceType :Nation ;
     rdfs:label "Germany"@en ;
     .
 
-:Jamaica a :Nation ;
+:Jamaica a :Place ; :hasPlaceType :Nation ;
     rdfs:label "Jamaica"@en ;
     .
 
-:Liverpool a :City ;
+:Liverpool a :Place ; :hasPlaceType :City ;
     rdfs:label "Liverpool"@en ;
     :locatedIn :England ;
     .
 
-:London a :City ;
+:London a :Place ; :hasPlaceType :City ;
     rdfs:label "London"@en ;
     :locatedIn :England ;
     .
 
-:Oxford a :City ;
+:Oxford a :Place ; :hasPlaceType :City ;
     rdfs:label "Oxford"@en ;
     :locatedIn :England ;
     .
 
-:Somerset a :City ;
+:Somerset a :Place ; :hasPlaceType :City ;
     rdfs:label "Somerset"@en ;
     :locatedIn :England ;
     .
 
-:Seattle a :City ;
+:Seattle a :Place ; :hasPlaceType :City ;
     rdfs:label "Seattle, Washington"@en ;
     :locatedIn :UnitedStates ;
     .
 
-:Chicago a :City ;
+:Chicago a :Place ; :hasPlaceType :City ;
     rdfs:label "Chicago, Illinois"@en ;
     :locatedIn :UnitedStates ;
     .
 
-:LongBeach_NY a :City ;
+:LongBeach_NY a :Place ; :hasPlaceType :City ;
     rdfs:label "Long Beach, New York"@en ;
     :locatedIn :UnitedStates ;
     .
 
-:Lawrence_MA a :City ;
+:Lawrence_MA a :Place ; :hasPlaceType :City ;
     rdfs:label "Lawrence, Massachusetts"@en ;
     :locatedIn :UnitedStates ;
     .
 
-:Duluth a :City ;
+:Duluth a :Place ; :hasPlaceType :City ;
     rdfs:label "Duluth, Minnesota"@en ;
     :locatedIn :UnitedStates ;
     .
 
-:Houston a :City ;
+:Houston a :Place ; :hasPlaceType :City ;
     rdfs:label "Houston, Texas"@en ;
     :locatedIn :UnitedStates ;
     .
 
-:Alton a :City ;
+:Alton a :Place ; :hasPlaceType :City ;
     rdfs:label "Alton, Illinois"@en ;
     :locatedIn :UnitedStates ;
     .
 
-:WestReading a :City ;
+:WestReading a :Place ; :hasPlaceType :City ;
     rdfs:label "West Reading, Pennsylvania"@en ;
     :locatedIn :UnitedStates ;
     .
 
-:Gary a :City ;
+:Gary a :Place ; :hasPlaceType :City ;
     rdfs:label "Gary, Indiana"@en ;
     :locatedIn :UnitedStates ;
     .
 
-:Aberdeen_WA a :City ;
+:Aberdeen_WA a :Place ; :hasPlaceType :City ;
     rdfs:label "Aberdeen, Washington"@en ;
     :locatedIn :UnitedStates ;
     .
 
-:NewYorkCity a :City ;
+:NewYorkCity a :Place ; :hasPlaceType :City ;
     rdfs:label "New York City"@en ;
     :locatedIn :UnitedStates ;
     .
 
-:SantaMonica a :City ;
+:SantaMonica a :Place ; :hasPlaceType :City ;
     rdfs:label "Santa Monica, California"@en ;
     :locatedIn :UnitedStates ;
     .
 
-:Indio a :City ;
+:Indio a :Place ; :hasPlaceType :City ;
     rdfs:label "Indio, California"@en ;
     :locatedIn :UnitedStates ;
     .
 
-:Paris a :City ;
+:Paris a :Place ; :hasPlaceType :City ;
     rdfs:label "Paris"@en ;
     :locatedIn :France ;
     .
 
-:Salzburg a :City ;
+:Salzburg a :Place ; :hasPlaceType :City ;
     rdfs:label "Salzburg"@en ;
     :locatedIn :Austria ;
     .
 
-:Bonn a :City ;
+:Bonn a :Place ; :hasPlaceType :City ;
     rdfs:label "Bonn"@en ;
     :locatedIn :Germany ;
     .
 
-:Eisenach a :City ;
+:Eisenach a :Place ; :hasPlaceType :City ;
     rdfs:label "Eisenach"@en ;
     :locatedIn :Germany ;
     .
 
-:Berlin a :City ;
+:Berlin a :Place ; :hasPlaceType :City ;
     rdfs:label "Berlin"@en ;
     :locatedIn :Germany ;
     .
 
-:NineMile a :City ;
+:NineMile a :Place ; :hasPlaceType :City ;
     rdfs:label "Nine Mile"@en ;
     :locatedIn :Jamaica ;
     .
 
-:Kingston a :City ;
+:Kingston a :Place ; :hasPlaceType :City ;
     rdfs:label "Kingston"@en ;
     :locatedIn :Jamaica ;
     .
@@ -1217,7 +1217,7 @@
 :JohnLennon a :SoloArtist ;
     :hasGenre :Rock .
 
-:LosAngeles a :City ;
+:LosAngeles a :Place ; :hasPlaceType :City ;
     rdfs:label "Los Angeles, California"@en ;
     :locatedIn :UnitedStates ;
     .
@@ -1318,3 +1318,52 @@
 :MichaelJackson :collaboratesWith :PaulMcCartney .   # "Say Say Say" / "The Girl Is Mine" (1982–83)
 :MichaelJackson :collaboratesWith :MickJagger .      # "State of Shock" (1984)
 :PaulMcCartney :collaboratesWith :KanyeWest .        # "FourFiveSeconds" / "Only One" (2015)
+
+###############################################################################
+# v2.2 — PLACE TYPES, CONTINENT ROLL-UP, ACTIVITY INTERVALS, HISTORICAL EVENTS
+###############################################################################
+
+# --- Place-type category individuals (gist:Category pattern; :broaderPlaceType
+#     orders them finest → coarsest so "at nation level or higher" queries work) ---
+:City      a :PlaceType ; rdfs:label "City"@en      ; :broaderPlaceType :Region .
+:Region    a :PlaceType ; rdfs:label "Region"@en    ; :broaderPlaceType :Nation .
+:Nation    a :PlaceType ; rdfs:label "Nation"@en    ; :broaderPlaceType :Continent .
+:Continent a :PlaceType ; rdfs:label "Continent"@en .
+
+# --- Continents + nation → continent roll-up (enables same-continent discovery, CQ-14) ---
+:Europe       a :Place ; :hasPlaceType :Continent ; rdfs:label "Europe"@en .
+:NorthAmerica a :Place ; :hasPlaceType :Continent ; rdfs:label "North America"@en .
+
+:England       :locatedIn :Europe .
+:France        :locatedIn :Europe .
+:Austria       :locatedIn :Europe .
+:Germany       :locatedIn :Europe .
+:UnitedStates  :locatedIn :NorthAmerica .
+:Jamaica       :locatedIn :NorthAmerica .
+
+# Ireland — added for the Irish War of Independence event below.
+:Ireland a :Place ; :hasPlaceType :Nation ; rdfs:label "Ireland"@en ; :locatedIn :Europe .
+
+# --- Artist activity intervals (canonical era signal, CQ-13). :activeUntil is
+#     omitted for still-active artists (open interval). ---
+:TheBeatles    :activeFrom "1960"^^xsd:gYear ; :activeUntil "1970"^^xsd:gYear .
+:Nirvana       :activeFrom "1987"^^xsd:gYear ; :activeUntil "1994"^^xsd:gYear .
+:PaulMcCartney :activeFrom "1957"^^xsd:gYear .
+:BobDylan      :activeFrom "1961"^^xsd:gYear .
+:DavidBowie    :activeFrom "1962"^^xsd:gYear ; :activeUntil "2016"^^xsd:gYear .
+:TaylorSwift   :activeFrom "2004"^^xsd:gYear .
+
+# --- Historical events (dated intervals + location; artist links are derived, CQ-15) ---
+:AmericanCivilRightsMovement a :HistoricalEvent ;
+    rdfs:label "American Civil Rights Movement"@en ;
+    gist:actualStartDate "1954-05-17"^^xsd:date ;
+    gist:actualEndDate   "1968-04-11"^^xsd:date ;
+    :locatedIn :UnitedStates ;
+    .
+
+:IrishWarOfIndependence a :HistoricalEvent ;
+    rdfs:label "Irish War of Independence"@en ;
+    gist:actualStartDate "1919-01-21"^^xsd:date ;
+    gist:actualEndDate   "1921-07-11"^^xsd:date ;
+    :locatedIn :Ireland ;
+    .

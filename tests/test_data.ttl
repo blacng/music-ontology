@@ -1,4 +1,5 @@
 @prefix : <https://www.somusicvocabulary.org/music#> .
+@prefix gist: <https://w3id.org/semanticarts/ns/ontology/gist/> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
@@ -16,9 +17,9 @@
 ###############################################################################
 
 # --- Places ---
-:TST_CountryZ a :Nation ; rdfs:label "Testland"@en ; .
-:TST_CityX a :City ; rdfs:label "Test City X"@en ; :locatedIn :TST_CountryZ ; .
-:TST_CityY a :City ; rdfs:label "Test City Y"@en ; :locatedIn :TST_CountryZ ; .
+:TST_CountryZ a :Place ; :hasPlaceType :Nation ; rdfs:label "Testland"@en ; .
+:TST_CityX a :Place ; :hasPlaceType :City ; rdfs:label "Test City X"@en ; :locatedIn :TST_CountryZ ; .
+:TST_CityY a :Place ; :hasPlaceType :City ; rdfs:label "Test City Y"@en ; :locatedIn :TST_CountryZ ; .
 
 # --- Labels / charts / awards / producers ---
 :TST_Label1 a :RecordLabel ; rdfs:label "Test Label One"@en ; :locatedIn :TST_CityX ; .
@@ -156,4 +157,74 @@
     :performedBy :TST_MusM ;
     :releasedIn "1990"^^xsd:gYear ;
     :hasGenre :Rock ;
+    .
+
+###############################################################################
+# v2.2 FIXTURES — ERA OVERLAP (CQ-13), MULTI-LEVEL GEOGRAPHY (CQ-14),
+#                 CAME-OF-AGE DURING A HISTORICAL EVENT (CQ-15)
+###############################################################################
+
+# --- CQ-13: activity-interval overlap + shared top-level genre ---
+# Seed :TST_Era90sA (active 1991–1998, Rock). Overlap = A.from ≤ B.until ∧ B.from ≤ A.until.
+:TST_Era90sA a :SoloArtist ;
+    rdfs:label "Test Era 90s A"@en ;
+    :hasGenre :Rock ;
+    :activeFrom "1991"^^xsd:gYear ; :activeUntil "1998"^^xsd:gYear ;
+    .
+:TST_Era90sB a :SoloArtist ;             # overlaps seed era AND shares Rock → YES
+    rdfs:label "Test Era 90s B"@en ;
+    :hasGenre :Rock ;
+    :activeFrom "1995"^^xsd:gYear ; :activeUntil "2003"^^xsd:gYear ;
+    .
+:TST_Era80s a :SoloArtist ;              # Rock but no era overlap (1980–1988) → NO
+    rdfs:label "Test Era 80s"@en ;
+    :hasGenre :Rock ;
+    :activeFrom "1980"^^xsd:gYear ; :activeUntil "1988"^^xsd:gYear ;
+    .
+:TST_Era90sJazz a :SoloArtist ;          # era overlaps seed but different genre → NO
+    rdfs:label "Test Era 90s Jazz"@en ;
+    :hasGenre :Jazz ;
+    :activeFrom "1992"^^xsd:gYear ; :activeUntil "2000"^^xsd:gYear ;
+    .
+
+# --- CQ-14: multi-level geographic peers (share an ancestor at a chosen level) ---
+# A second continent branch gives a same-continent-but-different-nation NO-instance
+# for the nation-level test.
+:TST_ContinentQ a :Place ; :hasPlaceType :Continent ; rdfs:label "Test Continent Q"@en ; .
+:TST_CountryW   a :Place ; :hasPlaceType :Nation ; rdfs:label "Test Country W"@en ; :locatedIn :TST_ContinentQ ; .
+:TST_CityW      a :Place ; :hasPlaceType :City   ; rdfs:label "Test City W"@en ;    :locatedIn :TST_CountryW ; .
+:TST_CountryZ   :locatedIn :TST_ContinentQ .     # Testland now rolls up to continent Q
+
+:TST_GeoFar a :SoloArtist ;              # same continent as seed, different nation → nation-level NO
+    rdfs:label "Test Geo Far"@en ;
+    :hasGenre :Rock ;
+    :originatesFrom :TST_CityW ;
+    .
+
+# --- CQ-15: came of age during a historical event (derived by birth-date + place) ---
+# Event window [1960,1968] in Testland. Age window = [born+15, born+25]; a candidate
+# qualifies iff that window overlaps the event AND their origin :locatedIn* the event place.
+:TST_EventE a :HistoricalEvent ;
+    rdfs:label "Test Event E"@en ;
+    gist:actualStartDate "1960-01-01"^^xsd:date ;
+    gist:actualEndDate   "1968-12-31"^^xsd:date ;
+    :locatedIn :TST_CountryZ ;
+    .
+:TST_ComeOfAge a :SoloArtist ;           # born 1948 → window [1963,1973] overlaps; origin in place → YES
+    rdfs:label "Test Came Of Age"@en ;
+    :hasGenre :Rock ;
+    :bornOn "1948-06-01"^^xsd:date ;
+    :originatesFrom :TST_CityX ;
+    .
+:TST_TooYoung a :SoloArtist ;            # born 1965 → window [1980,1990] no overlap → NO
+    rdfs:label "Test Too Young"@en ;
+    :hasGenre :Rock ;
+    :bornOn "1965-06-01"^^xsd:date ;
+    :originatesFrom :TST_CityX ;
+    .
+:TST_WrongPlace a :SoloArtist ;          # right age but origin outside the event place → NO
+    rdfs:label "Test Wrong Place"@en ;
+    :hasGenre :Rock ;
+    :bornOn "1948-06-01"^^xsd:date ;
+    :originatesFrom :TST_CityW ;
     .

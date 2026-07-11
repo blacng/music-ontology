@@ -21,8 +21,8 @@
 :MusicVocabulary a owl:Ontology ;
     rdfs:label "Comprehensive Music Vocabulary"@en ;
     rdfs:comment "A comprehensive vocabulary for describing music concepts, works, artists, instruments, and relationships."@en ;
-    owl:versionInfo "2.1.0" ;
-    owl:versionIRI <https://www.somusicvocabulary.org/music/2.1.0> ;
+    owl:versionInfo "2.2.0" ;
+    owl:versionIRI <https://www.somusicvocabulary.org/music/2.2.0> ;
     owl:imports <https://w3id.org/semanticarts/ontology/gistCore> .
 
 ###############################################################################
@@ -797,22 +797,36 @@ skos:scopeNote a owl:AnnotationProperty .
     skos:definition "A geographic location at which an agent originates or an organisation, venue, or event is situated."@en ;
     .
 
-:City a owl:Class ;
-    rdfs:subClassOf :Place ;
-    skos:prefLabel "City"@en ;
-    skos:definition "A place that is a city or town."@en ;
-    .
-
-:Nation a owl:Class ;
-    rdfs:subClassOf :Place ;
-    skos:prefLabel "Country (nation)"@en ;
-    skos:definition "A place that is a country or national-level region."@en ;
+# Granularity is carried by gist:Category typing (:hasPlaceType), not by subclassing,
+# mirroring the genre model. City/Region/Nation/Continent are :PlaceType individuals
+# in the ABox; :broaderPlaceType orders them finest-to-coarsest for level queries.
+:PlaceType a owl:Class ;
+    rdfs:subClassOf gist:Category ;
+    skos:prefLabel "Place Type"@en ;
+    skos:scopeNote "Place-type individuals (:City, :Region, :Nation, :Continent) live in the ABox; assign one to a :Place with :hasPlaceType."@en ;
+    skos:definition "A place type is a category that classifies a place by its geographic granularity, such as city, region, nation, or continent."@en ;
+    :exampleInstance :City, :Region, :Nation, :Continent ;
     .
 
 :locatedIn a owl:ObjectProperty, owl:TransitiveProperty ;
     skos:prefLabel "located in"@en ;
     rdfs:range :Place ;
     skos:definition "Relates an organisation, venue, event, or place to a containing place; transitive for regional roll-up."@en ;
+    .
+
+:hasPlaceType a owl:ObjectProperty ;
+    rdfs:subPropertyOf gist:isCategorizedBy ;
+    skos:prefLabel "has place type"@en ;
+    rdfs:domain :Place ;
+    rdfs:range :PlaceType ;
+    skos:definition "Relates a place to its granularity category — city, region, nation, or continent."@en ;
+    .
+
+:broaderPlaceType a owl:ObjectProperty, owl:TransitiveProperty ;
+    skos:prefLabel "has broader place type"@en ;
+    rdfs:domain :PlaceType ;
+    rdfs:range :PlaceType ;
+    skos:definition "Relates a finer place type to the next coarser one (city → region → nation → continent); transitive, so closure reaches every coarser level."@en ;
     .
 
 # --- Time: bornOn replaces the removed hasAge ---
@@ -824,6 +838,24 @@ skos:scopeNote a owl:AnnotationProperty .
     skos:definition "The date on which an agent was born."@en ;
     .
 
+# --- Time: artist activity interval (the canonical era signal). :startsCareerIn
+#     is the narrower "first professional year" and is subordinate to :activeFrom. ---
+
+:activeFrom a owl:DatatypeProperty ;
+    skos:prefLabel "active from"@en ;
+    rdfs:domain :MusicalArtist ;
+    rdfs:range xsd:gYear ;
+    skos:definition "The year an artist's active period began; the start of the activity interval used for era-overlap queries (CQ-13)."@en ;
+    .
+
+:activeUntil a owl:DatatypeProperty ;
+    skos:prefLabel "active until"@en ;
+    rdfs:domain :MusicalArtist ;
+    rdfs:range xsd:gYear ;
+    skos:scopeNote "Omit for currently-active artists; era-overlap queries treat a missing value as open-ended (still active)."@en ;
+    skos:definition "The year an artist's active period ended; absent means the artist is still active (an open interval)."@en ;
+    .
+
 ###############################################################################
 # v2.1 — VOCALS + CATALOG COMPLETENESS
 ###############################################################################
@@ -833,4 +865,20 @@ skos:scopeNote a owl:AnnotationProperty .
     rdfs:subClassOf :MusicalInstrument ;
     skos:prefLabel "Vocal Instrument"@en ;
     skos:definition "A musical instrument that is the human singing voice."@en ;
+    .
+
+###############################################################################
+# v2.2 — TIME PERIODS, MULTI-LEVEL GEOGRAPHY & HISTORICAL EVENTS
+###############################################################################
+
+# --- Historical events (for "came of age during …" discovery, CQ-15) ---
+# A period event with a start/end interval and a location. Artists are related to
+# it by *derivation* (birth-date age-window overlap + origin within its place),
+# not by an asserted edge — see docs/competency-questions.md CQ-15.
+:HistoricalEvent a owl:Class ;
+    rdfs:subClassOf gist:HistoricalEvent ;
+    skos:prefLabel "Historical Event"@en ;
+    skos:scopeNote "Dated with gist:actualStartDate / gist:actualEndDate (xsd:date) and situated with :locatedIn a :Place. Boundary dates are sourced editorial claims, not exact facts."@en ;
+    skos:definition "A historical event is a significant real-world occurrence spanning a bounded time interval that may shape the artists who come of age during it."@en ;
+    :exampleInstance :AmericanCivilRightsMovement, :IrishWarOfIndependence ;
     .

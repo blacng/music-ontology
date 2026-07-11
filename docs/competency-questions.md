@@ -50,7 +50,9 @@ label rosters (`isSignedTo`), authorship/performance (`performedBy`, `composedBy
 
 ---
 
-## The 12 Competency Questions
+## The Competency Questions
+
+*(12 original + CQ-1b below; three foundational CQs — CQ-13/14/15 — added in v2.2, see that section.)*
 
 ### CQ-1 — Genre-similar artists ("more like this") ✅
 - **Question:** Given a seed artist, which other artists share at least one **top-level genre**, counting subgenre matches via the hierarchy, ranked by number of shared top-level genres?
@@ -215,13 +217,79 @@ label rosters (`isSignedTo`), authorship/performance (`performedBy`, `composedBy
 
 ---
 
+## v2.2 additions — foundational time, geography & history
+
+Three CQs added in v2.2 (see `sdd/spec.md` §v2.2). They share **two reusable primitives**:
+a **temporal-interval** pattern (`:activeFrom`/`:activeUntil`; `gist:actualStartDate`/`End`)
+and the **place-containment graph** (`:locatedIn*` over category-typed `:Place`s). Geography
+migrated from `:City`/`:Nation` **subclasses** to the `gist:Category` pattern:
+`:Place :hasPlaceType :City|:Region|:Nation|:Continent`, ordered by transitive
+`:broaderPlaceType` — mirroring the genre model (`scripts/migrate_place_typing.py`).
+
+### CQ-13 — Same-era, same-genre peers ("90s Hip Hop artists") ✅
+- **Question:** Which artists were active during the **same time period** as a seed (their activity interval overlaps) *and* share a top-level genre?
+- **Use case:** Era-scoped discovery row — "90s Hip Hop like this", "80s synth-pop".
+- **Elements:** `:activeFrom`/`:activeUntil` (`xsd:gYear`), `:hasGenre`/`:hasBroaderGenre*`/`:TopLevelGenre`.
+- **Time model:** activity is an interval; **any-overlap** counts (Allen). A missing `:activeUntil` is **open** (still active) — treated as `+∞` via `COALESCE`. Canonical era signal is `:activeFrom` (`:startsCareerIn` is subordinate).
+- **Pass condition:** Seed `:TST_Era90sA` (active 1991–1998, Rock) ⇒ `:TST_Era90sB` (1995–2003, Rock); excludes `:TST_Era80s` (no overlap) and `:TST_Era90sJazz` (overlaps era, wrong genre).
+- **SPARQL skeleton:**
+  ```sparql
+  SELECT DISTINCT ?other WHERE {
+    :TST_Era90sA :activeFrom ?af0 ; :hasGenre/:hasBroaderGenre* ?root . ?root a :TopLevelGenre .
+    OPTIONAL { :TST_Era90sA :activeUntil ?au0 }
+    BIND(xsd:integer(STR(?af0)) AS ?f0) BIND(COALESCE(xsd:integer(STR(?au0)), 9999) AS ?u0)
+    ?other :activeFrom ?af ; :hasGenre/:hasBroaderGenre* ?root .
+    OPTIONAL { ?other :activeUntil ?au }
+    BIND(xsd:integer(STR(?af)) AS ?f) BIND(COALESCE(xsd:integer(STR(?au)), 9999) AS ?u)
+    FILTER(?other != :TST_Era90sA && ?f0 <= ?u && ?f <= ?u0)   # interval overlap
+  }
+  ```
+
+### CQ-14 — Multi-level geographic peers (same country / continent) ✅
+- **Question:** Which artists share a geographic ancestor **at a chosen granularity level** (city / region / nation / continent) with a seed, via the `:locatedIn` roll-up?
+- **Use case:** "Artists from your country", "from your continent" — nested geographic discovery.
+- **Elements:** `:originatesFrom`, transitive `:locatedIn`, `:hasPlaceType` (→ `:PlaceType` category), `:broaderPlaceType`.
+- **Level selection:** filter the shared ancestor by `?anc :hasPlaceType :Nation` (or `:Continent`, …).
+- **Pass condition:** Seed `:TST_SoloA` (Testland) at **nation** level ⇒ `:TST_SoloC` (same nation, different city); excludes `:TST_GeoFar` (same continent, **different** nation).
+- **SPARQL skeleton:**
+  ```sparql
+  SELECT DISTINCT ?other WHERE {
+    :TST_SoloA :originatesFrom/:locatedIn* ?anc . ?anc :hasPlaceType :Nation .
+    ?other     :originatesFrom/:locatedIn* ?anc .
+    FILTER(?other != :TST_SoloA)
+  }
+  ```
+
+### CQ-15 — Came of age during a historical event ✅
+- **Question:** Which artists **came of age** during a historical event — their ~15–25 window overlaps the event interval *and* they originated from within the event's place?
+- **Use case:** "Artists shaped by the Civil Rights Movement / the Irish War of Independence" — formative-context discovery.
+- **Elements:** `:HistoricalEvent` (`gist:actualStartDate`/`gist:actualEndDate`, `:locatedIn`), `:bornOn`, `:originatesFrom/:locatedIn*`.
+- **Derivation, not assertion (decided):** no artist→event edge; the link is computed. The **age window (15–25) is a query parameter**, not a modelled fact.
+- **Known approximations (per adversarial critique — documented, not fixed):**
+  1. `:originatesFrom` is **birthplace**, used as a *proxy* for formative residence — lossy for emigrant artists.
+  2. Scoped to **persons**: `:bornOn` is meaningless for `:Band`s; the query's `:bornOn` requirement naturally excludes them.
+  3. Event boundary dates are **sourced editorial claims**, not exact facts.
+  4. Corpus is Anglo-American-skewed (existing waiver) — the age window itself is culturally loaded.
+- **Pass condition:** Event `:TST_EventE` (1960–1968, Testland) ⇒ `:TST_ComeOfAge` (born 1948, from Testland); excludes `:TST_TooYoung` (born 1965) and `:TST_WrongPlace` (right age, origin outside Testland).
+- **SPARQL skeleton:**
+  ```sparql
+  SELECT DISTINCT ?artist WHERE {
+    :TST_EventE gist:actualStartDate ?es ; gist:actualEndDate ?ee ; :locatedIn ?ep .
+    ?artist :bornOn ?b ; :originatesFrom/:locatedIn* ?ep .
+    BIND(YEAR(?b) AS ?by)
+    FILTER(?by + 15 <= YEAR(?ee) && YEAR(?es) <= ?by + 25)   # age-window ∩ event ≠ ∅
+  }
+  ```
+
+---
+
 ## Regression suite (Artefact 5)
 
 Every CQ now has an executable test in `tests/cq_test_manifest.json`, run against
 `ontology/music_vocabulary_comprehensive.ttl` + `tests/test_data.ttl` (synthetic `:TST_*`
 fixtures) by `scripts/run_cq_tests.py`. Each test is membership-based — a designated
 yes-instance must appear and a no-instance must not — so it is robust to the illustrative
-real catalog. **12/12 pass.** Run: `uv run python scripts/run_cq_tests.py`.
+real catalog. **16/16 pass** (12 original + CQ-1b + the three v2.2 CQs). Run: `uv run python scripts/run_cq_tests.py`.
 
 ## Coverage, flags & waivers
 
@@ -236,6 +304,13 @@ real catalog. **12/12 pass.** Run: `uv run python scripts/run_cq_tests.py`.
 
 ## Changelog
 
+- **v5** (v2.2): added **CQ-13** (same-era + genre, activity-interval overlap), **CQ-14**
+  (multi-level geography via `:hasPlaceType` + `:locatedIn*`), and **CQ-15** (came-of-age
+  during a `:HistoricalEvent`, derived by birth-date + place). Migrated geography from
+  `:City`/`:Nation` subclasses to the `gist:Category` place-typing pattern
+  (`scripts/migrate_place_typing.py`); CQ-12 rewritten off the removed classes. Suite now
+  16/16. Design pressure-tested via `model_dialogue.md` + `adversarial_critique_skill.md`
+  (approximations in CQ-15 documented, not silently fixed).
 - **v4** (Artefact 5): added the executable regression suite (`tests/`, `scripts/run_cq_tests.py`);
   fixed CQ-2's non-standard `{1,2}` path quantifier (→ explicit 1∪2-hop union) caught by running
   the queries; all 12 CQs pass.

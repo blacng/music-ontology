@@ -10,7 +10,7 @@ LLMs as disciplined pair-modellers.
 - **Namespace:** `:` → `https://www.somusicvocabulary.org/music#`
 - **Upper ontology:** **gist v14.1.0** — `gist:` → `https://w3id.org/semanticarts/ns/ontology/gist/` (vendored at `ontology/imports/`, reasoner-validated)
 - **Scope:** content-based candidate generation (no user/interaction/rating is modelled)
-- **Maturity:** research prototype · **released v2.1.0** (SHACL fully conforms)
+- **Maturity:** research prototype · **released v2.2.0** (SHACL fully conforms)
 
 ---
 
@@ -55,7 +55,14 @@ flowchart TB
   skos --> pr[Production Readiness · 10/12 green]
   pr --> v20([Released v2.0.0])
   v20 --> v21[v2.1 · :Voice + real catalog completeness]
-  v21 --> rel([Released v2.1.0 · SHACL fully conforms 0/0])
+  v21 --> rel21([Released v2.1.0 · SHACL fully conforms 0/0])
+  rel21 --> v22{v2.2 · foundational time / geography / history}
+  v22 -->|time| af[activeFrom/Until · interval overlap]
+  v22 -->|geography| pt[gist:Category place-typing · hasPlaceType]
+  v22 -->|history| he[HistoricalEvent · derived came-of-age]
+  af --> rel([Released v2.2.0 · 16/16 CQs · SHACL 0/0])
+  pt --> rel
+  he --> rel
 ```
 
 Key decision points along the way:
@@ -65,9 +72,14 @@ Key decision points along the way:
   albums, and songs; subclassing it wouldn't deliver transitivity through `:hasGenre` and would
   fight the team style guide. The chosen pattern gives sound transitive traversal via the
   `owl:TransitiveProperty` `:hasBroaderGenre`, with top genres marked `:TopLevelGenre`.
-- **Structure beats free text** — geography became a `:Place`/`:City`/`:Nation` graph with
-  transitive `:locatedIn` (enabling "artists from England"), and the time-varying `:hasAge` became
-  a stable `:bornOn` date.
+- **Structure beats free text** — geography became a transitive `:locatedIn` place graph
+  (enabling "artists from England"), and the time-varying `:hasAge` became a stable `:bornOn` date.
+- **Two primitives carry the foundational CQs (v2.2)** — a **temporal-interval** pattern
+  (`:activeFrom`/`:activeUntil`; `gist:actualStartDate`/`End`) and the **place-containment graph**
+  underpin same-era discovery, multi-level geography, and "came-of-age during a historical event".
+  Geography moved from `:City`/`:Nation` **subclasses** to the same **`gist:Category`** idiom as
+  genres (`:hasPlaceType` a `:PlaceType`, ordered by `:broaderPlaceType`) — categorize over
+  subclass, so new admin levels are data, not schema.
 
 ---
 
@@ -87,7 +99,10 @@ graph LR
   MusicalArtist -->|isSignedTo| RecordLabel
   MusicalAgent -->|collaboratesWith| MusicalAgent
   MusicalArtist -->|originatesFrom| Place
-  City -->|locatedIn*| Nation
+  MusicalArtist -->|activeFrom / activeUntil| Year[[xsd:gYear]]
+  Place -->|hasPlaceType| PlaceType
+  Place -->|locatedIn*| Place
+  HistoricalEvent -->|locatedIn| Place
   Song & Album -->|performedBy| MusicalArtist
   Album -->|producedBy| MusicProducer
   Album -->|hasTrack| Song
@@ -96,11 +111,12 @@ graph LR
   Composition -->|composedBy| Composer
 ```
 
-~54 classes / ~38 properties across agents, works, a genre taxonomy, instruments (incl. the
-`:Voice`/`:VocalInstrument` for singing), events/venues, awards/charts, places, and musical
-features (key, tempo, time signature). Agents re-parent to `gist:Person`/`gist:Organization`,
-works to `gist:Content`, instruments to `gist:Equipment`, features to `gist:Aspect`, places to
-`gist:GeoRegion`. The instance catalog holds ~40 musicians with real band line-ups.
+~54 classes / ~41 properties across agents, works, a genre taxonomy, instruments (incl. the
+`:Voice`/`:VocalInstrument` for singing), events/venues, awards/charts, category-typed places,
+historical events, and musical features (key, tempo, time signature). Agents re-parent to
+`gist:Person`/`gist:Organization`, works to `gist:Content`, instruments to `gist:Equipment`,
+features to `gist:Aspect`, places to `gist:GeoRegion`, historical events to `gist:HistoricalEvent`.
+The instance catalog holds ~40 musicians with real band line-ups.
 
 ---
 
@@ -129,7 +145,7 @@ make check     # the full gate: model checks + CQ tests + SHACL (run by CI on ev
 
 # or individually:
 make validate  # parse + SPARQL (genre traversal, place roll-up, …)
-make test      # CQ regression suite (12/12)
+make test      # CQ regression suite (16/16)
 make shacl     # SHACL conformance — fails only on Violations; Warnings are advisory
 make reason    # HermiT consistency check, gist imported (needs Docker; not in the CI gate)
 
@@ -159,19 +175,20 @@ transforms that produced the current model are preserved and re-runnable in `scr
 
 ## Status
 
-Lifecycle complete — **released [v2.1.0](https://github.com/blacng/music-ontology/releases/tag/v2.1.0)** · SHACL **fully conforms (0/0)**.
+Lifecycle complete — **released [v2.2.0](https://github.com/blacng/music-ontology/releases/tag/v2.2.0)** · SHACL **fully conforms (0/0)**.
 
 | Phase | State |
 |-------|-------|
 | CQ generation → critique → revision (v4) | ✅ done |
 | Modeller Dialogue — structural fixes + `:MusicalAgent` boundary | ✅ done — **0 Violations** |
 | SHACL generation | ✅ done — `docs/shacl-report.md` |
-| Test data + CQ tests | ✅ done — **12/12 CQs pass** |
+| Test data + CQ tests | ✅ done — **16/16 CQs pass** |
 | gist v14.1.0 re-alignment | ✅ done — vendored, reasoner-validated |
 | SKOS-only labels + Y-statements | ✅ done — `sdd/decisions.md` |
 | Production readiness (12-pt gate) | ✅ **10/12 green** (item 4 waived, item 12 = PR sign-off) |
 | Vocals + catalog completeness (v2.1) | ✅ done — SHACL **fully conforms (0/0)** |
-| **Release** | ✅ **v2.0.0** → **v2.1.0** |
+| Foundational time / geography / history (v2.2) | ✅ done — CQ-13/14/15; `gist:Category` place-typing; `:HistoricalEvent` |
+| **Release** | ✅ **v2.0.0** → **v2.1.0** → **v2.2.0** |
 
 See [`sdd/plan.md`](sdd/plan.md) for the live lifecycle tracker and [`sdd/spec.md`](sdd/spec.md)
 for the specification.

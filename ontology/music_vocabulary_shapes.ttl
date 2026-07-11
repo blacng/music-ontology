@@ -1,4 +1,5 @@
 @prefix : <https://www.somusicvocabulary.org/music#> .
+@prefix gist: <https://w3id.org/semanticarts/ns/ontology/gist/> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -18,7 +19,8 @@
 ###############################################################################
 
 :musicPrefixes
-    sh:declare [ sh:prefix "m" ; sh:namespace "https://www.somusicvocabulary.org/music#"^^xsd:anyURI ] .
+    sh:declare [ sh:prefix "m" ; sh:namespace "https://www.somusicvocabulary.org/music#"^^xsd:anyURI ] ;
+    sh:declare [ sh:prefix "gist" ; sh:namespace "https://w3id.org/semanticarts/ns/ontology/gist/"^^xsd:anyURI ] .
 
 ###############################################################################
 # NODE SHAPES
@@ -41,6 +43,21 @@
         sh:message "bornOn must be a single xsd:date." ] ;
     sh:property [ sh:path :startsCareerIn ; sh:datatype xsd:gYear ; sh:maxCount 1 ;
         sh:message "startsCareerIn must be a single xsd:gYear." ] ;
+    sh:property [ sh:path :activeFrom ; sh:datatype xsd:gYear ; sh:maxCount 1 ;
+        sh:message "activeFrom must be a single xsd:gYear (CQ-13)." ] ;
+    sh:property [ sh:path :activeUntil ; sh:datatype xsd:gYear ; sh:maxCount 1 ;
+        sh:message "activeUntil must be a single xsd:gYear (CQ-13)." ] ;
+    # An artist's activity interval must be well-ordered: activeFrom ≤ activeUntil.
+    sh:sparql [
+        sh:message "activeFrom must not be later than activeUntil (CQ-13 activity interval)." ;
+        sh:prefixes :musicPrefixes ;
+        sh:select """
+            SELECT $this WHERE {
+                $this m:activeFrom ?f ; m:activeUntil ?u .
+                FILTER(xsd:integer(STR(?f)) > xsd:integer(STR(?u)))
+            }
+        """ ;
+    ] ;
     # --- completeness (Warning) ---
     sh:property [ sh:path :hasGenre ; sh:minCount 1 ; sh:severity sh:Warning ;
         sh:message "A musical artist should have at least one genre (needed for genre discovery, CQ-1/CQ-9)." ] ;
@@ -120,12 +137,61 @@
         sh:message "A top-level genre must not have a broader genre (it is a root of the hierarchy)." ] ;
     .
 
-# --- Geography shapes ---
+# --- Geography shapes (gist:Category place-typing) ---
 
-:CityShape a sh:NodeShape ;
-    sh:targetClass :City ;
+# Places must be categorized by exactly one :PlaceType, which must be a :PlaceType.
+:PlaceShape a sh:NodeShape ;
+    sh:targetClass :Place ;
+    sh:property [ sh:path :hasPlaceType ; sh:class :PlaceType ; sh:maxCount 1 ;
+        sh:message "A place must carry at most one :PlaceType (city/region/nation/continent)." ] ;
+    sh:property [ sh:path :locatedIn ; sh:class :Place ;
+        sh:message "locatedIn must point to another :Place." ] ;
+    .
+
+# City-level places must roll up to a containing place so regional discovery works
+# (CQ-12/CQ-14). Targeted via SPARQL constraint (not a class) now that granularity is
+# category-typed rather than subclassed.
+:CityRollupShape a sh:NodeShape ;
+    sh:targetClass :Place ;
+    sh:sparql [
+        sh:message "Every city must roll up to a containing place (its country) so regional discovery works (CQ-12/CQ-14)." ;
+        sh:prefixes :musicPrefixes ;
+        sh:select """
+            SELECT $this WHERE {
+                $this m:hasPlaceType m:City .
+                FILTER NOT EXISTS { $this m:locatedIn ?container }
+            }
+        """ ;
+    ] ;
+    .
+
+:PlaceTypeShape a sh:NodeShape ;
+    sh:targetClass :PlaceType ;
+    sh:property [ sh:path :broaderPlaceType ; sh:class :PlaceType ; sh:maxCount 1 ;
+        sh:message "broaderPlaceType must point to the next coarser :PlaceType." ] ;
+    .
+
+# --- Historical-event shape (CQ-15) ---
+
+:HistoricalEventShape a sh:NodeShape ;
+    sh:targetClass :HistoricalEvent ;
+    sh:property [ sh:path gist:actualStartDate ; sh:datatype xsd:date ; sh:maxCount 1 ; sh:minCount 1 ;
+        sh:message "A historical event must have exactly one gist:actualStartDate (xsd:date)." ] ;
+    sh:property [ sh:path gist:actualEndDate ; sh:datatype xsd:date ; sh:maxCount 1 ; sh:minCount 1 ;
+        sh:message "A historical event must have exactly one gist:actualEndDate (xsd:date)." ] ;
     sh:property [ sh:path :locatedIn ; sh:class :Place ; sh:minCount 1 ;
-        sh:message "Every city must roll up to a containing place (its country) so regional discovery works (CQ-12)." ] ;
+        sh:message "A historical event must be situated in a :Place (needed for came-of-age origin match, CQ-15)." ] ;
+    # The event interval must be well-ordered: start ≤ end.
+    sh:sparql [
+        sh:message "A historical event's gist:actualStartDate must not be later than its gist:actualEndDate." ;
+        sh:prefixes :musicPrefixes ;
+        sh:select """
+            SELECT $this WHERE {
+                $this gist:actualStartDate ?s ; gist:actualEndDate ?e .
+                FILTER(?s > ?e)
+            }
+        """ ;
+    ] ;
     .
 
 ###############################################################################
