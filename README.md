@@ -167,6 +167,12 @@ make down         # stop Fuseki (add `docker compose down -v` to also wipe the T
 `make fuseki-load` is idempotent (it `DROP ALL`s then reloads), so re-run it after any ontology
 change. Override the endpoint knobs inline, e.g. `make fuseki-load FUSEKI_PW=secret`.
 
+> **Local-dev only.** Fuseki is published on **`127.0.0.1` only** with a **default `admin`
+> password** — fine for a laptop, unsafe on a shared/exposed host. `FUSEKI_PW` is the single
+> knob (`make serve` propagates it to the server; the load's write credentials are passed via
+> `curl -K -`, never on the command line). For anything non-local, set a real password and put
+> it behind a proxy — don't widen the port binding.
+
 ### Named-graph layout (for triplestore ingest)
 
 The source stays as per-layer Turtle files (git-friendly; what the file-based gate validates).

@@ -33,20 +33,23 @@ dataset: ## Assemble the named-graph dataset for triplestore ingest (dist/*.trig
 	uv run python scripts/load_graphs.py
 
 serve: ## Start the Fuseki SPARQL server (http://localhost:3030, dataset `music`)
-	docker compose up -d fuseki
+	FUSEKI_ADMIN_PASSWORD=$(FUSEKI_PW) docker compose up -d fuseki
 	@echo "Fuseki starting at $(FUSEKI_URL) (UI: $(FUSEKI_URL)/#/dataset/$(FUSEKI_DS)/query). Load data with: make fuseki-load"
 
 fuseki-load: dataset serve ## Build the dataset and (re)load it into Fuseki's named graphs
 	@echo "Waiting for the $(FUSEKI_DS) dataset endpoint to come up..."
 	@for i in $$(seq 1 60); do \
-		curl -fsS -u admin:$(FUSEKI_PW) "$(FUSEKI_URL)/$(FUSEKI_DS)/query" \
+		curl -fsS "$(FUSEKI_URL)/$(FUSEKI_DS)/query" \
 			--data-urlencode 'query=ASK{}' >/dev/null 2>&1 && break || sleep 1; \
 	done
+	@# Auth for the write endpoints is fed via `curl -K -` from a printf builtin, so the
+	@# password is never in the process argv (visible to `ps`); FUSEKI_PW is the one knob
+	@# (serve propagates it to the server, above).
 	@echo "Clearing dataset $(FUSEKI_DS)..."
-	@curl -fsS -u admin:$(FUSEKI_PW) -X POST "$(FUSEKI_URL)/$(FUSEKI_DS)/update" \
+	@printf 'user = "admin:%s"\n' '$(FUSEKI_PW)' | curl -fsS -K - -X POST "$(FUSEKI_URL)/$(FUSEKI_DS)/update" \
 		--data-urlencode 'update=DROP ALL' >/dev/null
 	@echo "Loading dist/music_dataset.trig (4 named graphs)..."
-	@curl -fsS -u admin:$(FUSEKI_PW) -X POST "$(FUSEKI_URL)/$(FUSEKI_DS)/data" \
+	@printf 'user = "admin:%s"\n' '$(FUSEKI_PW)' | curl -fsS -K - -X POST "$(FUSEKI_URL)/$(FUSEKI_DS)/data" \
 		-H 'Content-Type: application/trig' --data-binary @dist/music_dataset.trig >/dev/null
 	@echo "Loaded. Query the graphs at $(FUSEKI_URL)/#/dataset/$(FUSEKI_DS)/query"
 
