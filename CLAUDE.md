@@ -99,6 +99,7 @@ over many hand-edits for bulk `.ttl` changes (see `apply_structural_fixes.py`).
 - `tests/` — CQ regression suite: `test_data.ttl` (synthetic `:TST_*` fixtures) + `cq_test_manifest.json`; run via `scripts/run_cq_tests.py`.
 - `sdd/` — spec-driven-development control docs (`spec.md`, `plan.md`).
 - `docs/` — engineering deliverables (`competency-questions.md`, `shacl-report.md`).
+- `docker-compose.yml` — two Docker services wired to `make`: `reasoner` (ROBOT/HermiT) and `fuseki` (SPARQL server).
 - `prompt_library/`, `docs/prompt-library-summary.md` — local-only (git-ignored).
 
 ## Commands
@@ -109,10 +110,14 @@ over many hand-edits for bulk `.ttl` changes (see `apply_structural_fixes.py`).
 - SHACL gate fails only on **Violations**; the 19 completeness Warnings are advisory.
 - Assemble the named-graph dataset for triplestore ingest: `make dataset` → `dist/`.
 - Reasoner consistency (HermiT via containerized ROBOT, needs Docker): `make reason` (merges TBox+ABox).
+- Live SPARQL (Docker, needs `make dataset` first): `make serve` starts Fuseki at `http://localhost:3030`
+  (dataset `music`); `make fuseki-load` (re)loads the 4 named graphs (idempotent — `DROP ALL` then load);
+  `make down` stops it. Both Docker services live in `docker-compose.yml`.
 - CI: `.github/workflows/ci.yml` runs `make check` on every push/PR (`uv sync --locked`).
-  The reasoner is a separate target (Docker), not in the CI gate.
+  The reasoner + Fuseki are separate Docker targets, not in the CI gate.
 - Add a dependency: `uv add <package>` · Sync: `uv sync` · Python pinned to **3.14**.
-- Docker is now used for the **reasoner** only (`make reason`); see `docs/production-readiness.md`.
+- Docker (via `docker-compose.yml`) runs the **reasoner** (`make reason`) and **Fuseki** (`make serve`/
+  `fuseki-load`); see `docs/production-readiness.md`.
 
 ## Working norms specific to this project
 
