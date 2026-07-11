@@ -3,6 +3,37 @@
 All notable changes to the Comprehensive Music Vocabulary. Versions follow the ontology's
 `owl:versionInfo` / `owl:versionIRI`.
 
+## [2.2.0] — 2026-07-10
+
+Foundational **time, geography, and history** modelling — three new competency questions
+(CQ-13/14/15) built on two reusable primitives: an activity-interval pattern and the
+place-containment graph. Design pressure-tested via `model_dialogue.md` +
+`adversarial_critique_skill.md` before implementation.
+
+### Added
+- **Time (CQ-13):** `:activeFrom` / `:activeUntil` (`xsd:gYear`) — artist activity interval;
+  `:activeFrom` is the canonical era signal. Era membership is any-overlap; a missing
+  `:activeUntil` is an open interval (still active).
+- **Geography (CQ-14):** `:PlaceType` (⊑ `gist:Category`), `:hasPlaceType` (⊑
+  `gist:isCategorizedBy`), and transitive `:broaderPlaceType` for level ordering. Continents +
+  nation→continent roll-up added to the catalog.
+- **History (CQ-15):** `:HistoricalEvent` (⊑ `gist:HistoricalEvent`) with
+  `gist:actualStartDate`/`gist:actualEndDate` + `:locatedIn`; "came of age" is **derived**
+  (birth-date age-window ∩ event, filtered by origin), not an asserted edge.
+- New SHACL: `:PlaceShape`, `:CityRollupShape` (SPARQL-targeted), `:PlaceTypeShape`,
+  `:HistoricalEventShape`, and activity-/event-interval ordering constraints.
+- `scripts/migrate_place_typing.py`; three CQ regression tests. **Suite now 16/16.**
+
+### Changed
+- **Geography migrated from `:City`/`:Nation` subclasses to `gist:Category` place-typing**
+  (matches the genre model and the "categorize over subclass" style rule). CQ-12 rewritten off
+  the removed classes. SHACL still **fully conforms: 0 Violations, 0 Warnings.**
+
+### Known approximations (documented, not fixed)
+- CQ-15 uses `:originatesFrom` (birthplace) as a proxy for formative residence; event dates are
+  editorial claims; the 15–25 age window is a culturally-loaded query parameter. See
+  `sdd/spec.md` → Known issues for the deferred fixes.
+
 ## [2.1.0] — 2026-06-14
 
 ### Added

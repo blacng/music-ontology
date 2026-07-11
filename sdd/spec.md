@@ -15,17 +15,17 @@ events/venues, awards/charts, and musical features (key, tempo, time signature),
 connective relationships used for recommendation (genre, collaboration, membership, label
 roster, authorship/performance, album composition, instrumentation, recognition, origin/era).
 
-Out of scope (currently): structured geography, streaming/usage signals, audio features
-beyond key/tempo/time-signature.
+Out of scope (currently): streaming/usage signals, audio features beyond key/tempo/time-
+signature, assertion provenance/confidence (waived for the prototype — see below).
 
 ## Contract: competency questions
 
 The ontology's functional contract is the competency-question set in
-[`docs/competency-questions.md`](../docs/competency-questions.md) — 12 CQs oriented to discovery
-and recommendation. "Done" for the ontology means every CQ has a passing SPARQL test against
-canonical instance data (Production Readiness Checklist item 1). **Realized in Artefact 5:**
-`tests/cq_test_manifest.json` + `tests/test_data.ttl`, run by `scripts/run_cq_tests.py` —
-**12/12 pass**.
+[`docs/competency-questions.md`](../docs/competency-questions.md) — 15 CQs (+ CQ-1b) oriented to
+discovery and recommendation. "Done" for the ontology means every CQ has a passing SPARQL test
+against canonical instance data (Production Readiness Checklist item 1). **Realized in Artefact 5,
+extended in v2.2:** `tests/cq_test_manifest.json` + `tests/test_data.ttl`, run by
+`scripts/run_cq_tests.py` — **16/16 pass**.
 
 ## Conventions
 
@@ -55,6 +55,26 @@ production use. Scope is **content-based candidate generation**, not personalise
 Applied via `scripts/apply_structural_fixes.py`; verified by `scripts/validate_fixes.py`
 (parse + SPARQL checks all pass) and `pyshacl` (0 Violations).
 
+## Resolved in v2.2 (Foundational time, geography & history)
+
+Three foundational CQs added, sharing **two reusable primitives** — a temporal-interval
+pattern and the place-containment graph. Design pressure-tested via `model_dialogue.md` +
+`adversarial_critique_skill.md` before implementation.
+
+- **Time (CQ-13):** artist **activity interval** `:activeFrom`/`:activeUntil` (`xsd:gYear`);
+  `:activeFrom` is the canonical era signal, `:startsCareerIn` is subordinate. Era membership
+  is **any-overlap** (Allen); a missing `:activeUntil` is an **open** interval (still active),
+  handled with `COALESCE`, never a baked current date.
+- **Geography (CQ-14):** migrated from `:City`/`:Nation` **subclasses** to the **`gist:Category`
+  place-typing** pattern — `:Place :hasPlaceType :City|:Region|:Nation|:Continent`, ordered
+  finest→coarsest by transitive `:broaderPlaceType`; roll-up still via transitive `:locatedIn`.
+  This matches the genre model and the style-guide "categorize over subclass" rule, and scales
+  to arbitrary admin levels as data. Applied by `scripts/migrate_place_typing.py`; CQ-12
+  rewritten off the removed classes.
+- **History (CQ-15):** `:HistoricalEvent ⊑ gist:HistoricalEvent` with `gist:actualStartDate`/
+  `gist:actualEndDate` + `:locatedIn`. "Came of age" is **derived** (birth-date age-window ∩
+  event, filtered by origin), not an asserted edge; the age window is a **query parameter**.
+
 ## Known issues / decisions pending
 
 - CQ-8 (producer lineage) and CQ-11 (member crossover) need richer instance data (Artefact 5).
@@ -64,5 +84,17 @@ Applied via `scripts/apply_structural_fixes.py`; verified by `scripts/validate_f
 - Annotation style is still mixed `rdfs:label`/`rdfs:comment` + SKOS; the style guide targets
   SKOS-only `skos:prefLabel`/`skos:definition` — a separate cleanup, not yet scheduled.
 - `:locatedIn` is left domain-open (permissive) to span orgs, venues, events, and places.
+- **CQ-15 documented approximations** (accepted, not fixed): `:originatesFrom` (birthplace) is a
+  *proxy* for formative residence — lossy for emigrant artists; event boundary dates are sourced
+  editorial claims, not exact facts; the 15–25 "coming-of-age" window is a culturally-loaded
+  query parameter on an Anglo-American-skewed corpus. Revisit with a residence-during-period
+  link + provenance before production.
+- **`:activeFrom` vs `:startsCareerIn`:** both now express career onset. `:activeFrom` is
+  canonical; consider deprecating `:startsCareerIn` or formally subordinating it in a later pass.
+- **`:locatedIn` acyclicity:** transitive roll-up assumes a DAG; non-tree geography (metro across
+  two states, disputed regions) would break it. A SHACL/`scripts/` acyclicity guard is deferred.
+- **SHACL without RDFS inference:** `check_shacl` runs `inference='none'`, so class-targeted
+  shapes only match explicitly-typed nodes (subclass instances slip superclass shapes). Pre-
+  existing; revisit if constraint coverage needs to follow the hierarchy.
 
 > Living document — update before completing each feature/development task.

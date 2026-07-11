@@ -16,6 +16,7 @@ Each generation step is followed by adversarial critique (Artefact 2) — not op
 | 5b | **Modeller Dialogue loop-back** (Artefact 4) | ✅ Done | `:Musician`↔`:MusicalArtist` boundary fixed via `:MusicalAgent` superclass + `:SoloArtist ⊑ :Musician` + `:collaboratesWith`→`:MusicalAgent`; **0 Violations** |
 | 6 | **Test Data + CQ Tests** (Artefact 5) | ✅ Done | `tests/test_data.ttl` + `tests/cq_test_manifest.json` + `scripts/run_cq_tests.py`; **12/12 CQs pass**. Caught & fixed CQ-2's non-standard `{1,2}` path quantifier |
 | 7 | **Production Readiness** (Artefact 7) | 🔄 Near done | `docs/production-readiness.md` — **10 green**, 1 waived (item 4 datatypes), 1 sign-off (item 12). gist migrated; SKOS-only labels (item 6); Y-statements `sdd/decisions.md` (item 9); reasoner consistent |
+| 8 | **v2.2 — Foundational time / geography / history** | ✅ Done | CQ-13 (activity-interval era overlap), CQ-14 (multi-level geography), CQ-15 (came-of-age during `:HistoricalEvent`, derived). Geography migrated to `gist:Category` place-typing (`scripts/migrate_place_typing.py`); new terms `:activeFrom`/`:activeUntil`, `:PlaceType`/`:hasPlaceType`/`:broaderPlaceType`, `:HistoricalEvent`; SHACL + tests + docs updated. Pressure-tested via `model_dialogue.md` + `adversarial_critique_skill.md`. **16/16 CQs pass, SHACL 0/0** |
 
 > **Sequencing rationale:** structural fixes precede SHACL and test data because both sit
 > downstream of the schema (regeneration discipline) — fix the schema → constrain it →
@@ -44,7 +45,12 @@ Each generation step is followed by adversarial critique (Artefact 2) — not op
 
 ## Next action
 
-**v2.1.0** done: modelled `:Voice` and completed the catalog with real data — SHACL now **fully
-conforms (0/0)**. Tag **v2.1.0**. The lifecycle is complete; no blocking work remains.
+**v2.2** done: added the three foundational CQs (time / geography / history) on two reusable
+primitives — activity-interval overlap and category-typed place containment — plus
+`:HistoricalEvent` (derived came-of-age). Geography migrated off subclasses to `gist:Category`
+place-typing. **16/16 CQs pass, SHACL 0/0**, model checks pass. **Release step:** tag **v2.2.0**
+and refresh `README.md` (version, counts, journey diagram) — a release chore, not modelling work.
+Deferred follow-ups recorded in `sdd/spec.md` → Known issues (residence-during-period link +
+provenance for CQ-15; `:locatedIn` acyclicity guard; `:startsCareerIn` deprecation).
 
 > Living document — update before completing each feature/development task.

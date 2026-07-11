@@ -15,6 +15,7 @@ from rdflib import Graph
 NS = "https://www.somusicvocabulary.org/music#"
 PREFIXES = f"""
 PREFIX : <{NS}>
+PREFIX gist: <https://w3id.org/semanticarts/ns/ontology/gist/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 """
