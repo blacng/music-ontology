@@ -130,6 +130,7 @@ The instance catalog holds ~40 musicians with real band line-ups.
 | `tests/` | CQ regression suite: `test_data.ttl` (synthetic fixtures) + `cq_test_manifest.json` |
 | `sdd/` | spec-driven-development control docs: `spec.md`, `plan.md`, `decisions.md` (Y-statements) |
 | `docs/` | engineering deliverables: `competency-questions.md`, `shacl-report.md`, `production-readiness.md` |
+| `docker-compose.yml` | two Docker services wired to `make`: `reasoner` (ROBOT/HermiT) and `fuseki` (live SPARQL server) |
 | `CHANGELOG.md`, `CLAUDE.md` | release notes; guidance for Claude Code in this repo |
 | `prompt_library/` *(local-only)* | the seven GRL Workshop prompts — git-ignored |
 
@@ -151,6 +152,20 @@ make reason    # HermiT consistency check, gist imported (needs Docker; not in t
 
 make dataset   # assemble the named-graph dataset (TBox/ABox/SHACL/gist) → dist/*.trig for a triplestore
 ```
+
+### Reasoning + live SPARQL (Docker Compose)
+
+`docker-compose.yml` provides two services, both wired to `make` (needs Docker):
+
+```bash
+make reason       # one-shot HermiT reasoner via ROBOT (compose service `reasoner`)
+make serve        # start Apache Jena Fuseki at http://localhost:3030 (dataset `music`)
+make fuseki-load  # build dist/ + (re)load its 4 named graphs into Fuseki, then query at the UI
+make down         # stop Fuseki (add `docker compose down -v` to also wipe the TDB volume)
+```
+
+`make fuseki-load` is idempotent (it `DROP ALL`s then reloads), so re-run it after any ontology
+change. Override the endpoint knobs inline, e.g. `make fuseki-load FUSEKI_PW=secret`.
 
 ### Named-graph layout (for triplestore ingest)
 
