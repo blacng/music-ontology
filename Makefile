@@ -1,7 +1,7 @@
 # Music Ontology — task runner (thin wrapper over uv).
 # Usage: make <target>.  `make check` runs the full validation gate.
 
-.PHONY: help install validate test shacl check dataset reason serve fuseki-load down clean
+.PHONY: help install validate test shacl coverage check dataset reason serve fuseki-load down clean
 
 # Fuseki endpoint knobs (override on the CLI, e.g. `make fuseki-load FUSEKI_PW=secret`)
 FUSEKI_URL ?= http://localhost:3030
@@ -23,6 +23,9 @@ test: ## CQ regression suite (one SPARQL test per competency question)
 
 shacl: ## SHACL conformance gate (fails only on Violations; Warnings advisory)
 	uv run python scripts/check_shacl.py
+
+coverage: ## ABox coverage report — can the real catalogue answer each CQ? (advisory, never fails)
+	uv run python scripts/cq_coverage.py
 
 reason: ## Reasoner consistency check (HermiT via ROBOT; docker compose service `reasoner`)
 	docker compose run --rm reasoner

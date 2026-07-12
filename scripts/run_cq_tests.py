@@ -5,6 +5,10 @@ query, and checks that the designated yes-instances appear in the result and the
 no-instances do not. Membership-based so it is robust to the illustrative real
 catalog also being present.
 
+This proves each CQ's *query* is correct against controlled fixtures. It says
+nothing about whether the real catalogue holds data to answer it — that is
+`scripts/cq_coverage.py`, which reuses these same queries with `?seed` left free.
+
 Run: uv run python scripts/run_cq_tests.py
 """
 import json
@@ -41,7 +45,12 @@ def main():
     for t in manifest["tests"]:
         var = t["var"]
         got = set()
-        for row in g.query(PREFIXES + t["sparql"]):
+        # Queries carry a free ?seed; bind it to the fixture individual for the
+        # regression run. Unseeded CQs (6, 9, 10) range over the whole graph.
+        sparql = t["sparql"]
+        if "fixture_seed" in t:
+            sparql = sparql.replace("?seed", t["fixture_seed"])
+        for row in g.query(PREFIXES + sparql):
             v = row.asdict().get(var)
             if v is not None:
                 got.add(local(v))

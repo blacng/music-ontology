@@ -55,6 +55,17 @@ production use. Scope is **content-based candidate generation**, not personalise
 Applied via `scripts/apply_structural_fixes.py`; verified by `scripts/validate_fixes.py`
 (parse + SPARQL checks all pass) and `pyshacl` (0 Violations).
 
+## Resolved in v2.1 (Voice as an instrument; SKOS-only vocabulary)
+
+- **Vocalist instrument gap closed:** singing is modelled as `:hasInstrument :Voice`, where
+  `:Voice a :VocalInstrument ⊑ :MusicalInstrument`. `MusicianShape` additionally exempts
+  `:Conductor` from the play-an-instrument expectation (`sh:or`), so the two legitimate
+  non-instrumentalist cases no longer trip the soft warning.
+- **Annotations are SKOS-only** on vocabulary terms: classes and properties carry
+  `skos:prefLabel` + `skos:definition` (+ `skos:scopeNote`), never `rdfs:label`/`rdfs:comment`.
+  The only surviving `rdfs:*` triples are on the `owl:Ontology` header itself, which the style
+  guide permits. Migrated via `scripts/migrate_skos_labels.py`.
+
 ## Resolved in v2.2 (Foundational time, geography & history)
 
 Three foundational CQs added, sharing **two reusable primitives** — a temporal-interval
@@ -95,12 +106,24 @@ pattern and the place-containment graph. Design pressure-tested via `model_dialo
 
 ## Known issues / decisions pending
 
-- CQ-8 (producer lineage) and CQ-11 (member crossover) need richer instance data (Artefact 5).
-- **Vocalist instrument gap:** with `:SoloArtist ⊑ :Musician`, vocalists trip the soft
-  "a musician should play an instrument" warning (voice isn't modelled). Resolve by modelling
-  `:Voice` or relaxing the expectation to "sings or plays."
-- Annotation style is still mixed `rdfs:label`/`rdfs:comment` + SKOS; the style guide targets
-  SKOS-only `skos:prefLabel`/`skos:definition` — a separate cleanup, not yet scheduled.
+- **Fixtures must model data the way the catalogue does.** This is the load-bearing lesson from the
+  CQ-11 bug. `tests/test_data.ttl` asserted **both halves** of an `owl:inverseOf` pair
+  (`:TST_MusM :performs :TST_SoloWork` *and* `:TST_SoloWork :performedBy :TST_MusM`) while the
+  catalogue asserts only `:performedBy`. CQ-11's query used `:performs`, so it passed on fixtures and
+  could never have answered from real data. A fixture written to satisfy the query, rather than to
+  mirror the ABox, turns the test suite into a mirror of itself. Fixed by asserting work-side only
+  and querying the asserted direction. **When adding a fixture, assert the same direction the
+  catalogue asserts — never restate an entailment.**
+- **`make coverage` is the guard against this class of bug** (`scripts/cq_coverage.py`): it re-runs
+  every CQ against TBox + ABox with the fixtures excluded and `?seed` left free, counting how many
+  *real* individuals can seed it. It found three CQs green on fixtures alone (CQ-8, CQ-11, CQ-15),
+  each with a **different** root cause — a genuine data gap, an asserted-direction bug, and sparse
+  `:bornOn` respectively. **Now 17/17 answerable.** Run it whenever a CQ or the ABox changes.
+- **Thin coverage (accepted, not a defect):** CQ-15 has one answerable seed
+  (`:AmericanCivilRightsMovement`); `:IrishWarOfIndependence` yields nothing because no artist in the
+  catalogue originates from Ireland. CQ-16 has a single `:WorkCollection`. Both are honest signals of
+  a research-prototype ABox — adding individuals purely to raise the number would be inventing data
+  to flatter a metric.
 - `:locatedIn` is left domain-open (permissive) to span orgs, venues, events, and places.
 - **CQ-15 documented approximations** (accepted, not fixed): `:originatesFrom` (birthplace) is a
   *proxy* for formative residence — lossy for emigrant artists; event boundary dates are sourced
