@@ -3,6 +3,28 @@
 All notable changes to the Comprehensive Music Vocabulary. Versions follow the ontology's
 `owl:versionInfo` / `owl:versionIRI`.
 
+## [Unreleased]
+
+Tooling and documentation only — **no ontology change**, so no version bump.
+
+### Added
+- **`make coverage`** (`scripts/cq_coverage.py`) — an **ABox coverage report**. `make test` loads the
+  synthetic `:TST_*` fixtures alongside the real catalogue, so a CQ can pass while the catalogue holds
+  nothing for it to find. The report re-runs each manifest query over TBox + ABox **only**, with `?seed`
+  left free, and counts how many real individuals can seed it. Advisory: always exits 0.
+  **Result: 14/17 CQs answerable; CQ-8, CQ-11 and CQ-15 are EMPTY** (no producer lineage; no band whose
+  members perform works; no `:HistoricalEvent` instance at all). CQ-16 is thin at one collection.
+
+### Changed
+- **CQ queries are seed-parameterised.** The 14 queries that hardcoded a `:TST_*` seed now use a free
+  `?seed` variable plus a `fixture_seed` field; `run_cq_tests.py` substitutes the fixture individual
+  back in. Queries are reconstructed byte-identically — **all 17 row counts unchanged, 17/17 still pass.**
+
+### Fixed
+- `sdd/spec.md` — retired two "Known issues" entries fixed back in v2.1.0 (the vocalist instrument gap,
+  closed by `:Voice`/`:VocalInstrument`; the mixed `rdfs:`/SKOS annotation style, closed by the SKOS-only
+  migration). They went stale because no "Resolved in v2.1" section existed for them to move to; added.
+
 ## [2.3.0] — 2026-07-12
 
 Curated **work collections** (Layer 1) and the **reasoner promoted to a CI gate**.

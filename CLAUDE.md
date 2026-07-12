@@ -107,7 +107,13 @@ over many hand-edits for bulk `.ttl` changes (see `apply_structural_fixes.py`).
 - **Full gate (what CI runs):** `make check` — model checks + CQ tests + SHACL.
 - Individually: `make validate` · `make test` · `make shacl` (or the underlying
   `uv run python scripts/{validate_fixes,run_cq_tests,check_shacl}.py`).
-- SHACL gate fails only on **Violations**; the 19 completeness Warnings are advisory.
+- SHACL gate fails only on **Violations**; completeness Warnings are advisory (currently 0/0).
+- **ABox coverage (advisory, never fails):** `make coverage` — `make test` loads the synthetic
+  `:TST_*` fixtures alongside the catalogue, so a CQ can be green while the real ABox holds nothing
+  for it to find. `scripts/cq_coverage.py` re-runs each manifest query over TBox+ABox **only**, with
+  the `?seed` left free, and counts how many real individuals can seed it. **14/17 answerable;
+  CQ-8/CQ-11/CQ-15 are EMPTY.** CQ queries therefore keep the seed as a `?seed` variable plus a
+  `fixture_seed` field — don't hardcode a `:TST_*` IRI back into a query.
 - Assemble the named-graph dataset for triplestore ingest: `make dataset` → `dist/`.
 - Reasoner consistency (HermiT via containerized ROBOT, needs Docker): `make reason` (merges TBox+ABox).
 - Live SPARQL (Docker, needs `make dataset` first): `make serve` starts Fuseki at `http://localhost:3030`

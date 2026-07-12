@@ -160,6 +160,8 @@ make test      # CQ regression suite (17/17)
 make shacl     # SHACL conformance — fails only on Violations; Warnings are advisory
 make reason    # HermiT consistency check, gist imported (needs Docker; also run as a CI job)
 
+make coverage  # can the *real* catalogue answer each CQ? (advisory, never fails the build)
+
 make dataset   # assemble the named-graph dataset (TBox/ABox/SHACL/gist) → dist/*.trig for a triplestore
 ```
 
