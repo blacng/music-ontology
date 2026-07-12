@@ -46,13 +46,31 @@ Each generation step is followed by adversarial critique (Artefact 2) — not op
 
 ## Next action
 
-**v2.3** done: added curated **work collections** (L1) — `:WorkCollection ⊑ gist:Collection` with
-the plain relation `:collects` (mirrors `gist:isMemberOf`, not its `owl:inverseOf` — see the v2.3
-row) and a `:CollectionType` `gist:Category`
-facet; CQ-16 browses it. The act-of-collecting event and time-indexed membership are deferred with
-explicit triggers in `sdd/spec.md`. **17/17 CQs pass, SHACL 0/0**, model checks pass. **Release step:**
-tag **v2.3.0** and refresh `README.md` (version, counts) — a release chore, not modelling work.
-Standing deferred follow-ups in `sdd/spec.md` → Resolved-in-v2.3 + Known issues (work-collection
-L2/L3; CQ-15 residence-proxy + provenance; `:locatedIn` acyclicity guard; `:startsCareerIn` deprecation).
+**v2.3** shipped and fully released: curated **work collections** (L1) — `:WorkCollection ⊑
+gist:Collection` with the plain relation `:collects` (mirrors `gist:isMemberOf`, not its
+`owl:inverseOf` — see the v2.3 row) and a `:CollectionType` `gist:Category` facet; CQ-16 browses it.
+**17/17 CQs, SHACL 0/0, reasoner consistent**; tagged **v2.3.0** + GitHub release (Latest); CHANGELOG,
+README, spec/plan all current. The act-of-collecting event and time-indexed membership are deferred
+with explicit triggers in `sdd/spec.md`. Standing deferred follow-ups in `sdd/spec.md` →
+Resolved-in-v2.3 + Known issues (work-collection L2/L3; CQ-15 residence-proxy + provenance;
+`:locatedIn` acyclicity guard; `:startsCareerIn` deprecation).
+
+## Release checklist
+
+Lesson from v2.3.0: README and CHANGELOG trailed the feature PR and had to be backfilled (#20, #21).
+**The doc surfaces are part of the feature, not a later chore — land them in the same PR.** For any
+change that touches the model or the CQ set:
+
+**In the feature PR (before merge):**
+- [ ] `owl:versionInfo` + `owl:versionIRI` bumped in the TBox.
+- [ ] `CHANGELOG.md` — new `[x.y.z]` entry (Added / Fixed / Scope-deferred).
+- [ ] `README.md` — maturity line, release link, **class/property counts**, **CQ count** (+ `make test` line), journey + model-at-a-glance **mermaid diagrams** (validate them), Status table row + release chain.
+- [ ] `docs/competency-questions.md` (new CQs + changelog), `sdd/spec.md` + `sdd/plan.md`.
+- [ ] SHACL + `tests/` regenerated; `make check` **and** `make reason` green locally.
+
+**After merge to `main` (release step):**
+- [ ] Annotated tag `git tag -a vX.Y.Z` + push.
+- [ ] `gh release create vX.Y.Z` with notes + `vPREV...vX.Y.Z` compare link; verify it shows **Latest**.
+- [ ] Update the auto-memory lifecycle status note (released-through version).
 
 > Living document — update before completing each feature/development task.
