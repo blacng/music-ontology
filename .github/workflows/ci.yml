@@ -33,3 +33,16 @@ jobs:
 
       - name: SHACL conformance (fail on Violations)
         run: make shacl
+
+  reason:
+    name: Reasoner consistency (HermiT)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      # HermiT via the containerized ROBOT (docker compose service `reasoner`).
+      # Fails on any unsatisfiable class — catches OWL-level inconsistencies the
+      # SHACL/SPARQL gate cannot see (e.g. a local property's domain leaking onto a
+      # shared gist property via owl:inverseOf). ubuntu-latest ships Docker + compose.
+      - name: Reasoner consistency (merged TBox+ABox, gist imported)
+        run: make reason

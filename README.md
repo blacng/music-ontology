@@ -148,7 +148,7 @@ make check     # the full gate: model checks + CQ tests + SHACL (run by CI on ev
 make validate  # parse + SPARQL (genre traversal, place roll-up, …)
 make test      # CQ regression suite (16/16)
 make shacl     # SHACL conformance — fails only on Violations; Warnings are advisory
-make reason    # HermiT consistency check, gist imported (needs Docker; not in the CI gate)
+make reason    # HermiT consistency check, gist imported (needs Docker; also run as a CI job)
 
 make dataset   # assemble the named-graph dataset (TBox/ABox/SHACL/gist) → dist/*.trig for a triplestore
 ```

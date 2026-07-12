@@ -113,8 +113,9 @@ over many hand-edits for bulk `.ttl` changes (see `apply_structural_fixes.py`).
 - Live SPARQL (Docker, needs `make dataset` first): `make serve` starts Fuseki at `http://localhost:3030`
   (dataset `music`); `make fuseki-load` (re)loads the 4 named graphs (idempotent — `DROP ALL` then load);
   `make down` stops it. Both Docker services live in `docker-compose.yml`.
-- CI: `.github/workflows/ci.yml` runs `make check` on every push/PR (`uv sync --locked`).
-  The reasoner + Fuseki are separate Docker targets, not in the CI gate.
+- CI: `.github/workflows/ci.yml` runs two jobs on every push/PR — `make check` (`uv sync --locked`)
+  and `make reason` (HermiT via Docker; catches OWL inconsistencies SHACL/SPARQL can't). Fuseki is a
+  separate Docker target, not in the CI gate.
 - Add a dependency: `uv add <package>` · Sync: `uv sync` · Python pinned to **3.14**.
 - Docker (via `docker-compose.yml`) runs the **reasoner** (`make reason`) and **Fuseki** (`make serve`/
   `fuseki-load`); see `docs/production-readiness.md`.
