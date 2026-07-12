@@ -111,9 +111,13 @@ over many hand-edits for bulk `.ttl` changes (see `apply_structural_fixes.py`).
 - **ABox coverage (advisory, never fails):** `make coverage` — `make test` loads the synthetic
   `:TST_*` fixtures alongside the catalogue, so a CQ can be green while the real ABox holds nothing
   for it to find. `scripts/cq_coverage.py` re-runs each manifest query over TBox+ABox **only**, with
-  the `?seed` left free, and counts how many real individuals can seed it. **14/17 answerable;
-  CQ-8/CQ-11/CQ-15 are EMPTY.** CQ queries therefore keep the seed as a `?seed` variable plus a
-  `fixture_seed` field — don't hardcode a `:TST_*` IRI back into a query.
+  the `?seed` left free, and counts how many real individuals can seed it. **Currently 17/17
+  answerable** (CQ-15 and CQ-16 thin at one seed each). Run it whenever a CQ or the ABox changes.
+- **Fixtures must model data the way the catalogue does.** `tests/test_data.ttl` once asserted *both*
+  halves of an `owl:inverseOf` pair (`:performs` **and** `:performedBy`) where the catalogue asserts
+  only `:performedBy` — so CQ-11 passed on fixtures and could never answer from real data. **Assert
+  the direction the catalogue asserts; never restate an entailment in a fixture**, and never hardcode
+  a `:TST_*` IRI back into a query (seeds are a `?seed` variable + a `fixture_seed` field).
 - Assemble the named-graph dataset for triplestore ingest: `make dataset` → `dist/`.
 - Reasoner consistency (HermiT via containerized ROBOT, needs Docker): `make reason` (merges TBox+ABox).
 - Live SPARQL (Docker, needs `make dataset` first): `make serve` starts Fuseki at `http://localhost:3030`

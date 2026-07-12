@@ -191,7 +191,7 @@
       "id": "CQ-11",
       "question": "What other works are associated with a band's members?",
       "var": "otherWork",
-      "sparql": "SELECT DISTINCT ?otherWork WHERE { ?seed :hasMember ?member . ?member :performs ?otherWork . }",
+      "sparql": "SELECT DISTINCT ?otherWork WHERE { ?seed :hasMember ?member . ?otherWork :performedBy ?member . }",
       "fixture_seed": ":TST_BandX",
       "expect": {
         "contains": [

@@ -65,12 +65,14 @@
     .
 
 # --- Musicians / band ---
+# CQ-11's link to :TST_SoloWork is asserted work-side only (:TST_SoloWork :performedBy :TST_MusM),
+# mirroring the catalogue. Asserting :performs here too would restate an owl:inverseOf entailment
+# and let CQ-11 pass on data the catalogue cannot supply.
 :TST_MusM a :SoloArtist ;             # dual role: solo artist AND band member
     rdfs:label "Test Musician M"@en ;
     :hasGenre :Rock ;
     :hasInstrument :Guitar ;          # same instrument as SoloA (CQ-5)
     :isMemberOf :TST_BandX ;
-    :performs :TST_SoloWork ;         # member's solo work (CQ-11)
     .
 
 :TST_MusN a :Musician ;              # pure musician (no solo work)

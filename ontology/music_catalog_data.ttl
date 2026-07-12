@@ -583,6 +583,7 @@
 :JimiHendrix a :Musician ;
     rdfs:label "Jimi Hendrix"@en ;
     rdfs:comment "American rock guitarist, singer, and songwriter."@en ;
+    :bornOn "1942-11-27"^^xsd:date ;
     :hasInstrument :Guitar ;
     :hasGenre :Rock ;
     :originatesFrom :Seattle ;
@@ -617,6 +618,7 @@
 :QuincyJones a :MusicProducer ;
     rdfs:label "Quincy Jones"@en ;
     rdfs:comment "American record producer, conductor, and composer, known for producing Michael Jackson's Thriller."@en ;
+    :bornOn "1933-03-14"^^xsd:date ;
     :originatesFrom :Chicago ;
     :startsCareerIn "1951"^^xsd:gYear ;
     .
@@ -671,6 +673,7 @@
 :BobDylan a :Composer, :Lyricist, :SoloArtist ;
     rdfs:label "Bob Dylan"@en ;
     rdfs:comment "American singer-songwriter widely considered one of the greatest songwriters of all time."@en ;
+    :bornOn "1941-05-24"^^xsd:date ;
     :hasGenre :Folk ;
     :hasGenre :Rock ;
     :hasInstrument :Guitar ;
@@ -915,6 +918,28 @@
     :releasedBy :SonyMusicEntertainment ;
     :producedBy :QuincyJones ;
     :hasAward :GrammyAward ;
+    .
+
+# Second album per producer, so producer lineage is traversable (CQ-8): Sgt. Pepper joins
+# Abbey Road under George Martin, Off the Wall joins Thriller under Quincy Jones.
+:SgtPepper a :StudioAlbum ;
+    rdfs:label "Sgt. Pepper's Lonely Hearts Club Band"@en ;
+    rdfs:comment "The eighth studio album by The Beatles, released in 1967."@en ;
+    :performedBy :TheBeatles ;
+    :releasedIn "1967"^^xsd:gYear ;
+    :hasGenre :Rock ;
+    :releasedBy :ParlophonicRecords ;
+    :producedBy :GeorgeMartin ;
+    .
+
+:OffTheWall a :StudioAlbum ;
+    rdfs:label "Off the Wall"@en ;
+    rdfs:comment "The fifth studio album by Michael Jackson, released in 1979."@en ;
+    :performedBy :MichaelJackson ;
+    :releasedIn "1979"^^xsd:gYear ;
+    :hasGenre :Pop ;
+    :hasGenre :RnB ;
+    :producedBy :QuincyJones ;
     .
 
 :KindOfBlue a :StudioAlbum ;

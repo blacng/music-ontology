@@ -106,15 +106,24 @@ pattern and the place-containment graph. Design pressure-tested via `model_dialo
 
 ## Known issues / decisions pending
 
-- **ABox coverage gap — CQ-8, CQ-11, CQ-15 are green on fixtures only.** `make coverage`
-  (`scripts/cq_coverage.py`) re-runs every CQ against TBox + ABox with the fixtures excluded and
-  the `?seed` left free, counting how many *real* individuals can seed it. **14/17 are answerable;
-  three are EMPTY:** CQ-8 (no producer lineage in the catalogue), CQ-11 (no band whose members
-  perform works), CQ-15 (no `:HistoricalEvent` instance at all). CQ-16 is thin — a single
-  `:WorkCollection`. The pattern is that **the newest features have the thinnest data**: CQ-15
-  (v2.2) and CQ-16 (v2.3) shipped with model + fixtures but little or no catalogue backing.
-  The queries are proven; the ABox is not. Backfilling the catalogue is the fix — the CQs and
-  their SHACL are already in place.
+- **Fixtures must model data the way the catalogue does.** This is the load-bearing lesson from the
+  CQ-11 bug. `tests/test_data.ttl` asserted **both halves** of an `owl:inverseOf` pair
+  (`:TST_MusM :performs :TST_SoloWork` *and* `:TST_SoloWork :performedBy :TST_MusM`) while the
+  catalogue asserts only `:performedBy`. CQ-11's query used `:performs`, so it passed on fixtures and
+  could never have answered from real data. A fixture written to satisfy the query, rather than to
+  mirror the ABox, turns the test suite into a mirror of itself. Fixed by asserting work-side only
+  and querying the asserted direction. **When adding a fixture, assert the same direction the
+  catalogue asserts — never restate an entailment.**
+- **`make coverage` is the guard against this class of bug** (`scripts/cq_coverage.py`): it re-runs
+  every CQ against TBox + ABox with the fixtures excluded and `?seed` left free, counting how many
+  *real* individuals can seed it. It found three CQs green on fixtures alone (CQ-8, CQ-11, CQ-15),
+  each with a **different** root cause — a genuine data gap, an asserted-direction bug, and sparse
+  `:bornOn` respectively. **Now 17/17 answerable.** Run it whenever a CQ or the ABox changes.
+- **Thin coverage (accepted, not a defect):** CQ-15 has one answerable seed
+  (`:AmericanCivilRightsMovement`); `:IrishWarOfIndependence` yields nothing because no artist in the
+  catalogue originates from Ireland. CQ-16 has a single `:WorkCollection`. Both are honest signals of
+  a research-prototype ABox — adding individuals purely to raise the number would be inventing data
+  to flatter a metric.
 - `:locatedIn` is left domain-open (permissive) to span orgs, venues, events, and places.
 - **CQ-15 documented approximations** (accepted, not fixed): `:originatesFrom` (birthplace) is a
   *proxy* for formative residence — lossy for emigrant artists; event boundary dates are sourced

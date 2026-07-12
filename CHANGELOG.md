@@ -5,22 +5,41 @@ All notable changes to the Comprehensive Music Vocabulary. Versions follow the o
 
 ## [Unreleased]
 
-Tooling and documentation only — **no ontology change**, so no version bump.
+Tooling, ABox data, and documentation. **No TBox change**, so no version bump — the model is untouched;
+what changed is the instance data and the tests that measure it.
 
 ### Added
 - **`make coverage`** (`scripts/cq_coverage.py`) — an **ABox coverage report**. `make test` loads the
   synthetic `:TST_*` fixtures alongside the real catalogue, so a CQ can pass while the catalogue holds
   nothing for it to find. The report re-runs each manifest query over TBox + ABox **only**, with `?seed`
   left free, and counts how many real individuals can seed it. Advisory: always exits 0.
-  **Result: 14/17 CQs answerable; CQ-8, CQ-11 and CQ-15 are EMPTY** (no producer lineage; no band whose
-  members perform works; no `:HistoricalEvent` instance at all). CQ-16 is thin at one collection.
+  It found three CQs green on fixtures alone — **CQ-8, CQ-11, CQ-15** — each with a *different* root
+  cause (see Fixed). **Now 17/17 answerable.**
+- **ABox backfill** (all documented public facts): `:bornOn` for `:JimiHendrix` (1942-11-27),
+  `:BobDylan` (1941-05-24) and `:QuincyJones` (1933-03-14); albums `:SgtPepper` (1967, `:producedBy
+  :GeorgeMartin`) and `:OffTheWall` (1979, `:producedBy :QuincyJones`), giving two traversable
+  producer clusters alongside `:AbbeyRoad` and `:Thriller`.
 
 ### Changed
 - **CQ queries are seed-parameterised.** The 14 queries that hardcoded a `:TST_*` seed now use a free
   `?seed` variable plus a `fixture_seed` field; `run_cq_tests.py` substitutes the fixture individual
-  back in. Queries are reconstructed byte-identically — **all 17 row counts unchanged, 17/17 still pass.**
+  back in. Queries are reconstructed byte-identically — **all 17 still pass.**
+- CQ-1, CQ-6, CQ-7 and CQ-9 gain rows (44→46, 14→15, 57→59, 39→40) — solely the two new albums;
+  each delta was verified to be a genuine new fact, with nothing lost.
 
 ### Fixed
+- **CQ-8 — genuine data gap.** Six studio albums, only two named a producer, and no producer was
+  shared, so producer lineage was untraversable. Closed by the two albums above (0 → 4 seeds).
+- **CQ-11 — an unrepresentative fixture, not missing data.** `tests/test_data.ttl` asserted *both*
+  halves of an `owl:inverseOf` pair (`:performs` **and** `:performedBy`) while the catalogue asserts
+  only `:performedBy`. CQ-11 queried `:performs`, so it passed on fixtures and could never answer from
+  real data. Fixed by asserting work-side only in the fixture and querying the direction the catalogue
+  actually asserts. The real answer was there all along: `:ImagineSong :performedBy :JohnLennon`, and
+  Lennon is a member of `:TheBeatles`.
+- **CQ-15 — sparse birth dates, not missing events.** (An earlier note in this section wrongly claimed
+  there was "no `:HistoricalEvent` instance at all"; **two exist** and are correctly typed, dated and
+  placed.) Only 6 individuals had `:bornOn`, and none came of age within an event's interval. Closed by
+  the three birth dates above (0 → 1 seed, via `:AmericanCivilRightsMovement`).
 - `sdd/spec.md` — retired two "Known issues" entries fixed back in v2.1.0 (the vocalist instrument gap,
   closed by `:Voice`/`:VocalInstrument`; the mixed `rdfs:`/SKOS annotation style, closed by the SKOS-only
   migration). They went stale because no "Resolved in v2.1" section existed for them to move to; added.
