@@ -6,7 +6,8 @@
       "id": "CQ-1",
       "question": "Which artists share at least one top-level genre with a seed artist?",
       "var": "other",
-      "sparql": "SELECT DISTINCT ?other WHERE { :TST_SoloA :hasGenre/:hasBroaderGenre* ?root . ?root a :TopLevelGenre . ?other :hasGenre/:hasBroaderGenre* ?root . FILTER(?other != :TST_SoloA) }",
+      "sparql": "SELECT DISTINCT ?other WHERE { ?seed :hasGenre/:hasBroaderGenre* ?root . ?root a :TopLevelGenre . ?other :hasGenre/:hasBroaderGenre* ?root . FILTER(?other != ?seed) }",
+      "fixture_seed": ":TST_SoloA",
       "expect": {
         "contains": [
           "TST_SoloB"
@@ -22,7 +23,8 @@
       "id": "CQ-1b",
       "question": "Which musical agents (artists/bands only, not their songs or albums) share a top-level genre with a seed artist, and which genre name(s) are shared? (Presentation refinement of CQ-1: restricts ?other to :MusicalAgent and emits genre rdfs:labels via GROUP_CONCAT instead of a count.)",
       "var": "other",
-      "sparql": "SELECT ?other (GROUP_CONCAT(DISTINCT ?genreName; SEPARATOR=\", \") AS ?Shared_Genres) WHERE { :TST_SoloA :hasGenre/:hasBroaderGenre* ?root . ?root a :TopLevelGenre ; rdfs:label ?genreName . ?other a/rdfs:subClassOf* :MusicalAgent ; :hasGenre/:hasBroaderGenre* ?root ; rdfs:label ?label . FILTER(?other != :TST_SoloA) } GROUP BY ?other",
+      "sparql": "SELECT ?other (GROUP_CONCAT(DISTINCT ?genreName; SEPARATOR=\", \") AS ?Shared_Genres) WHERE { ?seed :hasGenre/:hasBroaderGenre* ?root . ?root a :TopLevelGenre ; rdfs:label ?genreName . ?other a/rdfs:subClassOf* :MusicalAgent ; :hasGenre/:hasBroaderGenre* ?root ; rdfs:label ?label . FILTER(?other != ?seed) } GROUP BY ?other",
+      "fixture_seed": ":TST_SoloA",
       "expect": {
         "contains": [
           "TST_SoloB",
@@ -44,7 +46,8 @@
       "id": "CQ-2",
       "question": "Which agents are within two hops via collaboratesWith or shared band membership?",
       "var": "reachable",
-      "sparql": "SELECT DISTINCT ?reachable WHERE { { :TST_SoloA (:collaboratesWith|^:hasMember/:hasMember) ?reachable } UNION { :TST_SoloA (:collaboratesWith|^:hasMember/:hasMember)/(:collaboratesWith|^:hasMember/:hasMember) ?reachable } FILTER(?reachable != :TST_SoloA) }",
+      "sparql": "SELECT DISTINCT ?reachable WHERE { { ?seed (:collaboratesWith|^:hasMember/:hasMember) ?reachable } UNION { ?seed (:collaboratesWith|^:hasMember/:hasMember)/(:collaboratesWith|^:hasMember/:hasMember) ?reachable } FILTER(?reachable != ?seed) }",
+      "fixture_seed": ":TST_SoloA",
       "expect": {
         "contains": [
           "TST_SoloB"
@@ -59,7 +62,8 @@
       "id": "CQ-3",
       "question": "Which artists are signed to the same label as a seed artist?",
       "var": "labelmate",
-      "sparql": "SELECT DISTINCT ?labelmate WHERE { :TST_SoloA :isSignedTo ?l . ?labelmate :isSignedTo ?l . FILTER(?labelmate != :TST_SoloA) }",
+      "sparql": "SELECT DISTINCT ?labelmate WHERE { ?seed :isSignedTo ?l . ?labelmate :isSignedTo ?l . FILTER(?labelmate != ?seed) }",
+      "fixture_seed": ":TST_SoloA",
       "expect": {
         "contains": [
           "TST_SoloB",
@@ -75,7 +79,8 @@
       "id": "CQ-4",
       "question": "Which works share a seed work's release decade and a top-level genre?",
       "var": "work",
-      "sparql": "SELECT DISTINCT ?work WHERE { :TST_Album1 :releasedIn ?y0 ; :hasGenre/:hasBroaderGenre* ?root . ?root a :TopLevelGenre . ?work :releasedIn ?y ; :hasGenre/:hasBroaderGenre* ?root . FILTER(FLOOR(xsd:integer(STR(?y0))/10) = FLOOR(xsd:integer(STR(?y))/10) && ?work != :TST_Album1) }",
+      "sparql": "SELECT DISTINCT ?work WHERE { ?seed :releasedIn ?y0 ; :hasGenre/:hasBroaderGenre* ?root . ?root a :TopLevelGenre . ?work :releasedIn ?y ; :hasGenre/:hasBroaderGenre* ?root . FILTER(FLOOR(xsd:integer(STR(?y0))/10) = FLOOR(xsd:integer(STR(?y))/10) && ?work != ?seed) }",
+      "fixture_seed": ":TST_Album1",
       "expect": {
         "contains": [
           "TST_Album2"
@@ -90,7 +95,8 @@
       "id": "CQ-5",
       "question": "Which musicians play the same instrument or instrument family as a seed musician?",
       "var": "m",
-      "sparql": "SELECT DISTINCT ?m WHERE { :TST_MusM :hasInstrument ?i . ?i a ?fam . ?m :hasInstrument ?i2 . ?i2 a ?fam . FILTER(?m != :TST_MusM) }",
+      "sparql": "SELECT DISTINCT ?m WHERE { ?seed :hasInstrument ?i . ?i a ?fam . ?m :hasInstrument ?i2 . ?i2 a ?fam . FILTER(?m != ?seed) }",
+      "fixture_seed": ":TST_MusM",
       "expect": {
         "contains": [
           "TST_SoloA",
@@ -122,7 +128,8 @@
       "id": "CQ-7",
       "question": "Which candidates are related to a seed by a shared genre, label, or instrument (with evidence)?",
       "var": "candidate",
-      "sparql": "SELECT DISTINCT ?candidate WHERE { { :TST_SoloA :hasGenre/:hasBroaderGenre* ?r . ?r a :TopLevelGenre . ?candidate :hasGenre/:hasBroaderGenre* ?r } UNION { :TST_SoloA :isSignedTo ?l . ?candidate :isSignedTo ?l } UNION { :TST_SoloA :hasInstrument ?i . ?candidate :hasInstrument ?i } FILTER(?candidate != :TST_SoloA) }",
+      "sparql": "SELECT DISTINCT ?candidate WHERE { { ?seed :hasGenre/:hasBroaderGenre* ?r . ?r a :TopLevelGenre . ?candidate :hasGenre/:hasBroaderGenre* ?r } UNION { ?seed :isSignedTo ?l . ?candidate :isSignedTo ?l } UNION { ?seed :hasInstrument ?i . ?candidate :hasInstrument ?i } FILTER(?candidate != ?seed) }",
+      "fixture_seed": ":TST_SoloA",
       "expect": {
         "contains": [
           "TST_SoloB"
@@ -137,7 +144,8 @@
       "id": "CQ-8",
       "question": "Which albums share a seed album's producer?",
       "var": "other",
-      "sparql": "SELECT DISTINCT ?other WHERE { :TST_Album1 :producedBy ?p . ?other :producedBy ?p . FILTER(?other != :TST_Album1) }",
+      "sparql": "SELECT DISTINCT ?other WHERE { ?seed :producedBy ?p . ?other :producedBy ?p . FILTER(?other != ?seed) }",
+      "fixture_seed": ":TST_Album1",
       "expect": {
         "contains": [
           "TST_Album2"
@@ -183,7 +191,8 @@
       "id": "CQ-11",
       "question": "What other works are associated with a band's members?",
       "var": "otherWork",
-      "sparql": "SELECT DISTINCT ?otherWork WHERE { :TST_BandX :hasMember ?member . ?member :performs ?otherWork . }",
+      "sparql": "SELECT DISTINCT ?otherWork WHERE { ?seed :hasMember ?member . ?member :performs ?otherWork . }",
+      "fixture_seed": ":TST_BandX",
       "expect": {
         "contains": [
           "TST_SoloWork"
@@ -198,7 +207,8 @@
       "id": "CQ-12",
       "question": "Which artists originate from the same place as a seed artist?",
       "var": "artist",
-      "sparql": "SELECT DISTINCT ?artist WHERE { :TST_SoloA :originatesFrom ?p . ?artist :originatesFrom ?p . FILTER(?artist != :TST_SoloA) }",
+      "sparql": "SELECT DISTINCT ?artist WHERE { ?seed :originatesFrom ?p . ?artist :originatesFrom ?p . FILTER(?artist != ?seed) }",
+      "fixture_seed": ":TST_SoloA",
       "expect": {
         "contains": [
           "TST_SoloB"
@@ -213,7 +223,8 @@
       "id": "CQ-13",
       "question": "Which artists were active during the same time period as a seed artist (overlapping activity interval) AND share a top-level genre? (e.g. 90s Hip Hop peers)",
       "var": "other",
-      "sparql": "SELECT DISTINCT ?other WHERE { :TST_Era90sA :activeFrom ?af0 ; :hasGenre/:hasBroaderGenre* ?root . ?root a :TopLevelGenre . OPTIONAL { :TST_Era90sA :activeUntil ?au0 } BIND(xsd:integer(STR(?af0)) AS ?f0) BIND(COALESCE(xsd:integer(STR(?au0)), 9999) AS ?u0) ?other :activeFrom ?af ; :hasGenre/:hasBroaderGenre* ?root . OPTIONAL { ?other :activeUntil ?au } BIND(xsd:integer(STR(?af)) AS ?f) BIND(COALESCE(xsd:integer(STR(?au)), 9999) AS ?u) FILTER(?other != :TST_Era90sA) FILTER(?f0 <= ?u && ?f <= ?u0) }",
+      "sparql": "SELECT DISTINCT ?other WHERE { ?seed :activeFrom ?af0 ; :hasGenre/:hasBroaderGenre* ?root . ?root a :TopLevelGenre . OPTIONAL { ?seed :activeUntil ?au0 } BIND(xsd:integer(STR(?af0)) AS ?f0) BIND(COALESCE(xsd:integer(STR(?au0)), 9999) AS ?u0) ?other :activeFrom ?af ; :hasGenre/:hasBroaderGenre* ?root . OPTIONAL { ?other :activeUntil ?au } BIND(xsd:integer(STR(?af)) AS ?f) BIND(COALESCE(xsd:integer(STR(?au)), 9999) AS ?u) FILTER(?other != ?seed) FILTER(?f0 <= ?u && ?f <= ?u0) }",
+      "fixture_seed": ":TST_Era90sA",
       "expect": {
         "contains": [
           "TST_Era90sB"
@@ -229,7 +240,8 @@
       "id": "CQ-14",
       "question": "Which artists share a geographic ancestor at a chosen level (here nation) with a seed artist, via the :locatedIn roll-up? (same-country / same-continent discovery)",
       "var": "other",
-      "sparql": "SELECT DISTINCT ?other WHERE { :TST_SoloA :originatesFrom/:locatedIn* ?anc . ?anc :hasPlaceType :Nation . ?other :originatesFrom/:locatedIn* ?anc . FILTER(?other != :TST_SoloA) }",
+      "sparql": "SELECT DISTINCT ?other WHERE { ?seed :originatesFrom/:locatedIn* ?anc . ?anc :hasPlaceType :Nation . ?other :originatesFrom/:locatedIn* ?anc . FILTER(?other != ?seed) }",
+      "fixture_seed": ":TST_SoloA",
       "expect": {
         "contains": [
           "TST_SoloC"
@@ -244,7 +256,8 @@
       "id": "CQ-15",
       "question": "Which artists came of age (their ~15-25 window overlaps the event) during a historical event, and originated from within the event's place? (derived, not asserted)",
       "var": "artist",
-      "sparql": "SELECT DISTINCT ?artist WHERE { :TST_EventE gist:actualStartDate ?es ; gist:actualEndDate ?ee ; :locatedIn ?ep . ?artist :bornOn ?b ; :originatesFrom/:locatedIn* ?ep . BIND(YEAR(?b) AS ?by) FILTER(?by + 15 <= YEAR(?ee) && YEAR(?es) <= ?by + 25) }",
+      "sparql": "SELECT DISTINCT ?artist WHERE { ?seed gist:actualStartDate ?es ; gist:actualEndDate ?ee ; :locatedIn ?ep . ?artist :bornOn ?b ; :originatesFrom/:locatedIn* ?ep . BIND(YEAR(?b) AS ?by) FILTER(?by + 15 <= YEAR(?ee) && YEAR(?es) <= ?by + 25) }",
+      "fixture_seed": ":TST_EventE",
       "expect": {
         "contains": [
           "TST_ComeOfAge"
@@ -260,7 +273,8 @@
       "id": "CQ-16",
       "question": "Which works belong to a given curated work collection? (browse a box set / anthology / thematic collection)",
       "var": "work",
-      "sparql": "SELECT DISTINCT ?work WHERE { :TST_Collection :collects ?work }",
+      "sparql": "SELECT DISTINCT ?work WHERE { ?seed :collects ?work }",
+      "fixture_seed": ":TST_Collection",
       "expect": {
         "contains": [
           "TST_Album1",

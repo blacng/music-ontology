@@ -106,10 +106,15 @@ pattern and the place-containment graph. Design pressure-tested via `model_dialo
 
 ## Known issues / decisions pending
 
-- **CQ-8 / CQ-11 pass on synthetic fixtures only:** both are green, but each returns a single row
-  sourced from `tests/test_data.ttl` (`:TST_*`). The real catalogue carries almost no producer
-  lineage and no musician who is a member of two bands, so neither CQ has anything to find in
-  `music_catalog_data.ttl`. The queries are proven; the ABox coverage is not.
+- **ABox coverage gap — CQ-8, CQ-11, CQ-15 are green on fixtures only.** `make coverage`
+  (`scripts/cq_coverage.py`) re-runs every CQ against TBox + ABox with the fixtures excluded and
+  the `?seed` left free, counting how many *real* individuals can seed it. **14/17 are answerable;
+  three are EMPTY:** CQ-8 (no producer lineage in the catalogue), CQ-11 (no band whose members
+  perform works), CQ-15 (no `:HistoricalEvent` instance at all). CQ-16 is thin — a single
+  `:WorkCollection`. The pattern is that **the newest features have the thinnest data**: CQ-15
+  (v2.2) and CQ-16 (v2.3) shipped with model + fixtures but little or no catalogue backing.
+  The queries are proven; the ABox is not. Backfilling the catalogue is the fix — the CQs and
+  their SHACL are already in place.
 - `:locatedIn` is left domain-open (permissive) to span orgs, venues, events, and places.
 - **CQ-15 documented approximations** (accepted, not fixed): `:originatesFrom` (birthplace) is a
   *proxy* for formative residence — lossy for emigrant artists; event boundary dates are sourced
