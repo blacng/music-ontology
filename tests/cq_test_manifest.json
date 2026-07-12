@@ -255,6 +255,23 @@
         ]
       },
       "sample_row": "TST_ComeOfAge (born 1948, from Testland) came of age during Test Event E (1960-1968); TST_TooYoung (born 1965) is too young, TST_WrongPlace originates outside Testland"
+    },
+    {
+      "id": "CQ-16",
+      "question": "Which works belong to a given curated work collection? (browse a box set / anthology / thematic collection)",
+      "var": "work",
+      "sparql": "SELECT DISTINCT ?work WHERE { :TST_Collection :collects ?work }",
+      "expect": {
+        "contains": [
+          "TST_Album1",
+          "TST_Song1"
+        ],
+        "excludes": [
+          "TST_Album3",
+          "TST_Song2"
+        ]
+      },
+      "sample_row": "TST_Collection collects TST_Album1 and TST_Song1; TST_Album3/TST_Song2 are not in it"
     }
   ]
 }

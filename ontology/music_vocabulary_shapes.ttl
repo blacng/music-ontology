@@ -194,6 +194,18 @@
     ] ;
     .
 
+# --- Work-collection shape (L1: curated grouping of related works) ---
+
+:WorkCollectionShape a sh:NodeShape ;
+    sh:targetClass :WorkCollection ;
+    sh:property [ sh:path :collects ; sh:class :MusicalWork ;
+        sh:message "collects must point to a :MusicalWork." ] ;
+    sh:property [ sh:path gist:isCategorizedBy ; sh:class :CollectionType ; sh:maxCount 1 ;
+        sh:message "A work collection carries at most one :CollectionType (anthology/box set/…)." ] ;
+    sh:property [ sh:path :collects ; sh:minCount 1 ; sh:severity sh:Warning ;
+        sh:message "A work collection should collect at least one work (enables collection browse, CQ-16)." ] ;
+    .
+
 ###############################################################################
 # CQ-DERIVED SPARQL CONSTRAINT
 ###############################################################################

@@ -228,3 +228,13 @@
     :bornOn "1948-06-01"^^xsd:date ;
     :originatesFrom :TST_CityW ;
     .
+
+###############################################################################
+# v2.3 FIXTURE — WORK COLLECTION BROWSE (CQ-16)
+###############################################################################
+:TST_CollType a :CollectionType ; rdfs:label "Test Collection Type"@en ; .
+:TST_Collection a :WorkCollection ;      # collects two works; a third work is NOT collected
+    rdfs:label "Test Work Collection"@en ;
+    gist:isCategorizedBy :TST_CollType ;
+    :collects :TST_Album1, :TST_Song1 ;
+    .

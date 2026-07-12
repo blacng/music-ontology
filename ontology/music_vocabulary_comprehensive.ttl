@@ -21,8 +21,8 @@
 :MusicVocabulary a owl:Ontology ;
     rdfs:label "Comprehensive Music Vocabulary"@en ;
     rdfs:comment "A comprehensive vocabulary for describing music concepts, works, artists, instruments, and relationships."@en ;
-    owl:versionInfo "2.2.0" ;
-    owl:versionIRI <https://www.somusicvocabulary.org/music/2.2.0> ;
+    owl:versionInfo "2.3.0" ;
+    owl:versionIRI <https://www.somusicvocabulary.org/music/2.3.0> ;
     owl:imports <https://w3id.org/semanticarts/ontology/gistCore> .
 
 ###############################################################################
@@ -463,6 +463,26 @@
     skos:definition "A playlist is a list of songs or other audio tracks that are grouped together and played in sequence."@en ;
     .
 
+# A curated grouping of related works (box set, anthology, compilation, thematic series).
+# Generalises across work types — distinct from :Album (a release that is itself a work) and
+# broader than :Playlist (songs only). Membership is the plain relation :collects (L1); the
+# act-of-collecting event and time-indexed membership are deliberately deferred (see spec.md).
+:WorkCollection a owl:Class ;
+    rdfs:subClassOf gist:Collection ;
+    skos:prefLabel "Work Collection"@en ;
+    skos:scopeNote "Curated, identity-bearing grouping; not a query result. Derived 'related works' stay SPARQL/CQs. Kind carried by gist:isCategorizedBy a :CollectionType."@en ;
+    skos:definition "A work collection is a curated collection that groups related musical works, such as a box set, anthology, compilation, or thematic series."@en ;
+    :exampleInstance :GreatestRockAnthems ;
+    .
+
+:CollectionType a owl:Class ;
+    rdfs:subClassOf gist:Category ;
+    skos:prefLabel "Collection Type"@en ;
+    skos:scopeNote "Collection-type individuals (:Anthology, :BoxSet, :Compilation, :ThematicCollection) live in the ABox; assign one to a :WorkCollection with gist:isCategorizedBy."@en ;
+    skos:definition "A collection type is a category that classifies a work collection by its curatorial form, such as anthology, box set, compilation, or thematic series."@en ;
+    :exampleInstance :Anthology, :BoxSet, :Compilation, :ThematicCollection ;
+    .
+
 ###############################################################################
 # CLASSES — MUSICAL ELEMENTS
 ###############################################################################
@@ -656,6 +676,18 @@
     rdfs:domain :Song ;
     rdfs:range :Album ;
     owl:inverseOf :hasTrack ;
+    .
+
+# Plain membership relation for :WorkCollection (L1), mirroring gist:isMemberOf conceptually.
+# Deliberately NOT declared owl:inverseOf gist:isMemberOf: coupling a domain-constrained local
+# property to that shared upper property leaks :WorkCollection onto every gist:isMemberOf target
+# and makes gist:UnitGroup / IntergovernmentalOrganization / GeoRoute unsatisfiable (caught by
+# `make reason`). Atemporal: no "when added" / "who curated" — L2/L3 deferred (see sdd/spec.md).
+:collects a owl:ObjectProperty ;
+    skos:prefLabel "collects"@en ;
+    rdfs:domain :WorkCollection ;
+    rdfs:range :MusicalWork ;
+    skos:definition "Relates a work collection to a musical work it includes."@en ;
     .
 
 :releasedIn a owl:DatatypeProperty ;

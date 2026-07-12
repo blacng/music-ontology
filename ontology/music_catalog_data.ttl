@@ -1367,3 +1367,20 @@
     gist:actualEndDate   "1921-07-11"^^xsd:date ;
     :locatedIn :Ireland ;
     .
+
+###############################################################################
+# v2.3 — WORK COLLECTIONS (L1: curated grouping of related works, plain relation)
+###############################################################################
+
+# Collection-type category individuals (gist:Category pattern, like genres/place-types).
+:Anthology          a :CollectionType ; rdfs:label "Anthology"@en .
+:BoxSet             a :CollectionType ; rdfs:label "Box Set"@en .
+:Compilation        a :CollectionType ; rdfs:label "Compilation"@en .
+:ThematicCollection a :CollectionType ; rdfs:label "Thematic Collection"@en .
+
+# An illustrative curated collection: three #1 rock anthems (cf. CQ-10), grouped by theme.
+:GreatestRockAnthems a :WorkCollection ;
+    rdfs:label "Greatest Rock Anthems"@en ;
+    gist:isCategorizedBy :ThematicCollection ;
+    :collects :HeyJude, :BohemianRhapsody, :ImagineSong ;
+    .

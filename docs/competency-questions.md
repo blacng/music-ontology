@@ -281,6 +281,20 @@ migrated from `:City`/`:Nation` **subclasses** to the `gist:Category` pattern:
   }
   ```
 
+## v2.3 addition — curated work collections
+
+### CQ-16 — Browse a work collection ✅
+- **Question:** Which works belong to a given **curated** work collection (box set, anthology, compilation, thematic series)?
+- **Use case:** "What's in this collection" — browsing a curated grouping of related works.
+- **Elements:** `:WorkCollection` (`⊑ gist:Collection`), `:collects` (plain membership relation — mirrors `gist:isMemberOf` but not declared its `owl:inverseOf`, which would make gist classes unsatisfiable), `:MusicalWork`, `:CollectionType` (`gist:Category`).
+- **Curated ≠ derived:** a `:WorkCollection` is an **identity-bearing individual** (it has a name, a `:CollectionType`, and could carry a curator/date later). It is **not** a query result — "works *related to* a seed" stays a SPARQL/CQ (CQ-4 era, CQ-8 producer, CQ-13 era+genre) with nothing stored. Only reify a collection when a human would point at it and say *that one*.
+- **Scope (L1 only):** membership is the **plain relation** `:collects`, atemporal. The *act of collecting* (a `gist:Event`) and *time-indexed membership* (a reified state) are **deliberately deferred** — see `sdd/spec.md` → Known issues for the L2/L3 triggers.
+- **Pass condition:** Seed `:TST_Collection` ⇒ `{:TST_Album1, :TST_Song1}`; excludes `:TST_Album3`, `:TST_Song2` (not collected).
+- **SPARQL skeleton:**
+  ```sparql
+  SELECT DISTINCT ?work WHERE { :TST_Collection :collects ?work }
+  ```
+
 ---
 
 ## Regression suite (Artefact 5)
@@ -289,7 +303,7 @@ Every CQ now has an executable test in `tests/cq_test_manifest.json`, run agains
 `ontology/music_vocabulary_comprehensive.ttl` + `tests/test_data.ttl` (synthetic `:TST_*`
 fixtures) by `scripts/run_cq_tests.py`. Each test is membership-based — a designated
 yes-instance must appear and a no-instance must not — so it is robust to the illustrative
-real catalog. **16/16 pass** (12 original + CQ-1b + the three v2.2 CQs). Run: `uv run python scripts/run_cq_tests.py`.
+real catalog. **17/17 pass** (12 original + CQ-1b + three v2.2 CQs + CQ-16). Run: `uv run python scripts/run_cq_tests.py`.
 
 ## Coverage, flags & waivers
 
@@ -304,6 +318,10 @@ real catalog. **16/16 pass** (12 original + CQ-1b + the three v2.2 CQs). Run: `u
 
 ## Changelog
 
+- **v6** (v2.3): added **CQ-16** (browse a curated `:WorkCollection` via the plain `:collects`
+  relation, `⊑ gist:Collection`; kind via `:CollectionType` `gist:Category`). Scoped to L1
+  (plain membership); the act-of-collecting event and time-indexed membership are deferred with
+  triggers recorded in `sdd/spec.md`. Suite now 17/17.
 - **v5** (v2.2): added **CQ-13** (same-era + genre, activity-interval overlap), **CQ-14**
   (multi-level geography via `:hasPlaceType` + `:locatedIn*`), and **CQ-15** (came-of-age
   during a `:HistoricalEvent`, derived by birth-date + place). Migrated geography from
