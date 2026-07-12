@@ -17,6 +17,7 @@ Each generation step is followed by adversarial critique (Artefact 2) — not op
 | 6 | **Test Data + CQ Tests** (Artefact 5) | ✅ Done | `tests/test_data.ttl` + `tests/cq_test_manifest.json` + `scripts/run_cq_tests.py`; **12/12 CQs pass**. Caught & fixed CQ-2's non-standard `{1,2}` path quantifier |
 | 7 | **Production Readiness** (Artefact 7) | 🔄 Near done | `docs/production-readiness.md` — **10 green**, 1 waived (item 4 datatypes), 1 sign-off (item 12). gist migrated; SKOS-only labels (item 6); Y-statements `sdd/decisions.md` (item 9); reasoner consistent |
 | 8 | **v2.2 — Foundational time / geography / history** | ✅ Done | CQ-13 (activity-interval era overlap), CQ-14 (multi-level geography), CQ-15 (came-of-age during `:HistoricalEvent`, derived). Geography migrated to `gist:Category` place-typing (`scripts/migrate_place_typing.py`); new terms `:activeFrom`/`:activeUntil`, `:PlaceType`/`:hasPlaceType`/`:broaderPlaceType`, `:HistoricalEvent`; SHACL + tests + docs updated. Pressure-tested via `model_dialogue.md` + `adversarial_critique_skill.md`. **16/16 CQs pass, SHACL 0/0** |
+| 9 | **v2.3 — Curated work collections (L1)** | ✅ Done | CQ-16 (browse a `:WorkCollection ⊑ gist:Collection` via plain relation `:collects`; kind via `:CollectionType` `gist:Category`). `:collects` mirrors `gist:isMemberOf` but is **not** its `owl:inverseOf` — that coupling leaked its domain onto the shared upper property and made 3 gist classes unsatisfiable (`make reason` caught it). Act/state reifications (event, time-indexed membership) deferred with triggers in `sdd/spec.md`. **17/17 CQs pass, SHACL 0/0, reasoner consistent** |
 
 > **Sequencing rationale:** structural fixes precede SHACL and test data because both sit
 > downstream of the schema (regeneration discipline) — fix the schema → constrain it →
@@ -45,12 +46,13 @@ Each generation step is followed by adversarial critique (Artefact 2) — not op
 
 ## Next action
 
-**v2.2** done: added the three foundational CQs (time / geography / history) on two reusable
-primitives — activity-interval overlap and category-typed place containment — plus
-`:HistoricalEvent` (derived came-of-age). Geography migrated off subclasses to `gist:Category`
-place-typing. **16/16 CQs pass, SHACL 0/0**, model checks pass. **Release step:** tag **v2.2.0**
-and refresh `README.md` (version, counts, journey diagram) — a release chore, not modelling work.
-Deferred follow-ups recorded in `sdd/spec.md` → Known issues (residence-during-period link +
-provenance for CQ-15; `:locatedIn` acyclicity guard; `:startsCareerIn` deprecation).
+**v2.3** done: added curated **work collections** (L1) — `:WorkCollection ⊑ gist:Collection` with
+the plain relation `:collects` (mirrors `gist:isMemberOf`, not its `owl:inverseOf` — see the v2.3
+row) and a `:CollectionType` `gist:Category`
+facet; CQ-16 browses it. The act-of-collecting event and time-indexed membership are deferred with
+explicit triggers in `sdd/spec.md`. **17/17 CQs pass, SHACL 0/0**, model checks pass. **Release step:**
+tag **v2.3.0** and refresh `README.md` (version, counts) — a release chore, not modelling work.
+Standing deferred follow-ups in `sdd/spec.md` → Resolved-in-v2.3 + Known issues (work-collection
+L2/L3; CQ-15 residence-proxy + provenance; `:locatedIn` acyclicity guard; `:startsCareerIn` deprecation).
 
 > Living document — update before completing each feature/development task.

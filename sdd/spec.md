@@ -21,11 +21,11 @@ signature, assertion provenance/confidence (waived for the prototype — see bel
 ## Contract: competency questions
 
 The ontology's functional contract is the competency-question set in
-[`docs/competency-questions.md`](../docs/competency-questions.md) — 15 CQs (+ CQ-1b) oriented to
+[`docs/competency-questions.md`](../docs/competency-questions.md) — 16 CQs (+ CQ-1b) oriented to
 discovery and recommendation. "Done" for the ontology means every CQ has a passing SPARQL test
 against canonical instance data (Production Readiness Checklist item 1). **Realized in Artefact 5,
-extended in v2.2:** `tests/cq_test_manifest.json` + `tests/test_data.ttl`, run by
-`scripts/run_cq_tests.py` — **16/16 pass**.
+extended in v2.2–v2.3:** `tests/cq_test_manifest.json` + `tests/test_data.ttl`, run by
+`scripts/run_cq_tests.py` — **17/17 pass**.
 
 ## Conventions
 
@@ -74,6 +74,24 @@ pattern and the place-containment graph. Design pressure-tested via `model_dialo
 - **History (CQ-15):** `:HistoricalEvent ⊑ gist:HistoricalEvent` with `gist:actualStartDate`/
   `gist:actualEndDate` + `:locatedIn`. "Came of age" is **derived** (birth-date age-window ∩
   event, filtered by origin), not an asserted edge; the age window is a **query parameter**.
+
+## Resolved in v2.3 (Curated work collections — L1)
+
+- **`:WorkCollection` (⊑ `gist:Collection`)** groups related works; membership is the **plain
+  relation `:collects`** (mirrors `gist:isMemberOf` but is *not* declared its `owl:inverseOf` —
+  that coupling made three gist classes unsatisfiable; `make reason` caught it), atemporal. Kind carried by
+  `:CollectionType` (`gist:Category`). Sibling of `:Playlist`/`:MusicChart`; generalises across
+  work types, distinct from `:Album` (a release). CQ-16 browses it.
+- **Curated ≠ derived:** a `:WorkCollection` is an identity-bearing individual; "works related to
+  a seed" stays a query (CQ-4/8/13), nothing stored. Reify a collection only when a human would
+  name it as *that one*.
+- **Deferred by design — L2/L3 triggers** (the act/state reifications discussed but not built):
+  - **L2 (time-indexed membership** — a reified `:CollectionMembership` state with a
+    `gist:TimeInterval`): add **when a CQ needs collection *history*** (works entering/leaving over
+    time, "what did C contain in year Y"). Until then `:collects` is the current-membership view.
+  - **L3 (act of collecting** — a `:CompilationEvent ⊑ gist:Event` with curator + date that
+    *establishes* memberships): add **when the provenance waiver is lifted for production**. At that
+    point `:collects` becomes derived from open memberships (single source of truth), not asserted.
 
 ## Known issues / decisions pending
 
