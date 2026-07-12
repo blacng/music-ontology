@@ -3,6 +3,34 @@
 All notable changes to the Comprehensive Music Vocabulary. Versions follow the ontology's
 `owl:versionInfo` / `owl:versionIRI`.
 
+## [2.3.0] — 2026-07-12
+
+Curated **work collections** (Layer 1) and the **reasoner promoted to a CI gate**.
+
+### Added
+- **`:WorkCollection` (⊑ `gist:Collection`)** — a curated, identity-bearing grouping of related
+  works (box set, anthology, compilation, thematic series); sibling of `:Playlist`/`:MusicChart`,
+  distinct from `:Album` (a release).
+- **`:collects`** (domain `:WorkCollection`, range `:MusicalWork`) — the plain membership relation.
+  Mirrors `gist:isMemberOf` conceptually but is **not** declared its `owl:inverseOf` (see below).
+- **`:CollectionType` (⊑ `gist:Category`)** — anthology / box set / compilation / thematic, assigned
+  via `gist:isCategorizedBy` (same idiom as genres and place-types).
+- **CQ-16** (browse a work collection) + `:WorkCollectionShape` (SHACL) + `:TST_*` fixtures and an
+  illustrative `:GreatestRockAnthems`. **Suite now 17/17.**
+- **CI `reason` job** — HermiT via containerized ROBOT runs on every push/PR, alongside `make check`.
+
+### Fixed
+- Reasoner caught a real inconsistency: `:collects` first declared `owl:inverseOf gist:isMemberOf`
+  **with** `rdfs:domain :WorkCollection` leaked that domain onto the shared upper property, making
+  `gist:UnitGroup`, `gist:IntergovernmentalOrganization`, and `gist:GeoRoute` unsatisfiable. SHACL and
+  SPARQL were green; only `make reason` caught it — hence the new CI gate. A domain-constrained *local*
+  property must not be `owl:inverseOf` a *shared gist* property.
+
+### Scope / deferred
+- **Curated ≠ derived:** a `:WorkCollection` is stored and named; "works related to a seed" stays a
+  query (CQ-4/8/13). The **act-of-collecting event (L3)** and **time-indexed membership (L2)** are
+  deferred with explicit triggers in `sdd/spec.md`.
+
 ## [2.2.0] — 2026-07-10
 
 Foundational **time, geography, and history** modelling — three new competency questions
