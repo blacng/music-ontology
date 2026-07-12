@@ -55,6 +55,17 @@ production use. Scope is **content-based candidate generation**, not personalise
 Applied via `scripts/apply_structural_fixes.py`; verified by `scripts/validate_fixes.py`
 (parse + SPARQL checks all pass) and `pyshacl` (0 Violations).
 
+## Resolved in v2.1 (Voice as an instrument; SKOS-only vocabulary)
+
+- **Vocalist instrument gap closed:** singing is modelled as `:hasInstrument :Voice`, where
+  `:Voice a :VocalInstrument ⊑ :MusicalInstrument`. `MusicianShape` additionally exempts
+  `:Conductor` from the play-an-instrument expectation (`sh:or`), so the two legitimate
+  non-instrumentalist cases no longer trip the soft warning.
+- **Annotations are SKOS-only** on vocabulary terms: classes and properties carry
+  `skos:prefLabel` + `skos:definition` (+ `skos:scopeNote`), never `rdfs:label`/`rdfs:comment`.
+  The only surviving `rdfs:*` triples are on the `owl:Ontology` header itself, which the style
+  guide permits. Migrated via `scripts/migrate_skos_labels.py`.
+
 ## Resolved in v2.2 (Foundational time, geography & history)
 
 Three foundational CQs added, sharing **two reusable primitives** — a temporal-interval
@@ -95,12 +106,10 @@ pattern and the place-containment graph. Design pressure-tested via `model_dialo
 
 ## Known issues / decisions pending
 
-- CQ-8 (producer lineage) and CQ-11 (member crossover) need richer instance data (Artefact 5).
-- **Vocalist instrument gap:** with `:SoloArtist ⊑ :Musician`, vocalists trip the soft
-  "a musician should play an instrument" warning (voice isn't modelled). Resolve by modelling
-  `:Voice` or relaxing the expectation to "sings or plays."
-- Annotation style is still mixed `rdfs:label`/`rdfs:comment` + SKOS; the style guide targets
-  SKOS-only `skos:prefLabel`/`skos:definition` — a separate cleanup, not yet scheduled.
+- **CQ-8 / CQ-11 pass on synthetic fixtures only:** both are green, but each returns a single row
+  sourced from `tests/test_data.ttl` (`:TST_*`). The real catalogue carries almost no producer
+  lineage and no musician who is a member of two bands, so neither CQ has anything to find in
+  `music_catalog_data.ttl`. The queries are proven; the ABox coverage is not.
 - `:locatedIn` is left domain-open (permissive) to span orgs, venues, events, and places.
 - **CQ-15 documented approximations** (accepted, not fixed): `:originatesFrom` (birthplace) is a
   *proxy* for formative residence — lossy for emigrant artists; event boundary dates are sourced
