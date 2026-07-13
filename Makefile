@@ -1,7 +1,7 @@
 # Music Ontology — task runner (thin wrapper over uv).
 # Usage: make <target>.  `make check` runs the full validation gate.
 
-.PHONY: help install validate test shacl coverage check dataset reason serve fuseki-load down clean
+.PHONY: help install validate test shacl shacl-negative coverage check dataset reason reason-negative serve fuseki-load down clean
 
 # Fuseki endpoint knobs (override on the CLI, e.g. `make fuseki-load FUSEKI_PW=secret`)
 FUSEKI_URL ?= http://localhost:3030
@@ -24,6 +24,9 @@ test: ## CQ regression suite (one SPARQL test per competency question)
 shacl: ## SHACL conformance gate (fails only on Violations; Warnings advisory)
 	uv run python scripts/check_shacl.py
 
+shacl-negative: ## Non-vacuity gate — prove each shape can actually FAIL (tests/negative/)
+	uv run python scripts/check_shacl_negative.py
+
 coverage: ## ABox coverage report — can the real catalogue answer each CQ? (advisory, never fails)
 	uv run python scripts/cq_coverage.py
 
@@ -31,6 +34,24 @@ reason: ## Reasoner consistency check (HermiT via ROBOT; docker compose service 
 	docker compose run --rm reasoner
 	@rm -f .robot_reasoned.ttl
 	@echo "OK — ontology is consistent, no unsatisfiable classes (TBox+ABox merged, gist v14.1.0 imported locally)."
+
+reason-negative: ## Non-vacuity gate for the REASONER — prove HermiT can actually report inconsistency
+	@# Until v3.0.0 the domain TBox had ZERO owl:disjointWith axioms, so HermiT had nothing to
+	@# contradict and `make reason` could not fail on any input — a green light wired to nothing.
+	@# This merges a deliberately inconsistent fixture and REQUIRES a non-zero exit.
+	@if docker compose run --rm reasoner merge --catalog ontology/catalog-v001.xml \
+		--input ontology/music_vocabulary_comprehensive.ttl \
+		--input ontology/music_catalog_data.ttl \
+		--input tests/negative/reasoner_inconsistent.ttl \
+		reason --reasoner hermit --output /work/.robot_neg.ttl >/dev/null 2>&1; then \
+		rm -f .robot_neg.ttl; \
+		echo "FAIL — HermiT accepted a group that is also a person. The disjointness axioms are"; \
+		echo "       gone, and `make reason` is certifying nothing. See tests/negative/reasoner_inconsistent.ttl."; \
+		exit 1; \
+	else \
+		rm -f .robot_neg.ttl; \
+		echo "OK — HermiT rejects the inconsistent fixture. The reasoner gate is not vacuous."; \
+	fi
 
 dataset: ## Assemble the named-graph dataset for triplestore ingest (dist/*.trig, load.ru, manifest)
 	uv run python scripts/load_graphs.py
@@ -59,7 +80,7 @@ fuseki-load: dataset serve ## Build the dataset and (re)load it into Fuseki's na
 down: ## Stop the Fuseki server (keeps the TDB volume; use `docker compose down -v` to wipe)
 	docker compose down
 
-check: validate test shacl ## Run the full validation gate (CI; reasoner is separate, needs Docker)
+check: validate test shacl shacl-negative ## Run the full validation gate (CI; reasoner is separate, needs Docker)
 
 clean: ## Remove the virtual environment
 	rm -rf .venv

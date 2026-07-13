@@ -552,6 +552,41 @@
     .
 
 ###############################################################################
+# INSTANCES — MUSICAL ROLES (gist:Category)
+#
+# What an agent DOES. An agent may hold several of these at once — :QuincyJones holds
+# three — which is exactly what the old role-as-class model could not express.
+###############################################################################
+
+:ProducerRole a :MusicalRole ;
+    rdfs:label "Producer"@en ;
+    rdfs:comment "Oversees and manages the recording and production of music."@en ;
+    skos:definition "The role of overseeing the recording, mixing and production of a musical work."@en ;
+    :exampleInstance :GeorgeMartin, :QuincyJones, :RickRubin ;
+    .
+
+:ConductorRole a :MusicalRole ;
+    rdfs:label "Conductor"@en ;
+    rdfs:comment "Directs the performance of an orchestra or choir."@en ;
+    skos:definition "The role of directing the performance of an orchestra, choir or other ensemble."@en ;
+    :exampleInstance :HerbertVonKarajan, :LeonardBernstein ;
+    .
+
+:LyricistRole a :MusicalRole ;
+    rdfs:label "Lyricist"@en ;
+    rdfs:comment "Writes the words (lyrics) for songs."@en ;
+    skos:definition "The role of writing the words of a song."@en ;
+    :exampleInstance :BobDylan, :PaulMcCartney, :TaylorSwift ;
+    .
+
+:ComposerRole a :MusicalRole ;
+    rdfs:label "Composer"@en ;
+    rdfs:comment "Writes original music."@en ;
+    skos:definition "The role of creating an original musical work."@en ;
+    :exampleInstance :LudwigVanBeethoven, :WolfgangAmadeusMozart, :JohannSebastianBach ;
+    .
+
+###############################################################################
 # INSTANCES — MUSICIANS (band members / notable instrumentalists)
 ###############################################################################
 
@@ -583,7 +618,7 @@
 :JimiHendrix a :Musician ;
     rdfs:label "Jimi Hendrix"@en ;
     rdfs:comment "American rock guitarist, singer, and songwriter."@en ;
-    :bornOn "1942-11-27"^^xsd:date ;
+    :bornOn "1942"^^xsd:gYear ;
     :hasInstrument :Guitar ;
     :hasGenre :Rock ;
     :originatesFrom :Seattle ;
@@ -599,7 +634,8 @@
     :startsCareerIn "1962"^^xsd:gYear ;
     .
 
-:HerbertVonKarajan a :Conductor ;
+:HerbertVonKarajan a :MusicalPerson ;
+    :hasRole :ConductorRole ;
     rdfs:label "Herbert von Karajan"@en ;
     rdfs:comment "Austrian conductor, considered one of the greatest conductors of the 20th century."@en ;
     :hasGenre :Classical ;
@@ -607,7 +643,8 @@
     :startsCareerIn "1929"^^xsd:gYear ;
     .
 
-:LeonardBernstein a :Conductor ;
+:LeonardBernstein a :MusicalPerson ;
+    :hasRole :ConductorRole ;
     rdfs:label "Leonard Bernstein"@en ;
     rdfs:comment "American conductor, composer, pianist, music educator, and author."@en ;
     :hasGenre :Classical ;
@@ -615,22 +652,26 @@
     :startsCareerIn "1942"^^xsd:gYear ;
     .
 
-:QuincyJones a :MusicProducer ;
+:QuincyJones a :Musician ;
+    :hasRole :ProducerRole, :ConductorRole, :ComposerRole ;
+    :hasInstrument :Trumpet ;
     rdfs:label "Quincy Jones"@en ;
     rdfs:comment "American record producer, conductor, and composer, known for producing Michael Jackson's Thriller."@en ;
-    :bornOn "1933-03-14"^^xsd:date ;
+    :bornOn "1933"^^xsd:gYear ;
     :originatesFrom :Chicago ;
     :startsCareerIn "1951"^^xsd:gYear ;
     .
 
-:RickRubin a :MusicProducer ;
+:RickRubin a :MusicalPerson ;
+    :hasRole :ProducerRole ;
     rdfs:label "Rick Rubin"@en ;
     rdfs:comment "American record producer, co-founder of Def Jam Recordings."@en ;
     :originatesFrom :LongBeach_NY ;
     :startsCareerIn "1984"^^xsd:gYear ;
     .
 
-:GeorgeMartin a :MusicProducer ;
+:GeorgeMartin a :MusicalPerson ;
+    :hasRole :ProducerRole ;
     rdfs:label "George Martin"@en ;
     rdfs:comment "English record producer known for his work with The Beatles."@en ;
     :originatesFrom :London ;
@@ -641,7 +682,8 @@
 # INSTANCES — COMPOSERS
 ###############################################################################
 
-:LudwigVanBeethoven a :Composer, :SoloArtist ;
+:LudwigVanBeethoven a :SoloArtist ;
+    :hasRole :ComposerRole ;
     rdfs:label "Ludwig van Beethoven"@en ;
     rdfs:comment "German composer and pianist, widely regarded as one of the greatest composers in Western music history."@en ;
     :hasGenre :Classical ;
@@ -651,7 +693,8 @@
     :startsCareerIn "1782"^^xsd:gYear ;
     .
 
-:WolfgangAmadeusMozart a :Composer, :SoloArtist ;
+:WolfgangAmadeusMozart a :SoloArtist ;
+    :hasRole :ComposerRole ;
     rdfs:label "Wolfgang Amadeus Mozart"@en ;
     rdfs:comment "Austrian composer of the Classical period."@en ;
     :hasGenre :Classical ;
@@ -660,7 +703,8 @@
     :startsCareerIn "1761"^^xsd:gYear ;
     .
 
-:JohannSebastianBach a :Composer, :SoloArtist ;
+:JohannSebastianBach a :SoloArtist ;
+    :hasRole :ComposerRole ;
     rdfs:label "Johann Sebastian Bach"@en ;
     rdfs:comment "German composer and musician of the Baroque period."@en ;
     :hasGenre :Classical ;
@@ -670,10 +714,11 @@
     :startsCareerIn "1703"^^xsd:gYear ;
     .
 
-:BobDylan a :Composer, :Lyricist, :SoloArtist ;
+:BobDylan a :SoloArtist ;
+    :hasRole :ComposerRole, :LyricistRole ;
     rdfs:label "Bob Dylan"@en ;
     rdfs:comment "American singer-songwriter widely considered one of the greatest songwriters of all time."@en ;
-    :bornOn "1941-05-24"^^xsd:date ;
+    :bornOn "1941"^^xsd:gYear ;
     :hasGenre :Folk ;
     :hasGenre :Rock ;
     :hasInstrument :Guitar ;
@@ -687,10 +732,11 @@
 # INSTANCES — SOLO ARTISTS
 ###############################################################################
 
-:PaulMcCartney a :SoloArtist, :Lyricist ;
+:PaulMcCartney a :SoloArtist ;
+    :hasRole :LyricistRole ;
     rdfs:label "Paul McCartney"@en ;
     rdfs:comment "English singer-songwriter and musician, best known as a member of the Beatles."@en ;
-    :bornOn "1942-06-18"^^xsd:date ;
+    :bornOn "1942"^^xsd:gYear ;
     :startsCareerIn "1957"^^xsd:gYear ;
     :originatesFrom :Liverpool ;
     :speaksLanguage "English" ;
@@ -705,7 +751,7 @@
 :KanyeWest a :SoloArtist ;
     rdfs:label "Kanye West"@en ;
     rdfs:comment "American rapper, singer, songwriter, record producer, and fashion designer."@en ;
-    :bornOn "1977-06-08"^^xsd:date ;
+    :bornOn "1977"^^xsd:gYear ;
     :startsCareerIn "1996"^^xsd:gYear ;
     :originatesFrom :Chicago ;
     :speaksLanguage "English" ;
@@ -717,7 +763,7 @@
 :SadeAdu a :SoloArtist ;
     rdfs:label "Sade Adu"@en ;
     rdfs:comment "British-Nigerian singer, songwriter known for her smooth soulful voice."@en ;
-    :bornOn "1959-01-16"^^xsd:date ;
+    :bornOn "1959"^^xsd:gYear ;
     :startsCareerIn "1980"^^xsd:gYear ;
     :originatesFrom :London ;
     :speaksLanguage "English" ;
@@ -729,7 +775,7 @@
 :BeyonceKnowles a :SoloArtist ;
     rdfs:label "Beyoncé Knowles"@en ;
     rdfs:comment "American singer, songwriter, and actress, widely regarded as one of the greatest entertainers of all time."@en ;
-    :bornOn "1981-09-04"^^xsd:date ;
+    :bornOn "1981"^^xsd:gYear ;
     :startsCareerIn "1990"^^xsd:gYear ;
     :originatesFrom :Houston ;
     :speaksLanguage "English" ;
@@ -742,7 +788,7 @@
 :MilesDavis a :SoloArtist ;
     rdfs:label "Miles Davis"@en ;
     rdfs:comment "American jazz trumpeter and bandleader, one of the most influential musicians in jazz history."@en ;
-    :bornOn "1926-05-26"^^xsd:date ;
+    :bornOn "1926"^^xsd:gYear ;
     :startsCareerIn "1944"^^xsd:gYear ;
     :originatesFrom :Alton ;
     :speaksLanguage "English" ;
@@ -774,10 +820,11 @@
     :hasAward :GrammyAward ;
     .
 
-:TaylorSwift a :SoloArtist, :Lyricist ;
+:TaylorSwift a :SoloArtist ;
+    :hasRole :LyricistRole ;
     rdfs:label "Taylor Swift"@en ;
     rdfs:comment "American singer-songwriter known for her narrative songwriting."@en ;
-    :bornOn "1989-12-13"^^xsd:date ;
+    :bornOn "1989"^^xsd:gYear ;
     :startsCareerIn "2004"^^xsd:gYear ;
     :originatesFrom :WestReading ;
     :speaksLanguage "English" ;
@@ -974,10 +1021,17 @@
     :hasAward :MercuryPrize ;
     .
 
+# The classical credit shape: the ORCHESTRA performs, the CONDUCTOR conducts, the COMPOSER
+# composed. Three different agents in three different capacities on one work — the thing the
+# old role-as-class model could not lay out, and the reason :conductedBy now exists.
+# (Caveat, stated once and true of every credit here: these attach to the WORK. The model has
+# no Recording, so it cannot distinguish Karajan's 1963 reading from anyone else's.)
 :Symphony9Beethoven a :Symphony ;
     rdfs:label "Symphony No. 9 in D minor, Op. 125"@en ;
     rdfs:comment "The final complete symphony by Ludwig van Beethoven, premiered in 1824."@en ;
     :composedBy :LudwigVanBeethoven ;
+    :conductedBy :HerbertVonKarajan ;
+    :performedBy :BerlinPhilharmonic ;
     :releasedIn "1824"^^xsd:gYear ;
     :hasGenre :Classical ;
     :hasGenre :Romantic ;
@@ -988,6 +1042,7 @@
     rdfs:label "Requiem in D minor, K. 626"@en ;
     rdfs:comment "A requiem mass by Wolfgang Amadeus Mozart, left unfinished at his death in 1791."@en ;
     :composedBy :WolfgangAmadeusMozart ;
+    :conductedBy :LeonardBernstein ;
     :releasedIn "1791"^^xsd:gYear ;
     :hasGenre :Classical ;
     :hasTimeSignature :FourFourTime ;

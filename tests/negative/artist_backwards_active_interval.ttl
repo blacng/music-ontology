@@ -1,0 +1,17 @@
+@prefix : <https://www.somusicvocabulary.org/music#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# NEGATIVE: :MusicalArtistShape (sh:sparql) — an activity interval must be well-ordered.
+# This artist retires eleven years before starting, which would corrupt the era-overlap
+# answers in CQ-13.
+
+# No :hasGenre: these fixtures are validated STANDALONE, so a reference to the catalogue's
+# :Rock would be an untyped node here and trip :MusicalArtistShape's hasGenre class check —
+# a second, unrelated Violation that would mask the one under test. The absent genre raises
+# only the advisory "should have a genre" Warning, which is fine.
+:NEG_TimeTraveller a :SoloArtist ;
+    rdfs:label "Negative fixture — active 1990 to 1979"@en ;
+    :activeFrom "1990"^^xsd:gYear ;
+    :activeUntil "1979"^^xsd:gYear ;
+    .

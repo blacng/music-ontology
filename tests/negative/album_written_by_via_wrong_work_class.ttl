@@ -1,0 +1,22 @@
+@prefix : <https://www.somusicvocabulary.org/music#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# NEGATIVE: :WrittenByShape — THE BYPASS.
+#
+# The credit guards were originally hung off :SongShape / :AlbumShape / :CompositionShape,
+# i.e. anchored to the WORK'S CLASS. Nothing in the TBox stops an :Album carrying :writtenBy,
+# and :AlbumShape never mentioned :writtenBy — so this exact graph passed with ZERO
+# violations. An album "written by" a record label. The central new guarantee of v3.0.0
+# ("a credit requires the matching role") was bypassable by picking a different work type.
+#
+# The guards are now anchored with sh:targetSubjectsOf on the PROPERTY, so the rule follows
+# the credit wherever it is used. This fixture is the regression test for that.
+
+:NEG_LabelWriter a :RecordLabel ;
+    rdfs:label "Negative fixture — a record label"@en ;
+    .
+
+:NEG_AlbumWithLyricist a :Album ;
+    rdfs:label "Negative fixture — an ALBUM written by a record label"@en ;
+    :writtenBy :NEG_LabelWriter ;
+    .

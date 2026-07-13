@@ -7,6 +7,7 @@
 ###############################################################################
 
 @prefix : <https://www.somusicvocabulary.org/music#> .
+@prefix dct: <http://purl.org/dc/terms/> .
 @prefix gist: <https://w3id.org/semanticarts/ns/ontology/gist/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -21,9 +22,20 @@
 :MusicVocabulary a owl:Ontology ;
     rdfs:label "Comprehensive Music Vocabulary"@en ;
     rdfs:comment "A comprehensive vocabulary for describing music concepts, works, artists, instruments, and relationships."@en ;
-    owl:versionInfo "2.3.0" ;
-    owl:versionIRI <https://www.somusicvocabulary.org/music/2.3.0> ;
+    owl:versionInfo "3.0.0" ;
+    owl:versionIRI <https://www.somusicvocabulary.org/music/3.0.0> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> ;
+    dct:creator "Seun Odeyemi" ;
+    # gist is CC-BY-4.0, which requires attribution ON REDISTRIBUTION — and `make dataset`
+    # does redistribute it, as a named graph inside dist/music_dataset.trig. See NOTICE.
+    dct:source <https://w3id.org/semanticarts/ontology/gistCore> ;
     owl:imports <https://w3id.org/semanticarts/ontology/gistCore> .
+
+<https://w3id.org/semanticarts/ontology/gistCore>
+    dct:title "gist" ;
+    dct:creator "Semantic Arts, Inc." ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> ;
+    owl:versionInfo "14.1.0" .
 
 ###############################################################################
 # CLASSES — AGENTS & PEOPLE
@@ -35,11 +47,27 @@
     skos:definition "Any person or group that creates or performs music; the common parent of musical artists and musicians."@en ;
     .
 
+# The person-side counterpart to :Band. What every producer, conductor, lyricist and
+# engineer essentially IS — a human working in music — as distinct from what they DO,
+# which is a :MusicalRole (see :hasRole). Producing is a job you can take up and put
+# down; being a person is not. Roles are therefore categories, not classes, and this is
+# the class they attach to. :Musician narrows it to those who actually perform.
+:MusicalPerson a owl:Class ;
+    rdfs:subClassOf :MusicalAgent ;
+    rdfs:subClassOf gist:Person ;
+    skos:prefLabel "Musical Person"@en ;
+    skos:scopeNote "A human who works in music in any capacity — performing, producing, conducting, writing. Use :hasRole to say which."@en ;
+    skos:definition "A musical agent that is an individual human being, as opposed to a group."@en ;
+    :exampleInstance :GeorgeMartin, :RickRubin, :HerbertVonKarajan ;
+    .
+
 :MusicalArtist a owl:Class ;
     rdfs:subClassOf :MusicalAgent ;
     skos:prefLabel "Musical Artist"@en ;
     skos:scopeNote "An individual or group that performs music."@en ;
-    skos:broader :Artist ;
+    # `skos:broader :Artist` was here, pointing at a class this ontology has never defined.
+    # It dangled quietly for several releases; the new undeclared-reference check in
+    # validate_fixes.py caught it while checking for the ones the role deletion could leave.
     skos:related :MusicGenre ;
     skos:narrower :SoloArtist, :Band ;
     skos:definition "A musical artist is an individual or group that creates or performs music."@en ;
@@ -103,8 +131,7 @@
     .
 
 :Musician a owl:Class ;
-    rdfs:subClassOf :MusicalAgent ;
-    rdfs:subClassOf gist:Person ;
+    rdfs:subClassOf :MusicalPerson ;
     skos:prefLabel "Musician"@en ;
     skos:scopeNote "A person who plays a musical instrument or sings."@en ;
     skos:related :MusicalInstrument, :Band ;
@@ -112,42 +139,91 @@
     :exampleInstance :JohnLennon, :JimiHendrix, :YoYoMa ;
     .
 
-:Composer a owl:Class ;
-    rdfs:subClassOf :Musician ;
-    skos:prefLabel "Composer"@en ;
-    skos:scopeNote "A person who writes original music."@en ;
-    skos:broader :Musician ;
-    skos:definition "A composer is a musician who creates original musical works."@en ;
-    :exampleInstance :LudwigVanBeethoven, :WolfgangAmadeusMozart, :JohannSebastianBach ;
+# :Composer, :Lyricist, :MusicProducer and :Conductor were classes here until v3.0.0.
+# They are now :MusicalRole individuals (:ComposerRole, :LyricistRole, :ProducerRole,
+# :ConductorRole) in the ABox, attached with :hasRole. See the MUSICAL ROLES section above.
+#
+# They were removed rather than renamed in place: an old query `?x a :MusicProducer` now
+# returns zero rows and breaks loudly, which is the honest signal for a breaking release.
+# Reusing the IRIs would have flipped them from class to individual and returned zero rows
+# silently.
+
+###############################################################################
+# CLASSES — MUSICAL ROLES (gist:Category pattern)
+#
+# A role is what an agent DOES, not what it IS. Producing, conducting, writing lyrics and
+# composing are jobs: an agent can hold several at once, and can take them up or set them
+# down without ceasing to be the same person.
+#
+# Be precise about what was actually broken, because the loose version of this story is
+# false. Roles-as-classes did NOT make multi-role agents *impossible* — OWL individuals may
+# carry many types, and `:QuincyJones a :MusicProducer, :Composer` would have made him a
+# :Musician (via :Composer ⊑ :Musician) and let him hold :hasInstrument. The catalogue
+# simply never asserted it. That was a missing triple, not an impossibility.
+#
+# What roles-as-classes really cost:
+#   * Anti-rigidity (OntoClean). A class should hold what is essential to identity. Rubin
+#     cannot stop being a person; he can stop producing. Rigid class, anti-rigid property.
+#   * Combinatorics. Expressing "holds producer AND composer" needs the cross-product of
+#     type combinations; asking "who holds more than one role?" needs every role class
+#     enumerated in a VALUES clause, and the query breaks every time a role is added.
+#   * Extensibility. Real catalogues carry dozens of roles (engineer, arranger, mixer,
+#     librettist…). Under classes each is a TBox release. Under categories it is one ABox
+#     triple.
+#
+# So roles are gist:Category instances, reached by :hasRole — the same pattern the model
+# already uses for genres (:MusicGenre / :hasGenre), place granularity (:PlaceType /
+# :hasPlaceType) and collections (:CollectionType), and what the style guide means by
+# "prefer gist:isCategorizedBy over subclassing for type variation".
+#
+# KNOWN LIMIT, recorded honestly: the role sits on the AGENT, not on the CREDIT. So the
+# model says Quincy produces, and separately that he produced Thriller — it cannot say he
+# produced Thriller *in the role of producer* while playing trumpet on something else.
+# :HoldsProducerRoleShape can therefore only catch an agent credited with producing who
+# produces nothing anywhere; it cannot catch a wrong credit. Reifying credits (agent × role
+# × work, as MusicBrainz/Discogs/DDEX all do) is the real fix and is deliberately deferred.
+#
+# The role INSTANCES (:ProducerRole, :ConductorRole, :LyricistRole, :ComposerRole) live in
+# the ABox alongside the genre and :PlaceType individuals.
+###############################################################################
+
+:MusicalRole a owl:Class ;
+    rdfs:subClassOf gist:Category ;
+    skos:prefLabel "Musical Role"@en ;
+    skos:scopeNote "A capacity in which an agent contributes to music. Attach with :hasRole; do not subclass agents by role."@en ;
+    skos:definition "A category that classifies the capacity in which a musical agent contributes to music, such as producing, conducting, writing lyrics or composing."@en ;
+    :exampleInstance :ProducerRole, :ConductorRole, :LyricistRole, :ComposerRole ;
     .
 
-:Lyricist a owl:Class ;
-    rdfs:subClassOf gist:Person ;
-    skos:prefLabel "Lyricist"@en ;
-    skos:scopeNote "A person who writes the words (lyrics) for songs."@en ;
-    skos:related :Song ;
-    skos:definition "A lyricist is a writer who specializes in writing song lyrics."@en ;
-    :exampleInstance :BobDylan, :PaulMcCartney ;
-    .
+###############################################################################
+# DISJOINTNESS
+#
+# Without these, `make reason` is vacuously green — exactly as `make shacl` was before the
+# negative fixtures landed. The domain TBox carried ZERO owl:disjointWith axioms, so HermiT
+# had nothing to contradict and could not fail on any input. "Consistent, no unsatisfiable
+# classes" certified only that the file parsed.
+#
+# They also close a real hole. The TBox ships `:startsCareerIn rdfs:domain :MusicalAgent`,
+# and a domain is an inference RULE: any RDFS-entailing store reading a :RecordLabel with a
+# career onset will silently RETYPE it into a :MusicalAgent — repairing the bad data instead
+# of rejecting it. SHACL rejects it (that is what the taxonomy-only ont_graph is for), but
+# the SHIPPED model did not, and `make dataset` exports the shipped model. Two artefacts,
+# two answers.
+#
+# With disjointness the entailment becomes a contradiction, and the reasoner catches what
+# the domain axiom would otherwise quietly paper over. Now both gates reject the label, and
+# the shipped model agrees with its own validator.
+###############################################################################
 
-:MusicProducer a owl:Class ;
-    rdfs:subClassOf gist:Person ;
-    skos:prefLabel "Music Producer"@en ;
-    skos:scopeNote "A person who oversees and manages the recording and production of music."@en ;
-    skos:related :Album, :RecordLabel ;
-    skos:definition "A music producer is responsible for overseeing the recording, mixing, and production of musical recordings."@en ;
-    :exampleInstance :QuincyJones, :RickRubin, :GeorgeMartin ;
-    .
+[] a owl:AllDisjointClasses ;
+    owl:members ( :MusicalAgent :MusicalWork :Place :RecordLabel :MusicalInstrument ) .
 
-:Conductor a owl:Class ;
-    rdfs:subClassOf :Musician ;
-    skos:prefLabel "Conductor"@en ;
-    skos:scopeNote "A person who directs the performance of an orchestra or choir."@en ;
-    skos:broader :Musician ;
-    skos:related :Orchestra ;
-    skos:definition "A conductor is a musician who leads an orchestra, choir, or other musical ensemble."@en ;
-    :exampleInstance :HerbertVonKarajan, :LeonardBernstein ;
-    .
+# A group is not a person and a person is not a group. This is the one rigid distinction the
+# agent taxonomy actually turns on — it is why :Band and :MusicalPerson are siblings rather
+# than one being a role of the other.
+:Band owl:disjointWith :MusicalPerson .
+
+###############################################################################
 
 :RecordLabel a owl:Class ;
     rdfs:subClassOf gist:Organization ;
@@ -175,7 +251,7 @@
     skos:prefLabel "Song"@en ;
     skos:scopeNote "A short musical composition with vocals."@en ;
     skos:broader :MusicalWork ;
-    skos:related :Album, :MusicalArtist, :Lyricist ;
+    skos:related :Album, :MusicalArtist, :LyricistRole ;
     skos:definition "A song is a short musical composition intended to be sung, typically combining melody and lyrics."@en ;
     :exampleInstance :HeyJude, :BohemianRhapsody, :BillieJean, :SmokeOnTheWater, :ImagineSong, :NoWomanNoCry, :CryMeARiver ;
     .
@@ -230,7 +306,7 @@
     skos:scopeNote "A formal musical work, typically in the classical tradition."@en ;
     skos:broader :MusicalWork ;
     skos:narrower :Symphony, :Concerto, :Sonata, :Opera ;
-    skos:related :Composer ;
+    skos:related :ComposerRole ;
     skos:definition "A musical composition is a formal musical work created by a composer."@en ;
     :exampleInstance :Symphony9Beethoven, :RequiemMozart ;
     .
@@ -421,7 +497,7 @@
     skos:prefLabel "Recording Session"@en ;
     skos:scopeNote "A period of time during which music is recorded in a studio."@en ;
     skos:broader :MusicEvent ;
-    skos:related :Album, :MusicProducer ;
+    skos:related :Album, :ProducerRole ;
     skos:definition "A recording session is a period of time used in a recording studio to record music."@en ;
     .
 
@@ -526,6 +602,18 @@
     skos:definition "Relates a musical artist or work to the genre(s) it belongs to."@en ;
     .
 
+# The role dimension. Same shape as :hasGenre above: a sub-property of gist:isCategorizedBy
+# ranging over a gist:Category subclass. An agent may hold any number of roles at once —
+# that is the whole point, and it is what roles-as-classes could not express.
+:hasRole a owl:ObjectProperty ;
+    skos:prefLabel "has role"@en ;
+    skos:scopeNote "Associates a musical agent with a capacity in which they contribute — producing, conducting, writing lyrics, composing. Repeatable: an agent may hold several roles."@en ;
+    rdfs:domain :MusicalAgent ;
+    rdfs:subPropertyOf gist:isCategorizedBy ;
+    rdfs:range :MusicalRole ;
+    skos:definition "Relates a musical agent to the role(s) in which they contribute to music."@en ;
+    .
+
 :hasMember a owl:ObjectProperty ;
     skos:prefLabel "has member"@en ;
     skos:scopeNote "Associates a band with its individual members."@en ;
@@ -583,10 +671,15 @@
     rdfs:range :Place ;
     .
 
+# Domain is :MusicalAgent, not :MusicalArtist. Producers and conductors have careers too,
+# and until v3.0.0 they sat outside :MusicalAgent — so this domain was simply false, and
+# RDFS (for which a domain is an inference RULE, not a constraint) duly retyped every
+# producer as a musical artist. Now that roles are categories and every music-making agent
+# is a :MusicalAgent, the axiom is true. :CareerOnsetShape carries the constraint reading.
 :startsCareerIn a owl:DatatypeProperty ;
     skos:prefLabel "starts career in"@en ;
-    skos:scopeNote "The year in which the artist began their professional music career."@en ;
-    rdfs:domain :MusicalArtist ;
+    skos:scopeNote "The year in which the agent began their professional music career."@en ;
+    rdfs:domain :MusicalAgent ;
     rdfs:range xsd:gYear ;
     .
 
@@ -629,28 +722,53 @@
     owl:inverseOf :performedBy ;
     .
 
+# The three credit properties range over :MusicalAgent, not over a role class. The ROLE
+# requirement (the composer must actually hold :ComposerRole, etc.) is a constraint, so it
+# lives in SHACL — :CompositionShape, :SongShape, :AlbumShape — not in an rdfs:range, which
+# RDFS would read as licence to *manufacture* the role rather than to check it.
+
 :composedBy a owl:ObjectProperty ;
     skos:prefLabel "composed by"@en ;
-    skos:scopeNote "Associates a musical work with its composer."@en ;
+    skos:scopeNote "Associates a musical work with the agent who composed it. The agent must hold :ComposerRole (enforced by :CompositionShape)."@en ;
     rdfs:domain :MusicalWork ;
-    rdfs:range :Composer ;
-    skos:definition "Relates a musical work to the composer who created it."@en ;
+    rdfs:range :MusicalAgent ;
+    skos:definition "Relates a musical work to the agent who created it."@en ;
     .
 
+# Domain is :MusicalWork, not :Song. A libretto has a librettist, and an opera is a
+# :Composition — under `rdfs:domain :Song` the credit was unsayable for any work that is not
+# a song, which quietly excluded the entire classical repertoire from having a writer.
 :writtenBy a owl:ObjectProperty ;
     skos:prefLabel "written by"@en ;
-    skos:scopeNote "Associates a song with its lyricist."@en ;
-    rdfs:domain :Song ;
-    rdfs:range :Lyricist ;
-    skos:definition "Relates a song to the lyricist who wrote its lyrics."@en ;
+    skos:scopeNote "Associates a musical work with the agent who wrote its words. The agent must hold :LyricistRole (enforced by :WrittenByShape)."@en ;
+    rdfs:domain :MusicalWork ;
+    rdfs:range :MusicalAgent ;
+    skos:definition "Relates a musical work to the agent who wrote its words."@en ;
     .
 
 :producedBy a owl:ObjectProperty ;
     skos:prefLabel "produced by"@en ;
-    skos:scopeNote "Associates a musical work with its producer."@en ;
+    skos:scopeNote "Associates a musical work with the agent who produced it. The agent must hold :ProducerRole (enforced by :ProducedByShape)."@en ;
     rdfs:domain :MusicalWork ;
-    rdfs:range :MusicProducer ;
-    skos:definition "Relates a musical work to the producer who oversaw its production."@en ;
+    rdfs:range :MusicalAgent ;
+    skos:definition "Relates a musical work to the agent who oversaw its production."@en ;
+    .
+
+# Conducting had no property at all. A conductor could be *labelled* one (:ConductorRole) and
+# then linked to nothing — not an orchestra, not a symphony, not a recording. Karajan was a
+# decorated dead end, which is a poor showing for a music ontology, since "conductor +
+# ensemble + composer + work" is the credit shape the entire classical catalogue is keyed on.
+#
+# Note how the pieces sit: the ORCHESTRA performs (:Orchestra ⊑ :Band ⊑ :MusicalArtist, so it
+# satisfies :performedBy) and the CONDUCTOR conducts. That is how the credit actually works —
+# the conductor is not a performer, which is precisely why :MusicianShape no longer expects an
+# instrument from them.
+:conductedBy a owl:ObjectProperty ;
+    skos:prefLabel "conducted by"@en ;
+    skos:scopeNote "Associates a musical work with the person who conducted it. The person must hold :ConductorRole (enforced by :ConductedByShape). Like every credit here, this attaches to the WORK — the model has no Recording, so it cannot yet distinguish two conductors' readings of the same symphony."@en ;
+    rdfs:domain :MusicalWork ;
+    rdfs:range :MusicalPerson ;
+    skos:definition "Relates a musical work to the person who directed its performance."@en ;
     .
 
 :releasedBy a owl:ObjectProperty ;
@@ -863,11 +981,17 @@ skos:scopeNote a owl:AnnotationProperty .
 
 # --- Time: bornOn replaces the removed hasAge ---
 
+# xsd:gYear, not xsd:date — data minimisation (GDPR Art. 5(1)(c)). The catalogue describes
+# real, named, living people. Exactly one consumer reads :bornOn — CQ-15 — and it only ever
+# took YEAR(?b). Storing a person's exact date of birth to answer a question about the decade
+# they came of age is collecting more than the purpose requires. The year is sufficient, so
+# the year is what we keep.
 :bornOn a owl:DatatypeProperty ;
     skos:prefLabel "born on"@en ;
     rdfs:domain :MusicalAgent ;
-    rdfs:range xsd:date ;
-    skos:definition "The date on which an agent was born."@en ;
+    rdfs:range xsd:gYear ;
+    skos:scopeNote "Year of birth only. Do not narrow to a full date: no competency question needs one, and this is personal data about living individuals."@en ;
+    skos:definition "The year in which an agent was born."@en ;
     .
 
 # --- Time: artist activity interval (the canonical era signal). :startsCareerIn
@@ -875,14 +999,14 @@ skos:scopeNote a owl:AnnotationProperty .
 
 :activeFrom a owl:DatatypeProperty ;
     skos:prefLabel "active from"@en ;
-    rdfs:domain :MusicalArtist ;
+    rdfs:domain :MusicalAgent ;
     rdfs:range xsd:gYear ;
-    skos:definition "The year an artist's active period began; the start of the activity interval used for era-overlap queries (CQ-13)."@en ;
+    skos:definition "The year an agent's active period began; the start of the activity interval used for era-overlap queries (CQ-13)."@en ;
     .
 
 :activeUntil a owl:DatatypeProperty ;
     skos:prefLabel "active until"@en ;
-    rdfs:domain :MusicalArtist ;
+    rdfs:domain :MusicalAgent ;
     rdfs:range xsd:gYear ;
     skos:scopeNote "Omit for currently-active artists; era-overlap queries treat a missing value as open-ended (still active)."@en ;
     skos:definition "The year an artist's active period ended; absent means the artist is still active (an open interval)."@en ;

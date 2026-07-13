@@ -1,0 +1,22 @@
+@prefix : <https://www.somusicvocabulary.org/music#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# NEGATIVE: :MusicalPersonShape — the coverage hole this release opened.
+#
+# v3.0.0 moved conductors and producers OUT of :Musician (which :MusicianShape policed) and
+# into :MusicalPerson — a class that, as introduced, NO shape targeted. The four individuals
+# the release created (Karajan, Bernstein, Rubin, Martin) landed in an unvalidated hole: they
+# could carry a non-instrument :hasInstrument, a bogus :hasGenre and an untyped :bornOn and
+# still pass clean. Identical garbage on a :Musician failed immediately.
+#
+# A redesign that relocates a population must relocate its constraints too.
+
+:NEG_UnvalidatedPerson a :MusicalPerson ;
+    rdfs:label "Negative fixture — a person with garbage in every slot"@en ;
+    :hasInstrument :NEG_NotAnInstrument ;
+    :bornOn "sometime in the 1930s" ;   # untyped string where an xsd:gYear belongs
+    .
+
+:NEG_NotAnInstrument a :RecordLabel ;
+    rdfs:label "Negative fixture — emphatically not an instrument"@en ;
+    .

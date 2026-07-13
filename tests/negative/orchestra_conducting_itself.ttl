@@ -1,0 +1,17 @@
+@prefix : <https://www.somusicvocabulary.org/music#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# NEGATIVE: :ConductedByShape — an ensemble does not conduct itself.
+#
+# :conductedBy ranges over :MusicalPerson, not :MusicalAgent, precisely so an :Orchestra
+# (which is a :Band, hence a :MusicalArtist, hence a :MusicalAgent) cannot be its own
+# conductor. The orchestra performs; a person conducts. Two credits, two agents.
+
+:NEG_SelfConductingOrchestra a :Orchestra ;
+    rdfs:label "Negative fixture — an orchestra with no conductor but itself"@en ;
+    .
+
+:NEG_UnconductedWork a :Symphony ;
+    rdfs:label "Negative fixture — a symphony conducted by an orchestra"@en ;
+    :conductedBy :NEG_SelfConductingOrchestra ;
+    .

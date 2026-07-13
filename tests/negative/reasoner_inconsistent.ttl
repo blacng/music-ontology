@@ -1,0 +1,19 @@
+@prefix : <https://www.somusicvocabulary.org/music#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# NEGATIVE FIXTURE FOR THE REASONER (not for SHACL — this file is fed to HermiT).
+#
+# `make reason` was VACUOUSLY GREEN, for exactly the reason `make shacl` was before
+# tests/negative/ existed: the domain TBox contained ZERO owl:disjointWith axioms, so HermiT
+# had nothing to contradict and could not fail on ANY input. "Consistent, no unsatisfiable
+# classes" certified only that the file parsed. A reasoner gate that cannot go red is a
+# green light wired to nothing.
+#
+# v3.0.0 adds the disjointness the domain actually has, and this fixture proves the gate can
+# now fail: a group is not a person. `make reason-negative` merges this with the model and
+# REQUIRES HermiT to report an inconsistency. If it ever passes, the disjointness axioms have
+# been lost and `make reason` has gone back to certifying nothing.
+
+:NEG_BandPerson a :Band, :MusicalPerson ;
+    rdfs:label "Negative fixture — a group that is also a person"@en ;
+    .

@@ -1,0 +1,22 @@
+@prefix : <https://www.somusicvocabulary.org/music#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# NEGATIVE: :SongShape / :HoldsLyricistRoleShape — a musical agent who holds the PRODUCER
+# role credited with writing the words. Adversarial on purpose: the agent is a valid
+# :MusicalAgent and does hold a role, just not this one. A shape that only checked "has
+# some :hasRole" would pass this.
+
+# Fixtures validate STANDALONE, so anything referenced must be typed here — otherwise
+# :ProducerRole is an untyped node and trips :MusicalRoleShape, a second failure that has
+# nothing to do with what this fixture is testing.
+:ProducerRole a :MusicalRole .
+
+:NEG_ProducerNotLyricist a :MusicalPerson ;
+    rdfs:label "Negative fixture — holds :ProducerRole, not :LyricistRole"@en ;
+    :hasRole :ProducerRole ;
+    .
+
+:NEG_SongBadWriter a :Song ;
+    rdfs:label "Negative fixture — song credited to a non-lyricist"@en ;
+    :writtenBy :NEG_ProducerNotLyricist ;
+    .

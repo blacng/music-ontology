@@ -63,12 +63,29 @@ These come from `style_guide_system_prompt.md` and are reflected in the existing
   `skos:broader` for genre hierarchy.
 - **Geography:** `:originatesFrom` (agents → `:Place`) and transitive `:locatedIn`
   (orgs/venues/events/place-containment) over `:Place`/`:City`/`:Country`. Not free-text.
-- **Time:** use `:bornOn` (`xsd:date`); never store `:hasAge` (time-varying).
-- **Vocals:** singing is modelled as `:hasInstrument :Voice` (`:Voice a :VocalInstrument ⊑ :MusicalInstrument`); `MusicianShape` exempts `:Conductor` from the play-an-instrument expectation.
-- **Agent hierarchy:** `:MusicalAgent` (⊑ `gist:Agent`) is the shared parent of `:MusicalArtist`
-  and `:Musician`; `:SoloArtist` is **both** (`⊑ :MusicalArtist` and `⊑ :Musician`); `:Band` is a
-  `:MusicalArtist` only (a group, not a person). `:collaboratesWith` ranges over `:MusicalAgent`;
-  `:hasMember` ranges over `:Musician`. Keep this when adding agents.
+- **Time:** use `:bornOn` (**`xsd:gYear` — year only**); never store `:hasAge` (time-varying).
+  Do **not** widen `:bornOn` back to `xsd:date`: no CQ needs a full date, this is personal data about
+  living people, and the SHACL shape rejects it (see `docs/data-protection.md`).
+- **Vocals:** singing is modelled as `:hasInstrument :Voice` (`:Voice a :VocalInstrument ⊑ :MusicalInstrument`).
+  There is **no conductor exemption** — a conductor who plays nothing is a `:MusicalPerson`, not a
+  `:Musician`, so `MusicianShape` never targets them.
+- **Roles (v3.0.0 — `gist:Category`, not classes):** producer/conductor/lyricist/composer are
+  **`:MusicalRole` individuals** (`:ProducerRole`, …) attached with `:hasRole` (⊑ `gist:isCategorizedBy`),
+  living in the ABox beside the genres. Do **not** reintroduce `:MusicProducer`/`:Conductor`/`:Lyricist`/
+  `:Composer` as classes. A role is what an agent *does*; the class is what it *is*. Adding a new role
+  (engineer, arranger…) is **one ABox triple**, not a TBox change.
+  Roles are borne by `:MusicalPerson` only (`:RoleBearerShape`) — a band does not conduct.
+- **Agent hierarchy:** `:MusicalAgent` is the root. `:MusicalPerson` (⊑ `gist:Person`) is the
+  person-side branch and the parent of `:Musician`; `:Band` (⊑ `gist:Organization`) is the group side.
+  `:SoloArtist` is **both** `⊑ :MusicalArtist` and `⊑ :Musician`. A pure producer/conductor is a
+  `:MusicalPerson` + a role. `:collaboratesWith` ranges over `:MusicalAgent`; `:hasMember` over
+  `:Musician`; `:conductedBy` over `:MusicalPerson`. `:MusicalAgent`/`:MusicalWork`/`:Place`/
+  `:RecordLabel`/`:MusicalInstrument` are mutually **disjoint** — keep it that way, it is what makes
+  `make reason` able to fail at all.
+- **Credits:** `:producedBy`/`:writtenBy`/`:composedBy` range over `:MusicalAgent`, and the **role**
+  requirement is SHACL, anchored on the **property** (`sh:targetSubjectsOf`), never on the work's class
+  — anchoring it to `:AlbumShape` once let `:SomeAlbum :writtenBy :SomeRecordLabel` pass clean.
+  Never put a role in an `rdfs:range`: a range does not *check* a role, it *manufactures* one.
 - **`:exampleInstance`** is a project-local annotation property used throughout the `.ttl` to
   attach illustrative individuals to classes.
 - **Forbidden (≈5 ruthless rules):** no `owl:equivalentClass` without authorisation; no
@@ -104,10 +121,20 @@ over many hand-edits for bulk `.ttl` changes (see `apply_structural_fixes.py`).
 
 ## Commands
 
-- **Full gate (what CI runs):** `make check` — model checks + CQ tests + SHACL.
-- Individually: `make validate` · `make test` · `make shacl` (or the underlying
-  `uv run python scripts/{validate_fixes,run_cq_tests,check_shacl}.py`).
+- **Full gate (what CI runs):** `make check` — model checks + CQ tests + SHACL + SHACL non-vacuity.
+  **CI runs the targets individually and never invokes `make check`** — a new gate wired only into
+  `make check` is dead code in CI. Add a CI step too.
+- Individually: `make validate` · `make test` · `make shacl` · `make shacl-negative` (or the underlying
+  `uv run python scripts/{validate_fixes,run_cq_tests,check_shacl,check_shacl_negative}.py`).
 - SHACL gate fails only on **Violations**; completeness Warnings are advisory (currently 0/0).
+- **Gates must be provably able to FAIL.** A shape targeting nothing and a shape that passes report
+  identically; so do a reasoner with no disjointness axioms and a consistent ontology. Both gates here
+  *were* vacuously green. `tests/negative/` (`make shacl-negative`) and `tests/negative/reasoner_inconsistent.ttl`
+  (`make reason-negative`) exist to prove they can go red — **add a negative fixture with every new shape**,
+  and never write "verified" for anything not committed and runnable in CI.
+- **SHACL validates under `inference='rdfs'` with a taxonomy-only `ont_graph`** (domain/range stripped).
+  Do not "simplify" this away: with the full TBox as `ont_graph`, `rdfs:domain` *manufactures* the very
+  type a shape checks for, and `:CareerOnsetShape` becomes unfalsifiable. See `scripts/check_shacl.py`.
 - **ABox coverage (advisory, never fails):** `make coverage` — `make test` loads the synthetic
   `:TST_*` fixtures alongside the catalogue, so a CQ can be green while the real ABox holds nothing
   for it to find. `scripts/cq_coverage.py` re-runs each manifest query over TBox+ABox **only**, with

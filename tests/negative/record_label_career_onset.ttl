@@ -1,0 +1,24 @@
+@prefix : <https://www.somusicvocabulary.org/music#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# NEGATIVE: :CareerOnsetShape — a career belongs to a music-making agent. A record label
+# is a company; it has a founding date, not a career.
+#
+# THIS IS THE FIXTURE THAT WAS ONCE CLAIMED TO EXIST AND DID NOT. A previous release
+# stated the shape was "verified with a negative test — a :RecordLabel claiming a career
+# onset is rejected". The test lived in a throwaway shell heredoc, was never committed,
+# and never ran in CI. The claim then propagated into four files.
+#
+# It is also the fixture that proves the taxonomy-only ont_graph is load-bearing. The TBox
+# asserts `:startsCareerIn rdfs:domain :MusicalAgent`. Hand that axiom to the RDFS closure
+# and this file CONFORMS — the closure retypes :NEG_CareerLabel into a :MusicalAgent, so
+# `sh:class :MusicalAgent` is satisfied by the very inference it was meant to police. The
+# shape becomes unfalsifiable. Strip domain/range from the ont_graph and it fires.
+#
+# Revert the strip in scripts/check_shacl.py and watch this go green. That is the test.
+
+:NEG_CareerLabel a :RecordLabel ;
+    rdfs:label "Negative fixture — a record label claiming a career"@en ;
+    :startsCareerIn "1931"^^xsd:gYear ;
+    .

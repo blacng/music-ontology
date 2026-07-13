@@ -1,0 +1,18 @@
+@prefix : <https://www.somusicvocabulary.org/music#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# NEGATIVE: :MusicalRoleShape — :hasRole must point at a :MusicalRole, not at any old node.
+#
+# The role vocabulary is now DATA (gist:Category individuals in the ABox) rather than schema,
+# which is the point — a new role is one triple, not a TBox release. The price is that nothing
+# in the class hierarchy constrains what may sit on the object end any more, so SHACL has to.
+# Without this, `:SomeAgent :hasRole :Guitar` is a perfectly good triple.
+
+:NEG_RoleConfusedPerson a :MusicalPerson ;
+    rdfs:label "Negative fixture — holds a guitar as though it were a role"@en ;
+    :hasRole :NEG_NotARole ;
+    .
+
+:NEG_NotARole a :MusicalInstrument ;
+    rdfs:label "Negative fixture — an instrument, not a role"@en ;
+    .

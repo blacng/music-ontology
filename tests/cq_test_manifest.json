@@ -256,7 +256,7 @@
       "id": "CQ-15",
       "question": "Which artists came of age (their ~15-25 window overlaps the event) during a historical event, and originated from within the event's place? (derived, not asserted)",
       "var": "artist",
-      "sparql": "SELECT DISTINCT ?artist WHERE { ?seed gist:actualStartDate ?es ; gist:actualEndDate ?ee ; :locatedIn ?ep . ?artist :bornOn ?b ; :originatesFrom/:locatedIn* ?ep . BIND(YEAR(?b) AS ?by) FILTER(?by + 15 <= YEAR(?ee) && YEAR(?es) <= ?by + 25) }",
+      "sparql": "SELECT DISTINCT ?artist WHERE { ?seed gist:actualStartDate ?es ; gist:actualEndDate ?ee ; :locatedIn ?ep . ?artist :bornOn ?b ; :originatesFrom/:locatedIn* ?ep . BIND(xsd:integer(STR(?b)) AS ?by) FILTER(?by + 15 <= YEAR(?ee) && YEAR(?es) <= ?by + 25) }",
       "fixture_seed": ":TST_EventE",
       "expect": {
         "contains": [
@@ -267,7 +267,8 @@
           "TST_WrongPlace"
         ]
       },
-      "sample_row": "TST_ComeOfAge (born 1948, from Testland) came of age during Test Event E (1960-1968); TST_TooYoung (born 1965) is too young, TST_WrongPlace originates outside Testland"
+      "sample_row": "TST_ComeOfAge (born 1948, from Testland) came of age during Test Event E (1960-1968); TST_TooYoung (born 1965) is too young, TST_WrongPlace originates outside Testland",
+      "note": ":bornOn is xsd:gYear (personal-data minimisation), so the year is read with xsd:integer(STR(?b)) \u2014 SPARQL's YEAR() only accepts xsd:date/dateTime."
     },
     {
       "id": "CQ-16",
@@ -286,6 +287,25 @@
         ]
       },
       "sample_row": "TST_Collection collects TST_Album1 and TST_Song1; TST_Album3/TST_Song2 are not in it"
+    },
+    {
+      "id": "CQ-17",
+      "question": "Which agents hold more than one musical role (e.g. producer AND composer)?",
+      "var": "agent",
+      "sparql": "SELECT ?agent WHERE { ?agent :hasRole ?r . ?r a :MusicalRole } GROUP BY ?agent HAVING(COUNT(DISTINCT ?r) > 1)",
+      "expect": {
+        "contains": [
+          "TST_MultiRole",
+          "QuincyJones",
+          "BobDylan"
+        ],
+        "excludes": [
+          "TST_Producer1",
+          "GeorgeMartin"
+        ]
+      },
+      "sample_row": "QuincyJones holds ProducerRole + ConductorRole + ComposerRole; GeorgeMartin holds only ProducerRole",
+      "note": "Roles-as-classes did NOT make this unanswerable \u2014 that claim was false and is corrected here. `:QuincyJones a :MusicProducer, :Composer` was always legal OWL, and a VALUES clause over the four role classes would have answered it. What it cost was that the query had to ENUMERATE every role class, so it broke whenever a role was added, and each new role needed a TBox release. Under :hasRole the query is role-agnostic and a new role is one ABox triple. That is the real gain."
     }
   ]
 }

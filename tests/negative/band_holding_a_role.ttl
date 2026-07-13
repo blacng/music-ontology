@@ -1,0 +1,18 @@
+@prefix : <https://www.somusicvocabulary.org/music#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# NEGATIVE: :RoleBearerShape — a band does not conduct.
+#
+# Demoting the role classes threw away the one thing subclassing gave for free. Under the old
+# model `:Conductor ⊑ :Musician ⊑ gist:Person` guaranteed a conductor was a PERSON without
+# anyone having to state it. gist is explicit that a Category carries "no formal semantics",
+# so every guarantee the subclass axioms used to make has to be restated in SHACL — and this
+# one was not. :hasRole has rdfs:domain :MusicalAgent, which admits :Band, so a band could
+# hold :ConductorRole and nothing objected.
+
+:NEG_ConductingBand a :RockBand ;
+    rdfs:label "Negative fixture — a band that claims to conduct"@en ;
+    :hasRole :ConductorRole ;
+    .
+
+:ConductorRole a :MusicalRole .

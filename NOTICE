@@ -1,0 +1,26 @@
+# Third-party notices
+
+## gist (Semantic Arts)
+
+This project reuses and **redistributes** the gist upper ontology.
+
+- **Ontology:** gist
+- **Version:** 14.1.0
+- **Copyright:** © Semantic Arts, Inc.
+- **Licence:** Creative Commons Attribution 4.0 International (CC-BY-4.0)
+  <https://creativecommons.org/licenses/by/4.0/>
+- **Home:** <https://www.semanticarts.com/gist/>
+- **Namespace:** `https://w3id.org/semanticarts/ns/ontology/gist/`
+
+gist is vendored at `ontology/imports/gistCore.ttl` (resolved offline via
+`ontology/catalog-v001.xml`) and is **redistributed** by `make dataset`, which emits it as a
+named graph — `https://w3id.org/semanticarts/ontology/gistCore` — inside
+`dist/music_dataset.trig`.
+
+CC-BY-4.0 requires attribution on redistribution. This notice, and the `dct:license` /
+`dct:source` statements on the ontology header in
+`ontology/music_vocabulary_comprehensive.ttl`, are that attribution. Anyone redistributing
+`dist/` further must carry it forward.
+
+The Music Vocabulary itself does not modify gist. It reuses gist terms by IRI and never
+redefines them, per the project's modelling conventions.

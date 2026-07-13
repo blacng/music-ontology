@@ -1,0 +1,14 @@
+@prefix : <https://www.somusicvocabulary.org/music#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# NEGATIVE: :MusicalArtistShape — :activeFrom must be a single xsd:gYear. An untyped
+# string literal is one of the five "ruthless rules" the style guide forbids, and CQ-13
+# compares these years numerically.
+
+# No :hasGenre — see artist_backwards_active_interval.ttl: a reference to the catalogue's
+# :Rock is untyped in a standalone fixture graph and would raise a second, unrelated Violation.
+:NEG_LooseYear a :SoloArtist ;
+    rdfs:label "Negative fixture — activeFrom as a plain string"@en ;
+    :activeFrom "sometime in the nineties" ;
+    .

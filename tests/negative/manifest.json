@@ -1,0 +1,400 @@
+{
+  "description": "Negative SHACL fixtures. Each file is crafted to violate a specific shape. The gate asserts the expected result actually fires \u2014 matched on focus node, constraint component, path and severity, plus a message substring \u2014 not merely that the graph fails to conform. See README.md.",
+  "notes": [
+    "sourceShape is a BLANK NODE for every inline sh:property shape in music_vocabulary_shapes.ttl, so it cannot be matched by IRI. Match on the tuple below instead.",
+    "`expect` is a LIST: a fixture may legitimately break more than one thing at once (a record label credited as a producer is neither a :MusicalAgent nor a role-holder, and both failures are real). Any Violation NOT declared here fails the gate.",
+    "sh:node yields TWO results: the outer NodeConstraintComponent on the crediting work, and the inner HasValueConstraintComponent on the agent. Both are declared \u2014 the inner one is the precise statement of what is wrong ('this agent does not hold the role')."
+  ],
+  "fixtures": [
+    {
+      "file": "record_label_career_onset.ttl",
+      "shape": ":CareerOnsetShape",
+      "why": "A record label claiming a career. THE fixture that was once claimed to exist and did not \u2014 a previous release said this shape was 'verified with a negative test' when no such test was ever committed. It is also what proves the taxonomy-only ont_graph is load-bearing: hand the RDFS closure the `:startsCareerIn rdfs:domain :MusicalAgent` axiom and this file CONFORMS, because the closure retypes the label into the very class the shape checks for.",
+      "expect": [
+        {
+          "focus": "NEG_CareerLabel",
+          "component": "ClassConstraintComponent",
+          "severity": "Violation",
+          "message_contains": "belong to a music-making agent"
+        }
+      ],
+      "covers": [
+        ":CareerOnsetShape"
+      ]
+    },
+    {
+      "file": "musician_no_instrument.ttl",
+      "shape": ":MusicianShape",
+      "why": "A musician who plays nothing. Expected severity is Warning, not Violation \u2014 the completeness rule carries sh:severity sh:Warning. A gate keyed on Violation count would pass this while looking rigorous. Since v3.0.0 there is no conductor exemption: a conductor who plays nothing is a :MusicalPerson, not a :Musician, so this shape never targets them.",
+      "expect": [
+        {
+          "focus": "NEG_SilentMusician",
+          "component": "MinCountConstraintComponent",
+          "path": "hasInstrument",
+          "severity": "Warning",
+          "message_contains": "should play at least one instrument"
+        }
+      ],
+      "covers": [
+        ":MusicianShape"
+      ]
+    },
+    {
+      "file": "produced_by_agent_without_role.ttl",
+      "shape": ":AlbumShape / :HoldsProducerRoleShape",
+      "why": "A valid :MusicalAgent, credited as producer, who holds no :ProducerRole. Since the role left rdfs:range (where RDFS would have invented it) it must be asserted \u2014 and this proves it is checked.",
+      "expect": [
+        {
+          "focus": "NEG_AlbumBadProducer",
+          "component": "NodeConstraintComponent",
+          "path": "producedBy",
+          "severity": "Violation",
+          "message_contains": "holds :ProducerRole"
+        },
+        {
+          "focus": "NEG_NotAProducer",
+          "component": "HasValueConstraintComponent",
+          "path": "hasRole",
+          "severity": "Violation",
+          "message_contains": "does not hold :ProducerRole"
+        }
+      ],
+      "covers": [
+        ":ProducedByShape",
+        ":HoldsProducerRoleShape"
+      ]
+    },
+    {
+      "file": "written_by_agent_without_role.ttl",
+      "shape": ":SongShape / :HoldsLyricistRoleShape",
+      "why": "Adversarial: the agent DOES hold a role \u2014 :ProducerRole \u2014 just not the one being credited. A shape that merely checked 'has some :hasRole' would pass this.",
+      "expect": [
+        {
+          "focus": "NEG_SongBadWriter",
+          "component": "NodeConstraintComponent",
+          "path": "writtenBy",
+          "severity": "Violation",
+          "message_contains": "holds :LyricistRole"
+        },
+        {
+          "focus": "NEG_ProducerNotLyricist",
+          "component": "HasValueConstraintComponent",
+          "path": "hasRole",
+          "severity": "Violation",
+          "message_contains": "does not hold :LyricistRole"
+        }
+      ],
+      "covers": [
+        ":WrittenByShape",
+        ":HoldsLyricistRoleShape"
+      ]
+    },
+    {
+      "file": "composed_by_agent_without_role.ttl",
+      "shape": ":CompositionShape / :HoldsComposerRoleShape",
+      "why": "A performing musician with an instrument, credited as composer. Playing a work is not writing it \u2014 the distinction roles exist to draw.",
+      "expect": [
+        {
+          "focus": "NEG_CompositionBadComposer",
+          "component": "NodeConstraintComponent",
+          "path": "composedBy",
+          "severity": "Violation",
+          "message_contains": "holds :ComposerRole"
+        },
+        {
+          "focus": "NEG_PlayerNotComposer",
+          "component": "HasValueConstraintComponent",
+          "path": "hasRole",
+          "severity": "Violation",
+          "message_contains": "does not hold :ComposerRole"
+        }
+      ],
+      "covers": [
+        ":ComposedByShape",
+        ":HoldsComposerRoleShape"
+      ]
+    },
+    {
+      "file": "song_written_by_non_lyricist.ttl",
+      "shape": ":SongShape / :writtenBy",
+      "why": "A song written by a record label. Breaks BOTH arms: a label is not a :MusicalAgent, and holds no :LyricistRole. Type-check and role-check live in separate property shapes precisely so a failure says which.",
+      "expect": [
+        {
+          "focus": "NEG_SongWrittenByLabel",
+          "component": "ClassConstraintComponent",
+          "path": "writtenBy",
+          "severity": "Violation",
+          "message_contains": "writtenBy must point to a :MusicalAgent"
+        },
+        {
+          "focus": "NEG_SongWrittenByLabel",
+          "component": "NodeConstraintComponent",
+          "path": "writtenBy",
+          "severity": "Violation",
+          "message_contains": "holds :LyricistRole"
+        },
+        {
+          "focus": "NEG_LabelNotAWriter",
+          "component": "HasValueConstraintComponent",
+          "path": "hasRole",
+          "severity": "Violation",
+          "message_contains": "does not hold :LyricistRole"
+        }
+      ],
+      "covers": [
+        ":WrittenByShape",
+        ":HoldsLyricistRoleShape"
+      ]
+    },
+    {
+      "file": "album_produced_by_non_producer.ttl",
+      "shape": ":AlbumShape / :producedBy",
+      "why": "An album produced by a record label. Labels release records; they do not produce them. Breaks both the type and the role arm.",
+      "expect": [
+        {
+          "focus": "NEG_AlbumProducedByLabel",
+          "component": "ClassConstraintComponent",
+          "path": "producedBy",
+          "severity": "Violation",
+          "message_contains": "producedBy must point to a :MusicalAgent"
+        },
+        {
+          "focus": "NEG_AlbumProducedByLabel",
+          "component": "NodeConstraintComponent",
+          "path": "producedBy",
+          "severity": "Violation",
+          "message_contains": "holds :ProducerRole"
+        },
+        {
+          "focus": "NEG_LabelNotAProducer",
+          "component": "HasValueConstraintComponent",
+          "path": "hasRole",
+          "severity": "Violation",
+          "message_contains": "does not hold :ProducerRole"
+        }
+      ],
+      "covers": [
+        ":ProducedByShape",
+        ":HoldsProducerRoleShape"
+      ]
+    },
+    {
+      "file": "composition_composed_by_non_composer.ttl",
+      "shape": ":CompositionShape / :composedBy",
+      "why": "A composition composed by a record label. Breaks both the type and the role arm.",
+      "expect": [
+        {
+          "focus": "NEG_CompositionByLabel",
+          "component": "ClassConstraintComponent",
+          "path": "composedBy",
+          "severity": "Violation",
+          "message_contains": "composedBy must point to a :MusicalAgent"
+        },
+        {
+          "focus": "NEG_CompositionByLabel",
+          "component": "NodeConstraintComponent",
+          "path": "composedBy",
+          "severity": "Violation",
+          "message_contains": "holds :ComposerRole"
+        },
+        {
+          "focus": "NEG_LabelNotAComposer",
+          "component": "HasValueConstraintComponent",
+          "path": "hasRole",
+          "severity": "Violation",
+          "message_contains": "does not hold :ComposerRole"
+        }
+      ],
+      "covers": [
+        ":ComposedByShape",
+        ":HoldsComposerRoleShape"
+      ]
+    },
+    {
+      "file": "top_level_genre_with_broader.ttl",
+      "shape": ":TopLevelGenreShape",
+      "why": "A root genre claiming a parent. Would silently break the :hasGenre/:hasBroaderGenre* roll-up behind CQ-1 and CQ-9.",
+      "expect": [
+        {
+          "focus": "NEG_RootWithParent",
+          "component": "MaxCountConstraintComponent",
+          "path": "hasBroaderGenre",
+          "severity": "Violation",
+          "message_contains": "must not have a broader genre"
+        }
+      ],
+      "covers": [
+        ":TopLevelGenreShape"
+      ]
+    },
+    {
+      "file": "song_charted_without_chart.ttl",
+      "shape": ":ChartConsistencyShape (sh:sparql)",
+      "why": "A peak chart position with no chart named is a meaningless number (CQ-10). Proves the SPARQL-constraint shapes fire, not just the property shapes.",
+      "expect": [
+        {
+          "focus": "NEG_SongPeakNoChart",
+          "component": "SPARQLConstraintComponent",
+          "severity": "Violation",
+          "message_contains": "must also state the chart"
+        }
+      ],
+      "covers": [
+        ":ChartConsistencyShape"
+      ]
+    },
+    {
+      "file": "artist_backwards_active_interval.ttl",
+      "shape": ":MusicalArtistShape (sh:sparql)",
+      "why": "An artist who retires eleven years before starting. Would corrupt CQ-13's era-overlap answers.",
+      "expect": [
+        {
+          "focus": "NEG_TimeTraveller",
+          "component": "SPARQLConstraintComponent",
+          "severity": "Violation",
+          "message_contains": "must not be later than activeUntil"
+        }
+      ],
+      "covers": [
+        ":MusicalArtistShape"
+      ]
+    },
+    {
+      "file": "artist_non_gyear_active_from.ttl",
+      "shape": ":MusicalArtistShape / :activeFrom",
+      "why": "An untyped string where a gYear belongs \u2014 one of the style guide's five ruthless rules, and CQ-13 compares these years numerically.",
+      "expect": [
+        {
+          "focus": "NEG_LooseYear",
+          "component": "DatatypeConstraintComponent",
+          "path": "activeFrom",
+          "severity": "Violation",
+          "message_contains": "activeFrom must be a single xsd:gYear"
+        }
+      ],
+      "covers": [
+        ":MusicalArtistShape"
+      ]
+    },
+    {
+      "file": "album_written_by_via_wrong_work_class.ttl",
+      "shape": ":WrittenByShape (property-anchored)",
+      "why": "THE BYPASS. The credit guards were anchored to the WORK'S CLASS (:SongShape etc.), and nothing stops an :Album carrying :writtenBy \u2014 so an album 'written by' a record label passed with zero violations. Guards are now anchored with sh:targetSubjectsOf on the property.",
+      "expect": [
+        {
+          "focus": "NEG_AlbumWithLyricist",
+          "component": "ClassConstraintComponent",
+          "path": "writtenBy",
+          "severity": "Violation",
+          "message_contains": "writtenBy must point to a :MusicalAgent"
+        },
+        {
+          "focus": "NEG_AlbumWithLyricist",
+          "component": "NodeConstraintComponent",
+          "path": "writtenBy",
+          "severity": "Violation",
+          "message_contains": "holds :LyricistRole"
+        },
+        {
+          "focus": "NEG_LabelWriter",
+          "component": "HasValueConstraintComponent",
+          "path": "hasRole",
+          "severity": "Violation",
+          "message_contains": "does not hold :LyricistRole"
+        }
+      ],
+      "covers": [
+        ":WrittenByShape",
+        ":HoldsLyricistRoleShape"
+      ]
+    },
+    {
+      "file": "band_holding_a_role.ttl",
+      "shape": ":RoleBearerShape",
+      "why": "A band that conducts. Demoting the role classes discarded what subclassing gave free (:Conductor was a :Musician was a gist:Person); gist says a Category has 'no formal semantics', so the person-ness had to be restated in SHACL and was not.",
+      "expect": [
+        {
+          "focus": "NEG_ConductingBand",
+          "component": "ClassConstraintComponent",
+          "severity": "Violation",
+          "message_contains": "Only a :MusicalPerson can hold"
+        }
+      ],
+      "covers": [
+        ":RoleBearerShape"
+      ]
+    },
+    {
+      "file": "musical_person_bad_types.ttl",
+      "shape": ":MusicalPersonShape",
+      "why": "The coverage hole v3.0.0 opened: conductors/producers moved out of :Musician (policed) into :MusicalPerson (targeted by nothing). Garbage in every slot used to pass.",
+      "expect": [
+        {
+          "focus": "NEG_UnvalidatedPerson",
+          "component": "ClassConstraintComponent",
+          "path": "hasInstrument",
+          "severity": "Violation",
+          "message_contains": "hasInstrument must point to a :MusicalInstrument"
+        },
+        {
+          "focus": "NEG_UnvalidatedPerson",
+          "component": "DatatypeConstraintComponent",
+          "path": "bornOn",
+          "severity": "Violation",
+          "message_contains": "bornOn must be a single xsd:gYear"
+        }
+      ],
+      "covers": [
+        ":MusicalPersonShape"
+      ]
+    },
+    {
+      "file": "hasrole_pointing_at_non_role.ttl",
+      "shape": ":MusicalRoleShape",
+      "why": "The role vocabulary is now DATA, not schema \u2014 which is the point, but it means nothing in the class hierarchy constrains the object end of :hasRole any more. Without this shape, `:SomeAgent :hasRole :Guitar` is a perfectly good triple.",
+      "covers": [
+        ":MusicalRoleShape"
+      ],
+      "expect": [
+        {
+          "focus": "NEG_NotARole",
+          "component": "ClassConstraintComponent",
+          "severity": "Violation",
+          "message_contains": "hasRole must point to a :MusicalRole"
+        }
+      ]
+    },
+    {
+      "file": "orchestra_conducting_itself.ttl",
+      "shape": ":ConductedByShape",
+      "why": "An orchestra conducting itself. :conductedBy ranges over :MusicalPerson, not :MusicalAgent, precisely so an :Orchestra (a :Band, hence a :MusicalAgent) cannot be its own conductor.",
+      "covers": [
+        ":ConductedByShape",
+        ":HoldsConductorRoleShape"
+      ],
+      "expect": [
+        {
+          "focus": "NEG_UnconductedWork",
+          "component": "ClassConstraintComponent",
+          "path": "conductedBy",
+          "severity": "Violation",
+          "message_contains": "an ensemble does not conduct itself"
+        },
+        {
+          "focus": "NEG_UnconductedWork",
+          "component": "NodeConstraintComponent",
+          "path": "conductedBy",
+          "severity": "Violation",
+          "message_contains": "holds :ConductorRole"
+        },
+        {
+          "focus": "NEG_SelfConductingOrchestra",
+          "component": "HasValueConstraintComponent",
+          "path": "hasRole",
+          "severity": "Violation",
+          "message_contains": "does not hold :ConductorRole"
+        }
+      ]
+    }
+  ]
+}

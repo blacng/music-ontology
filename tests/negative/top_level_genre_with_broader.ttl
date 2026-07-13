@@ -1,0 +1,15 @@
+@prefix : <https://www.somusicvocabulary.org/music#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# NEGATIVE: :TopLevelGenreShape — a top-level genre is a ROOT of the genre hierarchy and
+# must not have a broader genre. This one claims a parent, which would silently break the
+# :hasGenre/:hasBroaderGenre* roll-up that CQ-1 and CQ-9 depend on.
+
+:NEG_ParentGenre a :MusicGenre ;
+    rdfs:label "Negative fixture — some broader genre"@en ;
+    .
+
+:NEG_RootWithParent a :TopLevelGenre ;
+    rdfs:label "Negative fixture — a root genre that claims a parent"@en ;
+    :hasBroaderGenre :NEG_ParentGenre ;
+    .

@@ -34,6 +34,13 @@ jobs:
       - name: SHACL conformance (fail on Violations)
         run: make shacl
 
+      # Without this, "0 Violations" above means nothing: a shape that targets zero nodes and
+      # a shape that genuinely passes report identically. This proves each shape can still fail.
+      # Note CI runs the targets individually and never invokes `make check` — a gate wired only
+      # into `make check` would be dead here, which is worse than absent (it manufactures trust).
+      - name: SHACL non-vacuity (prove the shapes can fail)
+        run: make shacl-negative
+
   reason:
     name: Reasoner consistency (HermiT)
     runs-on: ubuntu-latest
@@ -46,3 +53,9 @@ jobs:
       # shared gist property via owl:inverseOf). ubuntu-latest ships Docker + compose.
       - name: Reasoner consistency (merged TBox+ABox, gist imported)
         run: make reason
+
+      # Same discipline as the SHACL non-vacuity gate. Before v3.0.0 the domain TBox had ZERO
+      # owl:disjointWith axioms, so HermiT had nothing to contradict and this job could not
+      # fail on any input — it certified only that the file parsed.
+      - name: Reasoner non-vacuity (prove HermiT can report inconsistency)
+        run: make reason-negative
