@@ -304,7 +304,7 @@
         ]
       },
       "sample_row": "QuincyJones holds ProducerRole + ConductorRole + ComposerRole; GeorgeMartin holds only ProducerRole",
-      "note": "Unanswerable before v3.0.0 BY CONSTRUCTION. With roles as classes an agent could only be typed as one of them, so 'holds several roles' had nothing to count. This CQ is the redesign's contract with the data."
+      "note": "Roles-as-classes did NOT make this unanswerable \u2014 that claim was false and is corrected here. `:QuincyJones a :MusicProducer, :Composer` was always legal OWL, and a VALUES clause over the four role classes would have answered it. What it cost was that the query had to ENUMERATE every role class, so it broke whenever a role was added, and each new role needed a TBox release. Under :hasRole the query is role-agnostic and a new role is one ABox triple. That is the real gain."
     }
   ]
 }

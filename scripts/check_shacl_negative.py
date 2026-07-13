@@ -29,13 +29,17 @@ import json
 import sys
 from pathlib import Path
 
-from rdflib import Graph
+from rdflib import Graph, RDF
 from rdflib.namespace import SH
 
 from check_shacl import ONTOLOGY, SHAPES, validate_data
 
 NEG_DIR = Path("tests/negative")
 MANIFEST = NEG_DIR / "manifest.json"
+
+# A shape only validates something if it declares a target. Shapes without one (the
+# :Holds*RoleShape helpers) are reached via sh:node and are correctly target-less.
+TARGET_PREDICATES = (SH.targetClass, SH.targetSubjectsOf, SH.targetObjectsOf, SH.targetNode)
 
 
 def local(term) -> str:
@@ -146,7 +150,23 @@ def main() -> int:
             print(f"  * {f}")
         return 1
 
-    print("OK — every shape under test can actually fail. The green gate is not vacuous.")
+    # Report coverage, and be honest about the gap. "Every shape can fail" would be a lie —
+    # this gate covers the shapes it has fixtures for, and nothing more. Overclaiming here is
+    # precisely the failure this directory exists to prevent, so the gate must not commit it.
+    live = {
+        f":{str(s).split('#')[-1]}"
+        for s in shapes.subjects(RDF.type, SH.NodeShape)
+        if any(True for p in TARGET_PREDICATES for _ in shapes.objects(s, p))
+    }
+    covered = {name for e in manifest["fixtures"] for name in e.get("covers", [])}
+    uncovered = sorted(live - covered)
+
+    print(f"Coverage: {len(live & covered)}/{len(live)} shapes with a target have a fixture.")
+    if uncovered:
+        print("NOT covered — never observed failing, so their green still means nothing:")
+        for name in uncovered:
+            print(f"    {name}")
+    print("\nOK — every shape WITH A FIXTURE can actually fail. The gate is not vacuous for those.")
     return 0
 
 

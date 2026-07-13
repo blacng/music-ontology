@@ -17,6 +17,9 @@
           "severity": "Violation",
           "message_contains": "belong to a music-making agent"
         }
+      ],
+      "covers": [
+        ":CareerOnsetShape"
       ]
     },
     {
@@ -31,6 +34,9 @@
           "severity": "Warning",
           "message_contains": "should play at least one instrument"
         }
+      ],
+      "covers": [
+        ":MusicianShape"
       ]
     },
     {
@@ -52,6 +58,10 @@
           "severity": "Violation",
           "message_contains": "does not hold :ProducerRole"
         }
+      ],
+      "covers": [
+        ":ProducedByShape",
+        ":HoldsProducerRoleShape"
       ]
     },
     {
@@ -73,6 +83,10 @@
           "severity": "Violation",
           "message_contains": "does not hold :LyricistRole"
         }
+      ],
+      "covers": [
+        ":WrittenByShape",
+        ":HoldsLyricistRoleShape"
       ]
     },
     {
@@ -94,6 +108,10 @@
           "severity": "Violation",
           "message_contains": "does not hold :ComposerRole"
         }
+      ],
+      "covers": [
+        ":ComposedByShape",
+        ":HoldsComposerRoleShape"
       ]
     },
     {
@@ -122,6 +140,10 @@
           "severity": "Violation",
           "message_contains": "does not hold :LyricistRole"
         }
+      ],
+      "covers": [
+        ":WrittenByShape",
+        ":HoldsLyricistRoleShape"
       ]
     },
     {
@@ -150,6 +172,10 @@
           "severity": "Violation",
           "message_contains": "does not hold :ProducerRole"
         }
+      ],
+      "covers": [
+        ":ProducedByShape",
+        ":HoldsProducerRoleShape"
       ]
     },
     {
@@ -178,6 +204,10 @@
           "severity": "Violation",
           "message_contains": "does not hold :ComposerRole"
         }
+      ],
+      "covers": [
+        ":ComposedByShape",
+        ":HoldsComposerRoleShape"
       ]
     },
     {
@@ -192,6 +222,9 @@
           "severity": "Violation",
           "message_contains": "must not have a broader genre"
         }
+      ],
+      "covers": [
+        ":TopLevelGenreShape"
       ]
     },
     {
@@ -205,6 +238,9 @@
           "severity": "Violation",
           "message_contains": "must also state the chart"
         }
+      ],
+      "covers": [
+        ":ChartConsistencyShape"
       ]
     },
     {
@@ -218,6 +254,9 @@
           "severity": "Violation",
           "message_contains": "must not be later than activeUntil"
         }
+      ],
+      "covers": [
+        ":MusicalArtistShape"
       ]
     },
     {
@@ -231,6 +270,97 @@
           "path": "activeFrom",
           "severity": "Violation",
           "message_contains": "activeFrom must be a single xsd:gYear"
+        }
+      ],
+      "covers": [
+        ":MusicalArtistShape"
+      ]
+    },
+    {
+      "file": "album_written_by_via_wrong_work_class.ttl",
+      "shape": ":WrittenByShape (property-anchored)",
+      "why": "THE BYPASS. The credit guards were anchored to the WORK'S CLASS (:SongShape etc.), and nothing stops an :Album carrying :writtenBy \u2014 so an album 'written by' a record label passed with zero violations. Guards are now anchored with sh:targetSubjectsOf on the property.",
+      "expect": [
+        {
+          "focus": "NEG_AlbumWithLyricist",
+          "component": "ClassConstraintComponent",
+          "path": "writtenBy",
+          "severity": "Violation",
+          "message_contains": "writtenBy must point to a :MusicalAgent"
+        },
+        {
+          "focus": "NEG_AlbumWithLyricist",
+          "component": "NodeConstraintComponent",
+          "path": "writtenBy",
+          "severity": "Violation",
+          "message_contains": "holds :LyricistRole"
+        },
+        {
+          "focus": "NEG_LabelWriter",
+          "component": "HasValueConstraintComponent",
+          "path": "hasRole",
+          "severity": "Violation",
+          "message_contains": "does not hold :LyricistRole"
+        }
+      ],
+      "covers": [
+        ":WrittenByShape",
+        ":HoldsLyricistRoleShape"
+      ]
+    },
+    {
+      "file": "band_holding_a_role.ttl",
+      "shape": ":RoleBearerShape",
+      "why": "A band that conducts. Demoting the role classes discarded what subclassing gave free (:Conductor was a :Musician was a gist:Person); gist says a Category has 'no formal semantics', so the person-ness had to be restated in SHACL and was not.",
+      "expect": [
+        {
+          "focus": "NEG_ConductingBand",
+          "component": "ClassConstraintComponent",
+          "severity": "Violation",
+          "message_contains": "Only a :MusicalPerson can hold"
+        }
+      ],
+      "covers": [
+        ":RoleBearerShape"
+      ]
+    },
+    {
+      "file": "musical_person_bad_types.ttl",
+      "shape": ":MusicalPersonShape",
+      "why": "The coverage hole v3.0.0 opened: conductors/producers moved out of :Musician (policed) into :MusicalPerson (targeted by nothing). Garbage in every slot used to pass.",
+      "expect": [
+        {
+          "focus": "NEG_UnvalidatedPerson",
+          "component": "ClassConstraintComponent",
+          "path": "hasInstrument",
+          "severity": "Violation",
+          "message_contains": "hasInstrument must point to a :MusicalInstrument"
+        },
+        {
+          "focus": "NEG_UnvalidatedPerson",
+          "component": "DatatypeConstraintComponent",
+          "path": "bornOn",
+          "severity": "Violation",
+          "message_contains": "bornOn must be a single xsd:date"
+        }
+      ],
+      "covers": [
+        ":MusicalPersonShape"
+      ]
+    },
+    {
+      "file": "hasrole_pointing_at_non_role.ttl",
+      "shape": ":MusicalRoleShape",
+      "why": "The role vocabulary is now DATA, not schema \u2014 which is the point, but it means nothing in the class hierarchy constrains the object end of :hasRole any more. Without this shape, `:SomeAgent :hasRole :Guitar` is a perfectly good triple.",
+      "covers": [
+        ":MusicalRoleShape"
+      ],
+      "expect": [
+        {
+          "focus": "NEG_NotARole",
+          "component": "ClassConstraintComponent",
+          "severity": "Violation",
+          "message_contains": "hasRole must point to a :MusicalRole"
         }
       ]
     }

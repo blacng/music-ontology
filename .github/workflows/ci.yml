@@ -53,3 +53,9 @@ jobs:
       # shared gist property via owl:inverseOf). ubuntu-latest ships Docker + compose.
       - name: Reasoner consistency (merged TBox+ABox, gist imported)
         run: make reason
+
+      # Same discipline as the SHACL non-vacuity gate. Before v3.0.0 the domain TBox had ZERO
+      # owl:disjointWith axioms, so HermiT had nothing to contradict and this job could not
+      # fail on any input — it certified only that the file parsed.
+      - name: Reasoner non-vacuity (prove HermiT can report inconsistency)
+        run: make reason-negative

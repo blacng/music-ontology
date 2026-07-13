@@ -96,10 +96,7 @@
     sh:targetClass :Song ;
     sh:property [ sh:path :performedBy ; sh:class :MusicalArtist ;
         sh:message "performedBy must point to a :MusicalArtist." ] ;
-    sh:property [ sh:path :writtenBy ; sh:class :MusicalAgent ;
-        sh:message "writtenBy must point to a :MusicalAgent." ] ;
-    sh:property [ sh:path :writtenBy ; sh:node :HoldsLyricistRoleShape ;
-        sh:message "writtenBy must point to an agent who holds :LyricistRole." ] ;
+    # :writtenBy is guarded by :WrittenByShape, anchored on the PROPERTY (see role shapes).
     sh:property [ sh:path :belongsToAlbum ; sh:class :Album ; sh:maxCount 1 ;
         sh:message "A song belongs to at most one album." ] ;
     sh:property [ sh:path :releasedIn ; sh:datatype xsd:gYear ; sh:maxCount 1 ;
@@ -118,10 +115,7 @@
         sh:message "performedBy must point to a :MusicalArtist." ] ;
     sh:property [ sh:path :releasedBy ; sh:class :RecordLabel ;
         sh:message "releasedBy must point to a :RecordLabel." ] ;
-    sh:property [ sh:path :producedBy ; sh:class :MusicalAgent ;
-        sh:message "producedBy must point to a :MusicalAgent (CQ-8)." ] ;
-    sh:property [ sh:path :producedBy ; sh:node :HoldsProducerRoleShape ;
-        sh:message "producedBy must point to an agent who holds :ProducerRole (CQ-8)." ] ;
+    # :producedBy is guarded by :ProducedByShape, anchored on the PROPERTY (see role shapes).
     sh:property [ sh:path :hasTrack ; sh:class :Song ;
         sh:message "hasTrack must point to a :Song." ] ;
     sh:property [ sh:path :releasedIn ; sh:datatype xsd:gYear ; sh:maxCount 1 ;
@@ -132,26 +126,58 @@
 
 :CompositionShape a sh:NodeShape ;
     sh:targetClass :Composition ;
-    sh:property [ sh:path :composedBy ; sh:class :MusicalAgent ;
-        sh:message "composedBy must point to a :MusicalAgent." ] ;
-    sh:property [ sh:path :composedBy ; sh:node :HoldsComposerRoleShape ;
-        sh:message "composedBy must point to an agent who holds :ComposerRole." ] ;
+    # :composedBy is guarded by :ComposedByShape, anchored on the PROPERTY (see role shapes).
     sh:property [ sh:path :composedBy ; sh:minCount 1 ; sh:severity sh:Warning ;
         sh:message "A composition should state its composer." ] ;
     .
 
-# --- Role shapes (gist:Category pattern) ---
+# --- Credit shapes: anchored on the PROPERTY, not on the work's class ---
 #
 # Credit properties (:producedBy, :writtenBy, :composedBy) once carried the role in their
 # rdfs:range — `:producedBy rdfs:range :MusicProducer`. That was the wrong mechanism twice
 # over: it forced roles to be classes, and under RDFS a range does not CHECK the role, it
 # MANUFACTURES it (anything you produce with is thereby a producer). The range now says
-# :MusicalAgent, which is true, and the role requirement lives here, where a constraint
-# belongs and can actually fail.
+# :MusicalAgent, and the role requirement lives here.
 #
-# These carry NO sh:targetClass — a target would validate every node in the graph. They are
-# reachable only via sh:node from the credit shapes above. Each is kept separate from its
-# companion type-check so a failure says which of the two is wrong.
+# These are anchored with sh:targetSubjectsOf, NOT hung off :AlbumShape/:SongShape/
+# :CompositionShape. Hanging them off the work's class leaves the guard bypassable by
+# choosing a different work type: nothing in the TBox stops an :Album carrying :writtenBy,
+# so `:SomeAlbum :writtenBy :SomeRecordLabel` sailed through with zero violations while
+# :AlbumShape simply never mentioned :writtenBy. A credit rule belongs to the credit
+# property, wherever it is used. (:CareerOnsetShape already had this right.)
+#
+# KNOWN LIMIT: the role is on the AGENT, so this catches an agent credited with producing
+# who produces nothing anywhere — it cannot catch a WRONG credit (an agent who does hold
+# :ProducerRole validly "produces" any album you attach them to). Reified credits are the
+# real fix; see the ROLES section of the TBox.
+
+:ProducedByShape a sh:NodeShape ;
+    sh:targetSubjectsOf :producedBy ;
+    sh:property [ sh:path :producedBy ; sh:class :MusicalAgent ;
+        sh:message "producedBy must point to a :MusicalAgent (CQ-8)." ] ;
+    sh:property [ sh:path :producedBy ; sh:node :HoldsProducerRoleShape ;
+        sh:message "producedBy must point to an agent who holds :ProducerRole (CQ-8)." ] ;
+    .
+
+:WrittenByShape a sh:NodeShape ;
+    sh:targetSubjectsOf :writtenBy ;
+    sh:property [ sh:path :writtenBy ; sh:class :MusicalAgent ;
+        sh:message "writtenBy must point to a :MusicalAgent." ] ;
+    sh:property [ sh:path :writtenBy ; sh:node :HoldsLyricistRoleShape ;
+        sh:message "writtenBy must point to an agent who holds :LyricistRole." ] ;
+    .
+
+:ComposedByShape a sh:NodeShape ;
+    sh:targetSubjectsOf :composedBy ;
+    sh:property [ sh:path :composedBy ; sh:class :MusicalAgent ;
+        sh:message "composedBy must point to a :MusicalAgent." ] ;
+    sh:property [ sh:path :composedBy ; sh:node :HoldsComposerRoleShape ;
+        sh:message "composedBy must point to an agent who holds :ComposerRole." ] ;
+    .
+
+# The role-holder shapes carry NO sh:targetClass — a target would validate every node in the
+# graph. They are reachable only via sh:node from the credit shapes above. Kept separate from
+# the companion type-check so a failure says WHICH of the two is wrong.
 
 :HoldsProducerRoleShape a sh:NodeShape ;
     sh:property [ sh:path :hasRole ; sh:hasValue :ProducerRole ;
@@ -168,10 +194,47 @@
         sh:message "This agent does not hold :ComposerRole." ] ;
     .
 
+# --- Role shapes (gist:Category pattern) ---
+
 :MusicalRoleShape a sh:NodeShape ;
     sh:targetObjectsOf :hasRole ;
     sh:class :MusicalRole ;
     sh:message "hasRole must point to a :MusicalRole (a gist:Category individual), not an arbitrary node." ;
+    .
+
+# Roles are borne by PEOPLE. Producing, conducting, writing lyrics and composing are things
+# a human does; a band does not conduct. :hasRole has rdfs:domain :MusicalAgent, which admits
+# :Band — and demoting the role classes threw away the one thing subclassing gave for free
+# (`:Conductor ⊑ :Musician ⊑ gist:Person` said "a person" without anyone having to think
+# about it). gist is explicit that a Category carries "no formal semantics", so whatever the
+# subclass axioms used to guarantee has to be restated here. Nothing had restated it.
+:RoleBearerShape a sh:NodeShape ;
+    sh:targetSubjectsOf :hasRole ;
+    sh:class :MusicalPerson ;
+    sh:message "Only a :MusicalPerson can hold a :MusicalRole — a band does not conduct or write lyrics." ;
+    .
+
+# :MusicalPerson had NO shape at all when it was introduced, which was a coverage regression:
+# the redesign moved conductors and producers OUT of :Musician (where :MusicianShape policed
+# them) and into a class nothing validated. Karajan, Bernstein, Rubin and Martin — precisely
+# the population this release created — could carry an untyped :bornOn, a bogus :hasGenre or
+# a non-instrument :hasInstrument and still pass.
+:MusicalPersonShape a sh:NodeShape ;
+    sh:targetClass :MusicalPerson ;
+    sh:property [ sh:path :hasInstrument ; sh:class :MusicalInstrument ;
+        sh:message "hasInstrument must point to a :MusicalInstrument." ] ;
+    sh:property [ sh:path :hasGenre ; sh:class :MusicGenre ;
+        sh:message "hasGenre must point to a :MusicGenre." ] ;
+    sh:property [ sh:path :originatesFrom ; sh:class :Place ; sh:maxCount 1 ;
+        sh:message "A person's origin must be a single :Place." ] ;
+    sh:property [ sh:path :isSignedTo ; sh:class :RecordLabel ;
+        sh:message "isSignedTo must point to a :RecordLabel." ] ;
+    sh:property [ sh:path :hasAward ; sh:class :MusicAward ;
+        sh:message "hasAward must point to a :MusicAward (CQ-7)." ] ;
+    sh:property [ sh:path :bornOn ; sh:datatype xsd:date ; sh:maxCount 1 ;
+        sh:message "bornOn must be a single xsd:date." ] ;
+    sh:property [ sh:path :collaboratesWith ; sh:class :MusicalAgent ;
+        sh:message "collaboratesWith must relate one music-making agent to another (CQ-2)." ] ;
     .
 
 # --- Genre shapes (gist:Category pattern) ---

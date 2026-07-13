@@ -139,18 +139,37 @@
 ###############################################################################
 # CLASSES — MUSICAL ROLES (gist:Category pattern)
 #
-# A role is what an agent DOES, not what it IS. Producing, conducting, writing lyrics
-# and composing are jobs — an agent can hold several at once (Quincy Jones held three)
-# and can take them up or set them down without ceasing to be the same person. Modelling
-# an anti-rigid property like that as a rigid OWL class is what forced the old dead ends:
-# typed :MusicProducer, Quincy could not hold :hasInstrument (domain :Musician) or be the
-# :performedBy of a work (range :MusicalArtist), because roles-as-classes made his other
-# roles unsayable.
+# A role is what an agent DOES, not what it IS. Producing, conducting, writing lyrics and
+# composing are jobs: an agent can hold several at once, and can take them up or set them
+# down without ceasing to be the same person.
 #
-# So roles are gist:Category instances, reached by :hasRole. This is the same pattern the
-# model already uses for genres (:MusicGenre / :hasGenre), place granularity (:PlaceType /
-# :hasPlaceType) and collections (:CollectionType) — and it is what the style guide means
-# by "prefer gist:isCategorizedBy over subclassing for type variation".
+# Be precise about what was actually broken, because the loose version of this story is
+# false. Roles-as-classes did NOT make multi-role agents *impossible* — OWL individuals may
+# carry many types, and `:QuincyJones a :MusicProducer, :Composer` would have made him a
+# :Musician (via :Composer ⊑ :Musician) and let him hold :hasInstrument. The catalogue
+# simply never asserted it. That was a missing triple, not an impossibility.
+#
+# What roles-as-classes really cost:
+#   * Anti-rigidity (OntoClean). A class should hold what is essential to identity. Rubin
+#     cannot stop being a person; he can stop producing. Rigid class, anti-rigid property.
+#   * Combinatorics. Expressing "holds producer AND composer" needs the cross-product of
+#     type combinations; asking "who holds more than one role?" needs every role class
+#     enumerated in a VALUES clause, and the query breaks every time a role is added.
+#   * Extensibility. Real catalogues carry dozens of roles (engineer, arranger, mixer,
+#     librettist…). Under classes each is a TBox release. Under categories it is one ABox
+#     triple.
+#
+# So roles are gist:Category instances, reached by :hasRole — the same pattern the model
+# already uses for genres (:MusicGenre / :hasGenre), place granularity (:PlaceType /
+# :hasPlaceType) and collections (:CollectionType), and what the style guide means by
+# "prefer gist:isCategorizedBy over subclassing for type variation".
+#
+# KNOWN LIMIT, recorded honestly: the role sits on the AGENT, not on the CREDIT. So the
+# model says Quincy produces, and separately that he produced Thriller — it cannot say he
+# produced Thriller *in the role of producer* while playing trumpet on something else.
+# :HoldsProducerRoleShape can therefore only catch an agent credited with producing who
+# produces nothing anywhere; it cannot catch a wrong credit. Reifying credits (agent × role
+# × work, as MusicBrainz/Discogs/DDEX all do) is the real fix and is deliberately deferred.
 #
 # The role INSTANCES (:ProducerRole, :ConductorRole, :LyricistRole, :ComposerRole) live in
 # the ABox alongside the genre and :PlaceType individuals.
@@ -163,6 +182,34 @@
     skos:definition "A category that classifies the capacity in which a musical agent contributes to music, such as producing, conducting, writing lyrics or composing."@en ;
     :exampleInstance :ProducerRole, :ConductorRole, :LyricistRole, :ComposerRole ;
     .
+
+###############################################################################
+# DISJOINTNESS
+#
+# Without these, `make reason` is vacuously green — exactly as `make shacl` was before the
+# negative fixtures landed. The domain TBox carried ZERO owl:disjointWith axioms, so HermiT
+# had nothing to contradict and could not fail on any input. "Consistent, no unsatisfiable
+# classes" certified only that the file parsed.
+#
+# They also close a real hole. The TBox ships `:startsCareerIn rdfs:domain :MusicalAgent`,
+# and a domain is an inference RULE: any RDFS-entailing store reading a :RecordLabel with a
+# career onset will silently RETYPE it into a :MusicalAgent — repairing the bad data instead
+# of rejecting it. SHACL rejects it (that is what the taxonomy-only ont_graph is for), but
+# the SHIPPED model did not, and `make dataset` exports the shipped model. Two artefacts,
+# two answers.
+#
+# With disjointness the entailment becomes a contradiction, and the reasoner catches what
+# the domain axiom would otherwise quietly paper over. Now both gates reject the label, and
+# the shipped model agrees with its own validator.
+###############################################################################
+
+[] a owl:AllDisjointClasses ;
+    owl:members ( :MusicalAgent :MusicalWork :Place :RecordLabel :MusicalInstrument ) .
+
+# A group is not a person and a person is not a group. This is the one rigid distinction the
+# agent taxonomy actually turns on — it is why :Band and :MusicalPerson are siblings rather
+# than one being a role of the other.
+:Band owl:disjointWith :MusicalPerson .
 
 ###############################################################################
 
@@ -676,12 +723,15 @@
     skos:definition "Relates a musical work to the agent who created it."@en ;
     .
 
+# Domain is :MusicalWork, not :Song. A libretto has a librettist, and an opera is a
+# :Composition — under `rdfs:domain :Song` the credit was unsayable for any work that is not
+# a song, which quietly excluded the entire classical repertoire from having a writer.
 :writtenBy a owl:ObjectProperty ;
     skos:prefLabel "written by"@en ;
-    skos:scopeNote "Associates a song with the agent who wrote its lyrics. The agent must hold :LyricistRole (enforced by :SongShape)."@en ;
-    rdfs:domain :Song ;
+    skos:scopeNote "Associates a musical work with the agent who wrote its words. The agent must hold :LyricistRole (enforced by :WrittenByShape)."@en ;
+    rdfs:domain :MusicalWork ;
     rdfs:range :MusicalAgent ;
-    skos:definition "Relates a song to the agent who wrote its lyrics."@en ;
+    skos:definition "Relates a musical work to the agent who wrote its words."@en ;
     .
 
 :producedBy a owl:ObjectProperty ;
