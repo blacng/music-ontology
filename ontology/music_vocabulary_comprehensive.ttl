@@ -21,8 +21,8 @@
 :MusicVocabulary a owl:Ontology ;
     rdfs:label "Comprehensive Music Vocabulary"@en ;
     rdfs:comment "A comprehensive vocabulary for describing music concepts, works, artists, instruments, and relationships."@en ;
-    owl:versionInfo "2.3.0" ;
-    owl:versionIRI <https://www.somusicvocabulary.org/music/2.3.0> ;
+    owl:versionInfo "3.0.0" ;
+    owl:versionIRI <https://www.somusicvocabulary.org/music/3.0.0> ;
     owl:imports <https://w3id.org/semanticarts/ontology/gistCore> .
 
 ###############################################################################
@@ -53,7 +53,9 @@
     rdfs:subClassOf :MusicalAgent ;
     skos:prefLabel "Musical Artist"@en ;
     skos:scopeNote "An individual or group that performs music."@en ;
-    skos:broader :Artist ;
+    # `skos:broader :Artist` was here, pointing at a class this ontology has never defined.
+    # It dangled quietly for several releases; the new undeclared-reference check in
+    # validate_fixes.py caught it while checking for the ones the role deletion could leave.
     skos:related :MusicGenre ;
     skos:narrower :SoloArtist, :Band ;
     skos:definition "A musical artist is an individual or group that creates or performs music."@en ;
@@ -125,42 +127,14 @@
     :exampleInstance :JohnLennon, :JimiHendrix, :YoYoMa ;
     .
 
-:Composer a owl:Class ;
-    rdfs:subClassOf :Musician ;
-    skos:prefLabel "Composer"@en ;
-    skos:scopeNote "A person who writes original music."@en ;
-    skos:broader :Musician ;
-    skos:definition "A composer is a musician who creates original musical works."@en ;
-    :exampleInstance :LudwigVanBeethoven, :WolfgangAmadeusMozart, :JohannSebastianBach ;
-    .
-
-:Lyricist a owl:Class ;
-    rdfs:subClassOf gist:Person ;
-    skos:prefLabel "Lyricist"@en ;
-    skos:scopeNote "A person who writes the words (lyrics) for songs."@en ;
-    skos:related :Song ;
-    skos:definition "A lyricist is a writer who specializes in writing song lyrics."@en ;
-    :exampleInstance :BobDylan, :PaulMcCartney ;
-    .
-
-:MusicProducer a owl:Class ;
-    rdfs:subClassOf gist:Person ;
-    skos:prefLabel "Music Producer"@en ;
-    skos:scopeNote "A person who oversees and manages the recording and production of music."@en ;
-    skos:related :Album, :RecordLabel ;
-    skos:definition "A music producer is responsible for overseeing the recording, mixing, and production of musical recordings."@en ;
-    :exampleInstance :QuincyJones, :RickRubin, :GeorgeMartin ;
-    .
-
-:Conductor a owl:Class ;
-    rdfs:subClassOf :Musician ;
-    skos:prefLabel "Conductor"@en ;
-    skos:scopeNote "A person who directs the performance of an orchestra or choir."@en ;
-    skos:broader :Musician ;
-    skos:related :Orchestra ;
-    skos:definition "A conductor is a musician who leads an orchestra, choir, or other musical ensemble."@en ;
-    :exampleInstance :HerbertVonKarajan, :LeonardBernstein ;
-    .
+# :Composer, :Lyricist, :MusicProducer and :Conductor were classes here until v3.0.0.
+# They are now :MusicalRole individuals (:ComposerRole, :LyricistRole, :ProducerRole,
+# :ConductorRole) in the ABox, attached with :hasRole. See the MUSICAL ROLES section above.
+#
+# They were removed rather than renamed in place: an old query `?x a :MusicProducer` now
+# returns zero rows and breaks loudly, which is the honest signal for a breaking release.
+# Reusing the IRIs would have flipped them from class to individual and returned zero rows
+# silently.
 
 ###############################################################################
 # CLASSES — MUSICAL ROLES (gist:Category pattern)
@@ -218,7 +192,7 @@
     skos:prefLabel "Song"@en ;
     skos:scopeNote "A short musical composition with vocals."@en ;
     skos:broader :MusicalWork ;
-    skos:related :Album, :MusicalArtist, :Lyricist ;
+    skos:related :Album, :MusicalArtist, :LyricistRole ;
     skos:definition "A song is a short musical composition intended to be sung, typically combining melody and lyrics."@en ;
     :exampleInstance :HeyJude, :BohemianRhapsody, :BillieJean, :SmokeOnTheWater, :ImagineSong, :NoWomanNoCry, :CryMeARiver ;
     .
@@ -273,7 +247,7 @@
     skos:scopeNote "A formal musical work, typically in the classical tradition."@en ;
     skos:broader :MusicalWork ;
     skos:narrower :Symphony, :Concerto, :Sonata, :Opera ;
-    skos:related :Composer ;
+    skos:related :ComposerRole ;
     skos:definition "A musical composition is a formal musical work created by a composer."@en ;
     :exampleInstance :Symphony9Beethoven, :RequiemMozart ;
     .
@@ -464,7 +438,7 @@
     skos:prefLabel "Recording Session"@en ;
     skos:scopeNote "A period of time during which music is recorded in a studio."@en ;
     skos:broader :MusicEvent ;
-    skos:related :Album, :MusicProducer ;
+    skos:related :Album, :ProducerRole ;
     skos:definition "A recording session is a period of time used in a recording studio to record music."@en ;
     .
 
@@ -638,10 +612,15 @@
     rdfs:range :Place ;
     .
 
+# Domain is :MusicalAgent, not :MusicalArtist. Producers and conductors have careers too,
+# and until v3.0.0 they sat outside :MusicalAgent — so this domain was simply false, and
+# RDFS (for which a domain is an inference RULE, not a constraint) duly retyped every
+# producer as a musical artist. Now that roles are categories and every music-making agent
+# is a :MusicalAgent, the axiom is true. :CareerOnsetShape carries the constraint reading.
 :startsCareerIn a owl:DatatypeProperty ;
     skos:prefLabel "starts career in"@en ;
-    skos:scopeNote "The year in which the artist began their professional music career."@en ;
-    rdfs:domain :MusicalArtist ;
+    skos:scopeNote "The year in which the agent began their professional music career."@en ;
+    rdfs:domain :MusicalAgent ;
     rdfs:range xsd:gYear ;
     .
 
@@ -684,28 +663,33 @@
     owl:inverseOf :performedBy ;
     .
 
+# The three credit properties range over :MusicalAgent, not over a role class. The ROLE
+# requirement (the composer must actually hold :ComposerRole, etc.) is a constraint, so it
+# lives in SHACL — :CompositionShape, :SongShape, :AlbumShape — not in an rdfs:range, which
+# RDFS would read as licence to *manufacture* the role rather than to check it.
+
 :composedBy a owl:ObjectProperty ;
     skos:prefLabel "composed by"@en ;
-    skos:scopeNote "Associates a musical work with its composer."@en ;
+    skos:scopeNote "Associates a musical work with the agent who composed it. The agent must hold :ComposerRole (enforced by :CompositionShape)."@en ;
     rdfs:domain :MusicalWork ;
-    rdfs:range :Composer ;
-    skos:definition "Relates a musical work to the composer who created it."@en ;
+    rdfs:range :MusicalAgent ;
+    skos:definition "Relates a musical work to the agent who created it."@en ;
     .
 
 :writtenBy a owl:ObjectProperty ;
     skos:prefLabel "written by"@en ;
-    skos:scopeNote "Associates a song with its lyricist."@en ;
+    skos:scopeNote "Associates a song with the agent who wrote its lyrics. The agent must hold :LyricistRole (enforced by :SongShape)."@en ;
     rdfs:domain :Song ;
-    rdfs:range :Lyricist ;
-    skos:definition "Relates a song to the lyricist who wrote its lyrics."@en ;
+    rdfs:range :MusicalAgent ;
+    skos:definition "Relates a song to the agent who wrote its lyrics."@en ;
     .
 
 :producedBy a owl:ObjectProperty ;
     skos:prefLabel "produced by"@en ;
-    skos:scopeNote "Associates a musical work with its producer."@en ;
+    skos:scopeNote "Associates a musical work with the agent who produced it. The agent must hold :ProducerRole (enforced by :AlbumShape)."@en ;
     rdfs:domain :MusicalWork ;
-    rdfs:range :MusicProducer ;
-    skos:definition "Relates a musical work to the producer who oversaw its production."@en ;
+    rdfs:range :MusicalAgent ;
+    skos:definition "Relates a musical work to the agent who oversaw its production."@en ;
     .
 
 :releasedBy a owl:ObjectProperty ;
@@ -930,14 +914,14 @@ skos:scopeNote a owl:AnnotationProperty .
 
 :activeFrom a owl:DatatypeProperty ;
     skos:prefLabel "active from"@en ;
-    rdfs:domain :MusicalArtist ;
+    rdfs:domain :MusicalAgent ;
     rdfs:range xsd:gYear ;
-    skos:definition "The year an artist's active period began; the start of the activity interval used for era-overlap queries (CQ-13)."@en ;
+    skos:definition "The year an agent's active period began; the start of the activity interval used for era-overlap queries (CQ-13)."@en ;
     .
 
 :activeUntil a owl:DatatypeProperty ;
     skos:prefLabel "active until"@en ;
-    rdfs:domain :MusicalArtist ;
+    rdfs:domain :MusicalAgent ;
     rdfs:range xsd:gYear ;
     skos:scopeNote "Omit for currently-active artists; era-overlap queries treat a missing value as open-ended (still active)."@en ;
     skos:definition "The year an artist's active period ended; absent means the artist is still active (an open interval)."@en ;

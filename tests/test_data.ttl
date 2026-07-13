@@ -26,8 +26,17 @@
 :TST_Label2 a :RecordLabel ; rdfs:label "Test Label Two"@en ; .
 :TST_Chart1 a :MusicChart ; rdfs:label "Test Chart"@en ; .
 :TST_Award1 a :MusicAward ; rdfs:label "Test Award"@en ; .
-:TST_Producer1 a :MusicProducer ; rdfs:label "Test Producer One"@en ; .
-:TST_Producer2 a :MusicProducer ; rdfs:label "Test Producer Two"@en ; .
+:TST_Producer1 a :MusicalPerson ;
+    :hasRole :ProducerRole ; rdfs:label "Test Producer One"@en ; .
+:TST_Producer2 a :MusicalPerson ;
+    :hasRole :ProducerRole ; rdfs:label "Test Producer Two"@en ; .
+
+# CQ-17: an agent holding more than one role. The catalogue asserts roles exactly this way
+# (:QuincyJones holds three), so the fixture models the data as the catalogue does — it does
+# not restate an entailment the catalogue never asserts.
+:TST_MultiRole a :MusicalPerson ;
+    :hasRole :ProducerRole, :ComposerRole ;
+    rdfs:label "Test Multi-Role Agent"@en ; .
 
 # --- Solo artists (SoloArtist ⊑ MusicalArtist ⊑ MusicalAgent, and ⊑ Musician) ---
 :TST_SoloA a :SoloArtist ;

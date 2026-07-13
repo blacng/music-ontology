@@ -75,18 +75,31 @@
     sh:targetClass :Musician ;
     sh:property [ sh:path :hasInstrument ; sh:class :MusicalInstrument ;
         sh:message "hasInstrument must point to a :MusicalInstrument." ] ;
-    # A musician should play an instrument (singing counts via :Voice), unless they conduct.
-    sh:or ( [ sh:path :hasInstrument ; sh:minCount 1 ] [ sh:class :Conductor ] ) ;
-    sh:severity sh:Warning ;
-    sh:message "A musician should play at least one instrument — singing counts via :Voice — unless they are a conductor (CQ-5)." ;
+    # A musician plays an instrument — singing counts, via :Voice. No exemption.
+    #
+    # Until v3.0.0 this was `sh:or ( [:hasInstrument minCount 1] [sh:class :Conductor] )`,
+    # because conductors were typed :Conductor ⊑ :Musician yet play nothing. That was a
+    # band-aid over a bad type assignment: a conductor who plays no instrument is not a
+    # musician. Conducting is now a :MusicalRole, and conductors who do not perform are
+    # :MusicalPersons — outside this shape's target — so the exemption is simply gone.
+    # A conductor who DOES play (Quincy Jones, trumpet) is a :Musician and is held to the
+    # same rule as everyone else.
+    #
+    # sh:severity is declared ON the property shape. It is NOT inherited from the node
+    # shape, so hoisting this out of the sh:or without restating it would silently promote
+    # a completeness Warning into a Violation.
+    sh:property [ sh:path :hasInstrument ; sh:minCount 1 ; sh:severity sh:Warning ;
+        sh:message "A musician should play at least one instrument — singing counts via :Voice (CQ-5)." ] ;
     .
 
 :SongShape a sh:NodeShape ;
     sh:targetClass :Song ;
     sh:property [ sh:path :performedBy ; sh:class :MusicalArtist ;
         sh:message "performedBy must point to a :MusicalArtist." ] ;
-    sh:property [ sh:path :writtenBy ; sh:class :Lyricist ;
-        sh:message "writtenBy must point to a :Lyricist." ] ;
+    sh:property [ sh:path :writtenBy ; sh:class :MusicalAgent ;
+        sh:message "writtenBy must point to a :MusicalAgent." ] ;
+    sh:property [ sh:path :writtenBy ; sh:node :HoldsLyricistRoleShape ;
+        sh:message "writtenBy must point to an agent who holds :LyricistRole." ] ;
     sh:property [ sh:path :belongsToAlbum ; sh:class :Album ; sh:maxCount 1 ;
         sh:message "A song belongs to at most one album." ] ;
     sh:property [ sh:path :releasedIn ; sh:datatype xsd:gYear ; sh:maxCount 1 ;
@@ -105,8 +118,10 @@
         sh:message "performedBy must point to a :MusicalArtist." ] ;
     sh:property [ sh:path :releasedBy ; sh:class :RecordLabel ;
         sh:message "releasedBy must point to a :RecordLabel." ] ;
-    sh:property [ sh:path :producedBy ; sh:class :MusicProducer ;
-        sh:message "producedBy must point to a :MusicProducer (CQ-8)." ] ;
+    sh:property [ sh:path :producedBy ; sh:class :MusicalAgent ;
+        sh:message "producedBy must point to a :MusicalAgent (CQ-8)." ] ;
+    sh:property [ sh:path :producedBy ; sh:node :HoldsProducerRoleShape ;
+        sh:message "producedBy must point to an agent who holds :ProducerRole (CQ-8)." ] ;
     sh:property [ sh:path :hasTrack ; sh:class :Song ;
         sh:message "hasTrack must point to a :Song." ] ;
     sh:property [ sh:path :releasedIn ; sh:datatype xsd:gYear ; sh:maxCount 1 ;
@@ -117,10 +132,46 @@
 
 :CompositionShape a sh:NodeShape ;
     sh:targetClass :Composition ;
-    sh:property [ sh:path :composedBy ; sh:class :Composer ;
-        sh:message "composedBy must point to a :Composer." ] ;
+    sh:property [ sh:path :composedBy ; sh:class :MusicalAgent ;
+        sh:message "composedBy must point to a :MusicalAgent." ] ;
+    sh:property [ sh:path :composedBy ; sh:node :HoldsComposerRoleShape ;
+        sh:message "composedBy must point to an agent who holds :ComposerRole." ] ;
     sh:property [ sh:path :composedBy ; sh:minCount 1 ; sh:severity sh:Warning ;
         sh:message "A composition should state its composer." ] ;
+    .
+
+# --- Role shapes (gist:Category pattern) ---
+#
+# Credit properties (:producedBy, :writtenBy, :composedBy) once carried the role in their
+# rdfs:range — `:producedBy rdfs:range :MusicProducer`. That was the wrong mechanism twice
+# over: it forced roles to be classes, and under RDFS a range does not CHECK the role, it
+# MANUFACTURES it (anything you produce with is thereby a producer). The range now says
+# :MusicalAgent, which is true, and the role requirement lives here, where a constraint
+# belongs and can actually fail.
+#
+# These carry NO sh:targetClass — a target would validate every node in the graph. They are
+# reachable only via sh:node from the credit shapes above. Each is kept separate from its
+# companion type-check so a failure says which of the two is wrong.
+
+:HoldsProducerRoleShape a sh:NodeShape ;
+    sh:property [ sh:path :hasRole ; sh:hasValue :ProducerRole ;
+        sh:message "This agent does not hold :ProducerRole." ] ;
+    .
+
+:HoldsLyricistRoleShape a sh:NodeShape ;
+    sh:property [ sh:path :hasRole ; sh:hasValue :LyricistRole ;
+        sh:message "This agent does not hold :LyricistRole." ] ;
+    .
+
+:HoldsComposerRoleShape a sh:NodeShape ;
+    sh:property [ sh:path :hasRole ; sh:hasValue :ComposerRole ;
+        sh:message "This agent does not hold :ComposerRole." ] ;
+    .
+
+:MusicalRoleShape a sh:NodeShape ;
+    sh:targetObjectsOf :hasRole ;
+    sh:class :MusicalRole ;
+    sh:message "hasRole must point to a :MusicalRole (a gist:Category individual), not an arbitrary node." ;
     .
 
 # --- Genre shapes (gist:Category pattern) ---
@@ -204,6 +255,27 @@
         sh:message "A work collection carries at most one :CollectionType (anthology/box set/…)." ] ;
     sh:property [ sh:path :collects ; sh:minCount 1 ; sh:severity sh:Warning ;
         sh:message "A work collection should collect at least one work (enables collection browse, CQ-16)." ] ;
+    .
+
+# --- Career onset ---
+#
+# The TBox says `:startsCareerIn rdfs:domain :MusicalAgent`, which is TRUE (producers and
+# conductors have careers, and are now agents). But a domain is an inference RULE, not a
+# constraint: RDFS reads it as "anything with a career onset IS an agent", which is licence
+# to invent the type rather than to require it. The constraint reading belongs here.
+#
+# For this shape to mean anything, the validator must NOT be handed those domain axioms —
+# otherwise the closure retypes the focus node into the very class this shape checks for,
+# and the shape can never fail. scripts/check_shacl.py therefore passes a taxonomy-only
+# ont_graph. Proof, not assertion: tests/negative/record_label_career_onset.ttl fails this
+# shape today, and CONFORMS the moment the strip is reverted. That is the whole reason both
+# exist.
+:CareerOnsetShape a sh:NodeShape ;
+    sh:targetSubjectsOf :startsCareerIn, :activeFrom, :activeUntil ;
+    sh:property [ sh:path :startsCareerIn ; sh:datatype xsd:gYear ; sh:maxCount 1 ;
+        sh:message "startsCareerIn must be a single xsd:gYear." ] ;
+    sh:class :MusicalAgent ;
+    sh:message "Career-onset years belong to a music-making agent (:MusicalAgent). A record label has no career." ;
     .
 
 ###############################################################################

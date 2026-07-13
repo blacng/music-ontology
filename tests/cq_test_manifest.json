@@ -286,6 +286,25 @@
         ]
       },
       "sample_row": "TST_Collection collects TST_Album1 and TST_Song1; TST_Album3/TST_Song2 are not in it"
+    },
+    {
+      "id": "CQ-17",
+      "question": "Which agents hold more than one musical role (e.g. producer AND composer)?",
+      "var": "agent",
+      "sparql": "SELECT ?agent WHERE { ?agent :hasRole ?r . ?r a :MusicalRole } GROUP BY ?agent HAVING(COUNT(DISTINCT ?r) > 1)",
+      "expect": {
+        "contains": [
+          "TST_MultiRole",
+          "QuincyJones",
+          "BobDylan"
+        ],
+        "excludes": [
+          "TST_Producer1",
+          "GeorgeMartin"
+        ]
+      },
+      "sample_row": "QuincyJones holds ProducerRole + ConductorRole + ComposerRole; GeorgeMartin holds only ProducerRole",
+      "note": "Unanswerable before v3.0.0 BY CONSTRUCTION. With roles as classes an agent could only be typed as one of them, so 'holds several roles' had nothing to count. This CQ is the redesign's contract with the data."
     }
   ]
 }

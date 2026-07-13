@@ -70,6 +70,57 @@ q("McCartney has :bornOn", "SELECT ?d WHERE { :PaulMcCartney :bornOn ?d }", expe
 q("no :hasAge triples remain", "SELECT ?s WHERE { ?s :hasAge ?o }", expect=0)
 q("no :hasHeight triples remain", "SELECT ?s WHERE { ?s :hasHeight ?o }", expect=0)
 
+# v3.0.0 - roles as gist:Category (mirrors the genre checks above)
+q(":hasRole is a sub-property of gist:isCategorizedBy",
+  "ASK { :hasRole rdfs:subPropertyOf gist:isCategorizedBy }")
+q(":MusicalRole subClassOf gist:Category",
+  "ASK { :MusicalRole rdfs:subClassOf gist:Category }")
+q("the four musical roles exist as individuals",
+  "SELECT ?r WHERE { ?r a :MusicalRole }", expect=4)
+q("every :hasRole object is a :MusicalRole",
+  "SELECT ?o WHERE { ?s :hasRole ?o . FILTER NOT EXISTS { ?o a :MusicalRole } }", expect=0)
+
+# The role classes are gone. If any of these come back, the migration regressed.
+for _cls in ("Composer", "Lyricist", "MusicProducer", "Conductor"):
+    q(f"no individual is still typed :{_cls}",
+      "SELECT ?s WHERE { ?s a :%s }" % _cls, expect=0)
+    q(f":{_cls} is no longer a class",
+      "SELECT ?c WHERE { VALUES ?c { :%s } ?c a owl:Class }" % _cls, expect=0)
+
+# Quincy Jones is the individual the whole redesign is for: a producer AND a conductor AND
+# a composer AND a trumpeter. Under roles-as-classes he could be typed only one of those,
+# and so could hold no instrument at all.
+q("Quincy Jones holds three roles and plays an instrument",
+  "SELECT ?r WHERE { :QuincyJones :hasRole ?r ; :hasInstrument :Trumpet }", expect=3)
+
+# :MusicalPerson must reach :MusicalAgent through ASSERTED subClassOf. run_cq_tests.py and
+# cq_coverage.py apply NO inference — CQ-1b walks `a/rdfs:subClassOf*` over asserted triples.
+# Link :MusicalPerson only to gist:Person and that path breaks SILENTLY: the CQ suite keeps
+# passing, because it checks :TST_* fixtures that never exercise it.
+q(":MusicalPerson reaches :MusicalAgent via asserted subClassOf+",
+  "ASK { :MusicalPerson rdfs:subClassOf+ :MusicalAgent }")
+q(":Musician reaches :MusicalAgent via asserted subClassOf+",
+  "ASK { :Musician rdfs:subClassOf+ :MusicalAgent }")
+
+# The restored rdfs:domain on the career properties is only TRUE while every career-holder
+# really is an agent. This is the trip-wire that keeps it true as the catalogue grows.
+q("every career-onset subject is a :MusicalAgent",
+  """SELECT DISTINCT ?s WHERE {
+       { ?s :startsCareerIn ?y } UNION { ?s :activeFrom ?y } UNION { ?s :activeUntil ?y }
+       FILTER NOT EXISTS { ?s a/rdfs:subClassOf* :MusicalAgent }
+     }""", expect=0)
+
+# Deleting a class can leave skos:related/broader/narrower pointing into the void. The TBox
+# carried three such dangling refs to the role classes; :MusicalArtist skos:broader :Artist
+# has dangled since long before this release. Catch the next one at the gate.
+q("no skos:related/broader/narrower points at an undeclared : term",
+  """SELECT DISTINCT ?o WHERE {
+       ?s ?p ?o .
+       VALUES ?p { skos:related skos:broader skos:narrower }
+       FILTER(STRSTARTS(STR(?o), "https://www.somusicvocabulary.org/music#"))
+       FILTER NOT EXISTS { ?o a ?anyType }
+     }""", expect=0, show=True)
+
 print()
 if all(checks):
     print("ALL CHECKS PASSED")

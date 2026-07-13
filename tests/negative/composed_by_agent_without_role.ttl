@@ -1,0 +1,22 @@
+@prefix : <https://www.somusicvocabulary.org/music#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# NEGATIVE: :CompositionShape / :HoldsComposerRoleShape — a performing musician, with an
+# instrument, credited as the composer. Playing a work is not writing it; that distinction
+# is precisely what roles buy us.
+
+# Typed locally — fixtures validate standalone, so an untyped :Piano or :LyricistRole would
+# raise unrelated failures and muddy what this fixture is actually testing.
+:Piano a :MusicalInstrument .
+:LyricistRole a :MusicalRole .
+
+:NEG_PlayerNotComposer a :Musician ;
+    rdfs:label "Negative fixture — plays, but holds no composer role"@en ;
+    :hasInstrument :Piano ;
+    :hasRole :LyricistRole ;
+    .
+
+:NEG_CompositionBadComposer a :Composition ;
+    rdfs:label "Negative fixture — composition credited to a non-composer"@en ;
+    :composedBy :NEG_PlayerNotComposer ;
+    .

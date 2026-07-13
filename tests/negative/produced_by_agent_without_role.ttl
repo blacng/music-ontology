@@ -1,0 +1,16 @@
+@prefix : <https://www.somusicvocabulary.org/music#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# NEGATIVE: :AlbumShape / :HoldsProducerRoleShape — the producer is a perfectly good
+# musical agent, and still not a producer. Since v3.0.0 the role is no longer carried by
+# rdfs:range (which under RDFS would simply *invent* the role), so it has to be asserted
+# and can be checked. This fixture is the check.
+
+:NEG_NotAProducer a :MusicalPerson ;
+    rdfs:label "Negative fixture — an agent who holds no producer role"@en ;
+    .
+
+:NEG_AlbumBadProducer a :Album ;
+    rdfs:label "Negative fixture — album credited to a non-producer"@en ;
+    :producedBy :NEG_NotAProducer ;
+    .

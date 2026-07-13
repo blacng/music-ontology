@@ -82,9 +82,14 @@ def main() -> int:
 
     for entry in manifest["fixtures"]:
         name = entry["file"]
-        expect = entry["expect"]
-        data = Graph().parse(NEG_DIR / name, format="turtle")
+        # `expect` is a list: a fixture may legitimately break more than one thing at once.
+        # A record label credited as producer is neither a :MusicalAgent nor a role-holder,
+        # and BOTH failures are real. What must never happen is an *unexpected* Violation.
+        expected = entry["expect"]
+        if isinstance(expected, dict):
+            expected = [expected]
 
+        data = Graph().parse(NEG_DIR / name, format="turtle")
         conforms, report, _ = validate_data(data, shapes, tbox)
         results = results_of(report)
 
@@ -96,35 +101,41 @@ def main() -> int:
             print(f"  [VACUOUS] {name:<42} {entry['shape']} did not fire")
             continue
 
-        if not any(matches(r, expect) for r in results):
+        missing = [e for e in expected if not any(matches(r, e) for r in results)]
+        if missing:
             got = "; ".join(
                 f"{r['focus']}/{r['component']}/{r['path']}/{r['severity']}" for r in results
             ) or "nothing"
-            want = f"{expect['focus']}/{expect['component']}/{expect.get('path', '-')}/{expect['severity']}"
+            want = "; ".join(
+                f"{e['focus']}/{e['component']}/{e.get('path', '-')}/{e['severity']}"
+                for e in missing
+            )
             failures.append(
                 f"{name}: fired, but for the WRONG REASON.\n"
-                f"      expected: {want} ~ {expect['message_contains']!r}\n"
+                f"      missing:  {want}\n"
                 f"      got:      {got}"
             )
             print(f"  [WRONG]   {name:<42} fired, but not as {entry['shape']}")
             continue
 
-        # A fixture must not ALSO trip some unrelated shape — that would mask the real signal.
+        # Anything else that fires is a Violation nobody asked for — a fixture tripping a
+        # shape it was not written to test proves nothing precise, and can mask the signal.
         strays = [
             r
             for r in results
-            if r["severity"] == "Violation" and not matches(r, expect)
+            if r["severity"] == "Violation" and not any(matches(r, e) for e in expected)
         ]
         if strays:
             detail = "; ".join(f"{r['focus']}/{r['component']}/{r['path']}" for r in strays)
             failures.append(
-                f"{name}: fired correctly, but ALSO tripped unrelated Violation(s): {detail}. "
-                f"One fixture, one shape — otherwise it proves nothing precise."
+                f"{name}: fired correctly, but ALSO tripped unexpected Violation(s): {detail}. "
+                f"Declare them in the manifest if they are intended, or make the fixture narrower."
             )
             print(f"  [NOISY]   {name:<42} extra violations: {detail}")
             continue
 
-        print(f"  [FIRES]   {name:<42} {expect['component']} ({expect['severity']})")
+        fired = ", ".join(f"{e['component']} ({e['severity']})" for e in expected)
+        print(f"  [FIRES]   {name:<42} {fired}")
 
     total = len(manifest["fixtures"])
     print(f"\nNegative fixtures: {total - len(failures)}/{total} fired as expected")
