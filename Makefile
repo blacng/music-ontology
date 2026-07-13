@@ -1,7 +1,7 @@
 # Music Ontology — task runner (thin wrapper over uv).
 # Usage: make <target>.  `make check` runs the full validation gate.
 
-.PHONY: help install validate test shacl shacl-negative coverage check dataset reason reason-negative serve fuseki-load down clean
+.PHONY: help install validate test shacl shacl-negative coverage check dataset demo-updates viz reason reason-negative serve fuseki-load down clean
 
 # Fuseki endpoint knobs (override on the CLI, e.g. `make fuseki-load FUSEKI_PW=secret`)
 FUSEKI_URL ?= http://localhost:3030
@@ -56,6 +56,15 @@ reason-negative: ## Non-vacuity gate for the REASONER — prove HermiT can actua
 dataset: ## Assemble the named-graph dataset for triplestore ingest (dist/*.trig, load.ru, manifest)
 	uv run python scripts/load_graphs.py
 
+demo-updates: ## SPARQL write path — INSERT/DELETE against named graphs + a SHACL-rejected write
+	uv run python scripts/demo_updates.py
+
+report: ## Regenerate docs/mc2-graph-queries.md from a real run (writes a tracked file)
+	uv run python scripts/demo_updates.py --report
+
+viz: ## Render CQ answer subgraphs to dist/viz/*.svg (+ .mmd, .dot). Artifact, not a gate.
+	uv run python scripts/viz_subgraph.py
+
 serve: ## Start the Fuseki SPARQL server (http://localhost:3030, dataset `music`)
 	FUSEKI_ADMIN_PASSWORD=$(FUSEKI_PW) docker compose up -d fuseki
 	@echo "Fuseki starting at $(FUSEKI_URL) (UI: $(FUSEKI_URL)/#/dataset/$(FUSEKI_DS)/query). Load data with: make fuseki-load"
@@ -80,7 +89,7 @@ fuseki-load: dataset serve ## Build the dataset and (re)load it into Fuseki's na
 down: ## Stop the Fuseki server (keeps the TDB volume; use `docker compose down -v` to wipe)
 	docker compose down
 
-check: validate test shacl shacl-negative ## Run the full validation gate (CI; reasoner is separate, needs Docker)
+check: validate test shacl shacl-negative demo-updates ## Run the full validation gate (CI; reasoner is separate, needs Docker)
 
 clean: ## Remove the virtual environment
 	rm -rf .venv

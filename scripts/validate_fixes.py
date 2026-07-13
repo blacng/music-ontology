@@ -57,6 +57,26 @@ q("US-origin artists via city :locatedIn* :UnitedStates",
 q("no skos:broader triples remain among genres",
   "SELECT ?s WHERE { ?s <http://www.w3.org/2004/02/skos/core#broader> ?o . ?s a :MusicGenre }", expect=0)
 
+# The genre taxonomy must stay DEEP ENOUGH for transitivity to be falsifiable.
+#
+# :hasBroaderGenre is owl:TransitiveProperty and CQ-9 walks it with a `*` path — but for most
+# of this project's life the catalogue was FLAT: every genre was a direct child of a top-level
+# genre, so no entity's membership depended on the closure, and CQ-9 would have returned the
+# identical answer with the transitivity switched off entirely. The axiom was correct and
+# completely unexercised — a green light wired to nothing.
+#
+# This ASK requires at least one entity whose ONLY route to :Rock is a chain of length >= 2
+# (today: :PearlJam, tagged :Grunge -> :AlternativeRock -> :Rock and nothing else). Delete that
+# instance, or give it a shortcut edge like `:hasGenre :Rock`, and this check goes RED — which
+# is the entire point. Without it the invariant was defended by a code comment, and a comment
+# has never failed a build.
+q("transitivity is load-bearing: some entity reaches :Rock ONLY via a >=2-hop genre chain",
+  """ASK {
+       ?e :hasGenre ?deep .
+       ?deep :hasBroaderGenre/:hasBroaderGenre+ :Rock .
+       FILTER NOT EXISTS { ?e :hasGenre ?shallow . ?shallow :hasBroaderGenre? :Rock }
+     }""")
+
 # Fix 2 - geography / roll-up
 q("artists originating in England (city :locatedIn* :England)",
   "SELECT DISTINCT ?a WHERE { ?a :originatesFrom ?c . ?c :locatedIn* :England }", show=True)

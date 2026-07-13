@@ -52,6 +52,34 @@
     skos:definition "Punk rock is a rock music genre that developed in the mid-1970s, emphasizing short, fast-paced songs with hard-edged melodies."@en ;
     .
 
+# --- Third-level genres --------------------------------------------------------------
+# The only genres in the catalogue whose broader-genre chain is longer than one hop.
+# :hasBroaderGenre is owl:TransitiveProperty and CQ-9 walks it with a `*` path, but the
+# taxonomy used to be FLAT — every genre a direct child of a top-level genre — so neither the
+# axiom nor the path did any work the data could distinguish from a plain direct lookup. The
+# closure was correct and completely unexercised.
+#
+# Only :Grunge currently carries that argument, via :PearlJam below (see the note there).
+# :PostPunk is a genuine second branch of the taxonomy but no catalogued act is tagged with
+# it, so it proves nothing on its own — it is structure, not evidence. The invariant itself
+# is enforced by an ASK in scripts/validate_fixes.py (`make validate`, and a CI step), not by
+# this comment: a comment has never failed a build.
+
+:Grunge a :MusicGenre ;
+    rdfs:label "Grunge"@en ;
+    rdfs:comment "A subgenre of alternative rock from the Pacific Northwest, fusing punk and heavy metal."@en ;
+    :hasBroaderGenre :AlternativeRock ;
+    skos:definition "Grunge is a subgenre of alternative rock that emerged in the Seattle area in the mid-1980s, characterised by distorted guitars, contrasting song dynamics, and angst-driven lyrics."@en ;
+    :exampleInstance :Nirvana ;
+    .
+
+:PostPunk a :MusicGenre ;
+    rdfs:label "Post-Punk"@en ;
+    rdfs:comment "A subgenre of punk rock that broadened its palette with art-rock and dub influences."@en ;
+    :hasBroaderGenre :PunkRock ;
+    skos:definition "Post-punk is a subgenre of punk rock that emerged in the late 1970s, retaining punk's do-it-yourself stance while drawing on art rock, funk, and dub."@en ;
+    .
+
 :IndieRock a :MusicGenre ;
     rdfs:label "Indie Rock"@en ;
     rdfs:comment "Rock music produced independently from commercial record labels."@en ;
@@ -881,10 +909,27 @@
 :Nirvana a :RockBand ;
     rdfs:label "Nirvana"@en ;
     rdfs:comment "American rock band formed in Aberdeen, Washington in 1987, pioneers of grunge."@en ;
-    :hasGenre :AlternativeRock ;
+    :hasGenre :Grunge ;
     :hasGenre :PunkRock ;
     :originatesFrom :Aberdeen_WA ;
     :startsCareerIn "1987"^^xsd:gYear ;
+    .
+
+# Tagged :Grunge and nothing else — so the ONLY route from :PearlJam to :Rock is the two-hop
+# chain :Grunge -> :AlternativeRock -> :Rock. Every other entity in the catalogue has some
+# one-hop genre edge to a top-level genre and would still answer CQ-9 with the transitivity
+# switched off; this one would not. It is what makes CQ-9's `*` path falsifiable against the
+# real ABox rather than only against the :TST_* fixtures.
+#
+# Adding `:hasGenre :Rock` here, or deleting this instance, turns `make validate` RED — see
+# the "transitivity is load-bearing" ASK in scripts/validate_fixes.py. That check exists
+# because this exact edit used to pass the whole gate green.
+:PearlJam a :RockBand ;
+    rdfs:label "Pearl Jam"@en ;
+    rdfs:comment "American rock band formed in Seattle in 1990, a defining act of the grunge movement."@en ;
+    :hasGenre :Grunge ;
+    :originatesFrom :Seattle ;
+    :startsCareerIn "1990"^^xsd:gYear ;
     .
 
 :LedZeppelin a :RockBand ;
@@ -1320,6 +1365,12 @@
 :KurtCobain a :Musician ; rdfs:label "Kurt Cobain"@en ; :hasInstrument :Voice, :Guitar .
 :KristNovoselic a :Musician ; rdfs:label "Krist Novoselic"@en ; :hasInstrument :Bass .
 :DaveGrohl a :Musician ; rdfs:label "Dave Grohl"@en ; :hasInstrument :Drums .
+
+:PearlJam :hasMember :EddieVedder, :StoneGossard, :JeffAment, :MikeMcCready .
+:EddieVedder a :Musician ; rdfs:label "Eddie Vedder"@en ; :hasInstrument :Voice, :Guitar .
+:StoneGossard a :Musician ; rdfs:label "Stone Gossard"@en ; :hasInstrument :Guitar .
+:JeffAment a :Musician ; rdfs:label "Jeff Ament"@en ; :hasInstrument :Bass .
+:MikeMcCready a :Musician ; rdfs:label "Mike McCready"@en ; :hasInstrument :Guitar .
 
 :LedZeppelin :hasMember :RobertPlant, :JimmyPage, :JohnPaulJones, :JohnBonham .
 :RobertPlant a :Musician ; rdfs:label "Robert Plant"@en ; :hasInstrument :Voice .
