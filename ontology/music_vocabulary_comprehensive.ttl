@@ -21,8 +21,8 @@
 :MusicVocabulary a owl:Ontology ;
     rdfs:label "Comprehensive Music Vocabulary"@en ;
     rdfs:comment "A comprehensive vocabulary for describing music concepts, works, artists, instruments, and relationships."@en ;
-    owl:versionInfo "2.3.0" ;
-    owl:versionIRI <https://www.somusicvocabulary.org/music/2.3.0> ;
+    owl:versionInfo "2.4.0" ;
+    owl:versionIRI <https://www.somusicvocabulary.org/music/2.4.0> ;
     owl:imports <https://w3id.org/semanticarts/ontology/gistCore> .
 
 ###############################################################################
@@ -583,10 +583,13 @@
     rdfs:range :Place ;
     .
 
+# No rdfs:domain: domain is an *inference rule* ("anything with this property IS a
+# :MusicalArtist"), not the constraint we mean. Producers, conductors and orchestras all have
+# career-start years, and a :MusicalArtist domain silently retyped 9 of them. The constraint
+# reading lives in SHACL (:CareerOnsetShape).
 :startsCareerIn a owl:DatatypeProperty ;
     skos:prefLabel "starts career in"@en ;
-    skos:scopeNote "The year in which the artist began their professional music career."@en ;
-    rdfs:domain :MusicalArtist ;
+    skos:scopeNote "The year in which the agent began their professional music career."@en ;
     rdfs:range xsd:gYear ;
     .
 
@@ -873,19 +876,19 @@ skos:scopeNote a owl:AnnotationProperty .
 # --- Time: artist activity interval (the canonical era signal). :startsCareerIn
 #     is the narrower "first professional year" and is subordinate to :activeFrom. ---
 
+# No rdfs:domain — see :startsCareerIn. Constraint enforced by :CareerOnsetShape.
 :activeFrom a owl:DatatypeProperty ;
     skos:prefLabel "active from"@en ;
-    rdfs:domain :MusicalArtist ;
     rdfs:range xsd:gYear ;
-    skos:definition "The year an artist's active period began; the start of the activity interval used for era-overlap queries (CQ-13)."@en ;
+    skos:definition "The year an agent's active period began; the start of the activity interval used for era-overlap queries (CQ-13)."@en ;
     .
 
+# No rdfs:domain — see :startsCareerIn. Constraint enforced by :CareerOnsetShape.
 :activeUntil a owl:DatatypeProperty ;
     skos:prefLabel "active until"@en ;
-    rdfs:domain :MusicalArtist ;
     rdfs:range xsd:gYear ;
-    skos:scopeNote "Omit for currently-active artists; era-overlap queries treat a missing value as open-ended (still active)."@en ;
-    skos:definition "The year an artist's active period ended; absent means the artist is still active (an open interval)."@en ;
+    skos:scopeNote "Omit for currently-active agents; era-overlap queries treat a missing value as open-ended (still active)."@en ;
+    skos:definition "The year an agent's active period ended; absent means they are still active (an open interval)."@en ;
     .
 
 ###############################################################################

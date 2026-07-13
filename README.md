@@ -10,7 +10,7 @@ LLMs as disciplined pair-modellers.
 - **Namespace:** `:` → `https://www.somusicvocabulary.org/music#`
 - **Upper ontology:** **gist v14.1.0** — `gist:` → `https://w3id.org/semanticarts/ns/ontology/gist/` (vendored at `ontology/imports/`, reasoner-validated)
 - **Scope:** content-based candidate generation (no user/interaction/rating is modelled)
-- **Maturity:** research prototype · **released v2.3.0** (SHACL fully conforms · reasoner-gated in CI)
+- **Maturity:** research prototype · **released v2.4.0** (SHACL fully conforms **under RDFS inference** · reasoner-gated in CI)
 
 ---
 
@@ -64,7 +64,9 @@ flowchart TB
   pt --> rel22
   he --> rel22
   rel22 --> v23[v2.3 · curated work collections · reasoner CI gate]
-  v23 --> rel([Released v2.3.0 · 17/17 CQs · SHACL 0/0 · reasoner consistent])
+  v23 --> rel23([Released v2.3.0 · 17/17 CQs · SHACL 0/0 · reasoner consistent])
+  rel23 --> v24[v2.4 · SHACL under RDFS inference · rdfs:domain trap fixed]
+  v24 --> rel([Released v2.4.0 · 17/17 CQs · 17/17 ABox-answerable · SHACL 0/0])
 ```
 
 Key decision points along the way:
@@ -208,7 +210,7 @@ transforms that produced the current model are preserved and re-runnable in `scr
 
 ## Status
 
-Lifecycle complete — **released [v2.3.0](https://github.com/blacng/music-ontology/releases/tag/v2.3.0)** · SHACL **fully conforms (0/0)** · reasoner-gated in CI.
+Lifecycle complete — **released [v2.4.0](https://github.com/blacng/music-ontology/releases/tag/v2.4.0)** · SHACL **fully conforms (0/0) under RDFS inference** · reasoner-gated in CI · **17/17 CQs answerable from the real catalogue** (`make coverage`).
 
 | Phase | State |
 |-------|-------|
@@ -222,7 +224,9 @@ Lifecycle complete — **released [v2.3.0](https://github.com/blacng/music-ontol
 | Vocals + catalog completeness (v2.1) | ✅ done — SHACL **fully conforms (0/0)** |
 | Foundational time / geography / history (v2.2) | ✅ done — CQ-13/14/15; `gist:Category` place-typing; `:HistoricalEvent` |
 | Curated work collections (v2.3) | ✅ done — CQ-16; `:WorkCollection`/`:collects`/`:CollectionType`; **reasoner now a CI gate** |
-| **Release** | ✅ **v2.0.0** → **v2.1.0** → **v2.2.0** → **v2.3.0** |
+| ABox coverage report (`make coverage`) | ✅ done — **17/17 CQs answerable from the real catalogue** (was 14/17) |
+| SHACL under RDFS inference (v2.4) | ✅ done — shapes reach subclass instances; `rdfs:domain` mistyping fixed; `:CareerOnsetShape` |
+| **Release** | ✅ **v2.0.0** → **v2.1.0** → **v2.2.0** → **v2.3.0** → **v2.4.0** |
 
 See [`sdd/plan.md`](sdd/plan.md) for the live lifecycle tracker and [`sdd/spec.md`](sdd/spec.md)
 for the specification.

@@ -207,6 +207,31 @@
     .
 
 ###############################################################################
+# CAREER-ONSET CONSTRAINT (replaces the rdfs:domain axioms dropped in v2.4.0)
+###############################################################################
+
+# :startsCareerIn / :activeFrom / :activeUntil used to carry `rdfs:domain :MusicalArtist`.
+# In RDFS a domain is an *inference rule* — "anything with this property IS a :MusicalArtist" —
+# not the constraint we meant. It silently retyped producers, conductors and non-artist musicians
+# as :MusicalArtist (visible once check_shacl.py enabled inference). The domains are gone; this
+# shape states the intended rule in the language built for it.
+#
+# Careers belong to music-making agents (:MusicalAgent covers artists, bands, orchestras via
+# :Band, and musicians incl. conductors) and to producers (:MusicProducer sits under gist:Person,
+# outside :MusicalAgent).
+:CareerOnsetShape a sh:NodeShape ;
+    sh:targetSubjectsOf :startsCareerIn, :activeFrom, :activeUntil ;
+    sh:property [ sh:path :startsCareerIn ; sh:datatype xsd:gYear ; sh:maxCount 1 ;
+        sh:message "startsCareerIn must be a single xsd:gYear." ] ;
+    sh:property [ sh:path :activeFrom ; sh:datatype xsd:gYear ; sh:maxCount 1 ;
+        sh:message "activeFrom must be a single xsd:gYear (CQ-13)." ] ;
+    sh:property [ sh:path :activeUntil ; sh:datatype xsd:gYear ; sh:maxCount 1 ;
+        sh:message "activeUntil must be a single xsd:gYear (CQ-13)." ] ;
+    sh:or ( [ sh:class :MusicalAgent ] [ sh:class :MusicProducer ] ) ;
+    sh:message "Career-onset years belong to a music-making agent (:MusicalAgent) or a :MusicProducer." ;
+    .
+
+###############################################################################
 # CQ-DERIVED SPARQL CONSTRAINT
 ###############################################################################
 

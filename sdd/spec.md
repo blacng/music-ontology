@@ -104,6 +104,29 @@ pattern and the place-containment graph. Design pressure-tested via `model_dialo
     *establishes* memberships): add **when the provenance waiver is lifted for production**. At that
     point `:collects` becomes derived from open memberships (single source of truth), not asserted.
 
+## Resolved in v2.4 (SHACL inference; the `rdfs:domain` trap)
+
+- **SHACL now validates the graph the model actually implies.** `check_shacl.py` ran with pyshacl's
+  default `inference='none'`, so `sh:targetClass` matched only *explicitly*-typed nodes: a
+  `:SoloArtist` slipped straight past `:MusicalArtistShape`. (The docstring claimed `ont_graph`
+  handled this — it does not; `ont_graph` merges TBox triples but computes no entailment.) Now
+  `inference='rdfs'`, so subclass and domain/range entailments are materialised before validation.
+  **No new dependency** — pyshacl already ships `owlrl` and `inference` is a first-class parameter.
+  Full `owlrl` closure was rejected: it puns class IRIs as individuals and raised two spurious
+  Violations on `:City` and `:Region` (classes, not instances).
+- **`rdfs:domain` is an inference rule, not a constraint — and it was mistyping non-artists.** Turning
+  inference on immediately exposed the bug it had been hiding: `:startsCareerIn`, `:activeFrom` and
+  `:activeUntil` carried `rdfs:domain :MusicalArtist`, which in RDFS means *"anything with this
+  property **is** a :MusicalArtist"*. Producers, conductors and non-artist musicians all have career
+  years, so RDFS silently retyped them — George Martin, Quincy Jones and Rick Rubin became musical
+  artists, then tripped "a musical artist should have a genre." **The data was right; the axiom was
+  wrong.** Domains dropped; the constraint reading now lives where constraints belong, in SHACL
+  (`:CareerOnsetShape` — career years belong to a `:MusicalAgent` or a `:MusicProducer`; verified with
+  a negative test).
+- **Net effect:** SHACL 0 Violations / 0 Warnings — the three Warnings vanished because the root cause
+  was fixed, not suppressed. Shapes now reach subclass instances (`:PaulMcCartney`, asserted only
+  `:SoloArtist`, is validated by `:MusicalArtistShape` and `:MusicianShape`).
+
 ## Known issues / decisions pending
 
 - **Fixtures must model data the way the catalogue does.** This is the load-bearing lesson from the
@@ -134,8 +157,14 @@ pattern and the place-containment graph. Design pressure-tested via `model_dialo
   canonical; consider deprecating `:startsCareerIn` or formally subordinating it in a later pass.
 - **`:locatedIn` acyclicity:** transitive roll-up assumes a DAG; non-tree geography (metro across
   two states, disputed regions) would break it. A SHACL/`scripts/` acyclicity guard is deferred.
-- **SHACL without RDFS inference:** `check_shacl` runs `inference='none'`, so class-targeted
-  shapes only match explicitly-typed nodes (subclass instances slip superclass shapes). Pre-
-  existing; revisit if constraint coverage needs to follow the hierarchy.
+- **Residual domain-entailment risk (`rdfs:domain :MusicalArtist`).** v2.4.0 dropped the domain on
+  the three career-onset properties, but four others still carry it: `:isSignedTo`,
+  `:speaksLanguage`, `:nationalityOf`, `:performs`. None mistypes anyone in the *current* ABox
+  (checked), so they were left alone — but the same trap is armed: record a producer's spoken
+  language or a conductor's label deal and RDFS will retype them `:MusicalArtist`. Before adding
+  such data, either drop the domain (and constrain in SHACL) or confirm the entailment is wanted.
+  `:originatesFrom` / `:bornOn` (`rdfs:domain :MusicalAgent`) already infer producers into
+  `:MusicalAgent` — benign today (no shape depends on it, and `:CareerOnsetShape` accepts it), but
+  the same category of over-typing.
 
 > Living document — update before completing each feature/development task.

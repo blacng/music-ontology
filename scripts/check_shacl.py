@@ -7,9 +7,18 @@ Violations**; report Warnings without failing.
 
 Since the TBox/ABox split, this mirrors the intended triplestore layout: the
 **ABox** (instance catalogue) is the data graph under validation, the **shapes**
-are the SHACL graph, and the **TBox** is supplied as `ont_graph` so class-hierarchy
-axioms (e.g. :SoloArtist rdfs:subClassOf :MusicalArtist) let `sh:targetClass`
-reach subclass instances — without the model polluting the data being validated.
+are the SHACL graph, and the **TBox** is supplied as `ont_graph` — without the
+model polluting the data being validated.
+
+`inference='rdfs'` is what actually makes `sh:targetClass` reach subclass instances.
+Supplying `ont_graph` alone only merges the TBox triples in; it computes no entailment,
+so with pyshacl's default (`inference='none'`) a `:SoloArtist` slipped straight past
+`sh:targetClass :MusicalArtist`. RDFS closure materialises the subclass (and domain/range)
+entailments, so shapes see the types the model actually implies. No new dependency —
+pyshacl already ships owlrl, and `inference` is a first-class pyshacl parameter.
+
+Full `owlrl` closure is deliberately NOT used: it puns class IRIs as individuals and
+raised two spurious Violations on :City and :Region (classes, not instances).
 
 Run: uv run python scripts/check_shacl.py
 """
@@ -27,7 +36,9 @@ def main():
     data = Graph().parse(DATA, format="turtle")
     ontology = Graph().parse(ONTOLOGY, format="turtle")
     shapes = Graph().parse(SHAPES, format="turtle")
-    _, report, _ = validate(data, shacl_graph=shapes, ont_graph=ontology, meta_shacl=True)
+    _, report, _ = validate(
+        data, shacl_graph=shapes, ont_graph=ontology, meta_shacl=True, inference="rdfs"
+    )
 
     violations = warnings = 0
     for res in report.subjects(RDF.type, SH.ValidationResult):

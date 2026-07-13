@@ -3,10 +3,33 @@
 All notable changes to the Comprehensive Music Vocabulary. Versions follow the ontology's
 `owl:versionInfo` / `owl:versionIRI`.
 
-## [Unreleased]
+## [2.4.0] — 2026-07-12
 
-Tooling, ABox data, and documentation. **No TBox change**, so no version bump — the model is untouched;
-what changed is the instance data and the tests that measure it.
+**SHACL now validates the graph the model implies** — and the first thing that revealed was an
+`rdfs:domain` axiom quietly mistyping non-artists.
+
+### Fixed (v2.4.0 — the inference gap)
+- **`check_shacl.py` runs `inference='rdfs'`.** It previously ran with pyshacl's default
+  (`inference='none'`), so `sh:targetClass` matched only *explicitly*-typed nodes — a `:SoloArtist`
+  slipped straight past `:MusicalArtistShape`. (The docstring claimed passing the TBox as `ont_graph`
+  handled this. It does not: `ont_graph` merges TBox triples but computes no entailment.) **No new
+  dependency** — pyshacl already ships `owlrl`, and `inference` is a first-class pyshacl parameter.
+  Full `owlrl` closure was rejected: it puns class IRIs as individuals, raising two spurious
+  Violations on `:City` and `:Region` (classes, not instances).
+- **Dropped `rdfs:domain :MusicalArtist` from `:startsCareerIn`, `:activeFrom`, `:activeUntil`.**
+  In RDFS a domain is an *inference rule* — "anything with this property **is** a `:MusicalArtist`" —
+  not the constraint the model meant. Producers, conductors and non-artist musicians all have career
+  years, so RDFS silently retyped them: `:GeorgeMartin`, `:QuincyJones` and `:RickRubin` became musical
+  artists and then tripped "a musical artist should have a genre." The data was right; the axiom was
+  wrong. **SHACL 0 Violations / 0 Warnings** — the warnings vanished because the cause was fixed, not
+  suppressed.
+- **New `:CareerOnsetShape`** carries the constraint reading the domains were wrongly expressing:
+  career-onset years belong to a `:MusicalAgent` or a `:MusicProducer`, and must be a single
+  `xsd:gYear`. Verified with a negative test (a `:RecordLabel` claiming a career onset is rejected).
+
+### Also in this release (ABox coverage — see #23)
+
+Tooling, ABox data and documentation; no TBox change of its own.
 
 ### Added
 - **`make coverage`** (`scripts/cq_coverage.py`) — an **ABox coverage report**. `make test` loads the
