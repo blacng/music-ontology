@@ -41,6 +41,14 @@ jobs:
       - name: SHACL non-vacuity (prove the shapes can fail)
         run: make shacl-negative
 
+      # The write path. Everything above only ever reads. This exercises INSERT DATA /
+      # DELETE-INSERT / DELETE WHERE against the named graphs, and asserts that a write the
+      # shapes must reject IS rejected (0 Violations before, >0 after, 0 again after rollback)
+      # — so it fails if the ABox drifts out of SHACL conformance under mutation, which
+      # `make shacl` cannot see because it only ever validates the file at rest.
+      - name: SPARQL write path + SHACL write gate
+        run: make demo-updates
+
   reason:
     name: Reasoner consistency (HermiT)
     runs-on: ubuntu-latest
