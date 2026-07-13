@@ -1,0 +1,14 @@
+@prefix : <https://www.somusicvocabulary.org/music#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# NEGATIVE: :SongShape — :writtenBy must point to a lyricist. Here it points at a
+# record label, which is an :Organization, not a writer of words.
+
+:NEG_LabelNotAWriter a :RecordLabel ;
+    rdfs:label "Negative fixture — a record label"@en ;
+    .
+
+:NEG_SongWrittenByLabel a :Song ;
+    rdfs:label "Negative fixture — a song written by a record label"@en ;
+    :writtenBy :NEG_LabelNotAWriter ;
+    .

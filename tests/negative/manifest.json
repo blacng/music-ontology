@@ -1,0 +1,99 @@
+{
+  "description": "Negative SHACL fixtures. Each file is crafted to violate exactly one shape. The gate asserts the expected result actually fires — matched on focus node, constraint component, path and severity, plus a message substring — not merely that the graph fails to conform. See README.md.",
+  "note": "sourceShape is a BLANK NODE for every inline sh:property shape in music_vocabulary_shapes.ttl, so it cannot be matched by IRI. Match on the tuple below instead.",
+  "fixtures": [
+    {
+      "file": "musician_no_instrument.ttl",
+      "shape": ":MusicianShape",
+      "why": "A musician who plays nothing. Expected severity is Warning, not Violation — the shape carries node-level sh:severity sh:Warning. A gate keyed on Violation count would pass this while looking rigorous.",
+      "expect": {
+        "focus": "NEG_SilentMusician",
+        "component": "OrConstraintComponent",
+        "severity": "Warning",
+        "message_contains": "should play at least one instrument"
+      }
+    },
+    {
+      "file": "song_written_by_non_lyricist.ttl",
+      "shape": ":SongShape / :writtenBy",
+      "why": "A song written by a record label.",
+      "expect": {
+        "focus": "NEG_SongWrittenByLabel",
+        "component": "ClassConstraintComponent",
+        "path": "writtenBy",
+        "severity": "Violation",
+        "message_contains": "writtenBy"
+      }
+    },
+    {
+      "file": "album_produced_by_non_producer.ttl",
+      "shape": ":AlbumShape / :producedBy",
+      "why": "An album produced by a record label. Labels release records; they do not produce them.",
+      "expect": {
+        "focus": "NEG_AlbumProducedByLabel",
+        "component": "ClassConstraintComponent",
+        "path": "producedBy",
+        "severity": "Violation",
+        "message_contains": "producedBy"
+      }
+    },
+    {
+      "file": "composition_composed_by_non_composer.ttl",
+      "shape": ":CompositionShape / :composedBy",
+      "why": "A composition composed by a record label.",
+      "expect": {
+        "focus": "NEG_CompositionByLabel",
+        "component": "ClassConstraintComponent",
+        "path": "composedBy",
+        "severity": "Violation",
+        "message_contains": "composedBy"
+      }
+    },
+    {
+      "file": "top_level_genre_with_broader.ttl",
+      "shape": ":TopLevelGenreShape",
+      "why": "A root genre claiming a parent. Would silently break the :hasGenre/:hasBroaderGenre* roll-up behind CQ-1 and CQ-9.",
+      "expect": {
+        "focus": "NEG_RootWithParent",
+        "component": "MaxCountConstraintComponent",
+        "path": "hasBroaderGenre",
+        "severity": "Violation",
+        "message_contains": "must not have a broader genre"
+      }
+    },
+    {
+      "file": "song_charted_without_chart.ttl",
+      "shape": ":ChartConsistencyShape (sh:sparql)",
+      "why": "A peak chart position with no chart named is a meaningless number (CQ-10). Proves the SPARQL-constraint shapes fire, not just the property shapes.",
+      "expect": {
+        "focus": "NEG_SongPeakNoChart",
+        "component": "SPARQLConstraintComponent",
+        "severity": "Violation",
+        "message_contains": "must also state the chart"
+      }
+    },
+    {
+      "file": "artist_backwards_active_interval.ttl",
+      "shape": ":MusicalArtistShape (sh:sparql)",
+      "why": "An artist who retires eleven years before starting. Would corrupt CQ-13's era-overlap answers.",
+      "expect": {
+        "focus": "NEG_TimeTraveller",
+        "component": "SPARQLConstraintComponent",
+        "severity": "Violation",
+        "message_contains": "must not be later than activeUntil"
+      }
+    },
+    {
+      "file": "artist_non_gyear_active_from.ttl",
+      "shape": ":MusicalArtistShape / :activeFrom",
+      "why": "An untyped string where a gYear belongs — one of the style guide's five ruthless rules, and CQ-13 compares these years numerically.",
+      "expect": {
+        "focus": "NEG_LooseYear",
+        "component": "DatatypeConstraintComponent",
+        "path": "activeFrom",
+        "severity": "Violation",
+        "message_contains": "activeFrom must be a single xsd:gYear"
+      }
+    }
+  ]
+}

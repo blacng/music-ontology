@@ -1,0 +1,14 @@
+@prefix : <https://www.somusicvocabulary.org/music#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# NEGATIVE: :AlbumShape — :producedBy must point to a producer (CQ-8). Here it points
+# at a record label: labels release records, they do not produce them.
+
+:NEG_LabelNotAProducer a :RecordLabel ;
+    rdfs:label "Negative fixture — a record label"@en ;
+    .
+
+:NEG_AlbumProducedByLabel a :Album ;
+    rdfs:label "Negative fixture — an album produced by a record label"@en ;
+    :producedBy :NEG_LabelNotAProducer ;
+    .

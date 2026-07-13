@@ -1,0 +1,14 @@
+@prefix : <https://www.somusicvocabulary.org/music#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# NEGATIVE: :CompositionShape — :composedBy must point to a composer. Here it points at
+# a record label.
+
+:NEG_LabelNotAComposer a :RecordLabel ;
+    rdfs:label "Negative fixture — a record label"@en ;
+    .
+
+:NEG_CompositionByLabel a :Composition ;
+    rdfs:label "Negative fixture — a composition composed by a record label"@en ;
+    :composedBy :NEG_LabelNotAComposer ;
+    .

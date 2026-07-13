@@ -34,6 +34,13 @@ jobs:
       - name: SHACL conformance (fail on Violations)
         run: make shacl
 
+      # Without this, "0 Violations" above means nothing: a shape that targets zero nodes and
+      # a shape that genuinely passes report identically. This proves each shape can still fail.
+      # Note CI runs the targets individually and never invokes `make check` — a gate wired only
+      # into `make check` would be dead here, which is worse than absent (it manufactures trust).
+      - name: SHACL non-vacuity (prove the shapes can fail)
+        run: make shacl-negative
+
   reason:
     name: Reasoner consistency (HermiT)
     runs-on: ubuntu-latest

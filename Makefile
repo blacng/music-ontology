@@ -1,7 +1,7 @@
 # Music Ontology — task runner (thin wrapper over uv).
 # Usage: make <target>.  `make check` runs the full validation gate.
 
-.PHONY: help install validate test shacl coverage check dataset reason serve fuseki-load down clean
+.PHONY: help install validate test shacl shacl-negative coverage check dataset reason serve fuseki-load down clean
 
 # Fuseki endpoint knobs (override on the CLI, e.g. `make fuseki-load FUSEKI_PW=secret`)
 FUSEKI_URL ?= http://localhost:3030
@@ -23,6 +23,9 @@ test: ## CQ regression suite (one SPARQL test per competency question)
 
 shacl: ## SHACL conformance gate (fails only on Violations; Warnings advisory)
 	uv run python scripts/check_shacl.py
+
+shacl-negative: ## Non-vacuity gate — prove each shape can actually FAIL (tests/negative/)
+	uv run python scripts/check_shacl_negative.py
 
 coverage: ## ABox coverage report — can the real catalogue answer each CQ? (advisory, never fails)
 	uv run python scripts/cq_coverage.py
@@ -59,7 +62,7 @@ fuseki-load: dataset serve ## Build the dataset and (re)load it into Fuseki's na
 down: ## Stop the Fuseki server (keeps the TDB volume; use `docker compose down -v` to wipe)
 	docker compose down
 
-check: validate test shacl ## Run the full validation gate (CI; reasoner is separate, needs Docker)
+check: validate test shacl shacl-negative ## Run the full validation gate (CI; reasoner is separate, needs Docker)
 
 clean: ## Remove the virtual environment
 	rm -rf .venv

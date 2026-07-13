@@ -1,0 +1,11 @@
+@prefix : <https://www.somusicvocabulary.org/music#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# NEGATIVE: :ChartConsistencyShape (sh:sparql) — a song claiming a peak chart position
+# must say WHICH chart it peaked on, or the number is meaningless (CQ-10).
+
+:NEG_SongPeakNoChart a :Song ;
+    rdfs:label "Negative fixture — peaked at #1 on no chart in particular"@en ;
+    :peaksAt 1 ;
+    .

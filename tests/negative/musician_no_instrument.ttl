@@ -1,0 +1,12 @@
+@prefix : <https://www.somusicvocabulary.org/music#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# NEGATIVE: :MusicianShape — a musician must play at least one instrument
+# (singing counts via :Voice). This one plays nothing.
+#
+# Expected: Warning (the shape carries node-level sh:severity sh:Warning). A gate keyed
+# on Violation COUNT would pass this fixture while appearing to test it.
+
+:NEG_SilentMusician a :Musician ;
+    rdfs:label "Negative fixture — a musician who plays nothing"@en ;
+    .
