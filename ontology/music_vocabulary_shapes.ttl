@@ -39,8 +39,8 @@
         sh:message "collaboratesWith must relate one music-making agent to another (CQ-2)." ] ;
     sh:property [ sh:path :hasAward ; sh:class :MusicAward ;
         sh:message "hasAward must point to a :MusicAward (CQ-7)." ] ;
-    sh:property [ sh:path :bornOn ; sh:datatype xsd:date ; sh:maxCount 1 ;
-        sh:message "bornOn must be a single xsd:date." ] ;
+    sh:property [ sh:path :bornOn ; sh:datatype xsd:gYear ; sh:maxCount 1 ;
+        sh:message "bornOn must be a single xsd:gYear — year only, not a full date (personal-data minimisation)." ] ;
     sh:property [ sh:path :startsCareerIn ; sh:datatype xsd:gYear ; sh:maxCount 1 ;
         sh:message "startsCareerIn must be a single xsd:gYear." ] ;
     sh:property [ sh:path :activeFrom ; sh:datatype xsd:gYear ; sh:maxCount 1 ;
@@ -175,6 +175,15 @@
         sh:message "composedBy must point to an agent who holds :ComposerRole." ] ;
     .
 
+# An orchestra cannot conduct itself: the range is :MusicalPerson, not :MusicalAgent.
+:ConductedByShape a sh:NodeShape ;
+    sh:targetSubjectsOf :conductedBy ;
+    sh:property [ sh:path :conductedBy ; sh:class :MusicalPerson ;
+        sh:message "conductedBy must point to a :MusicalPerson — an ensemble does not conduct itself." ] ;
+    sh:property [ sh:path :conductedBy ; sh:node :HoldsConductorRoleShape ;
+        sh:message "conductedBy must point to a person who holds :ConductorRole." ] ;
+    .
+
 # The role-holder shapes carry NO sh:targetClass — a target would validate every node in the
 # graph. They are reachable only via sh:node from the credit shapes above. Kept separate from
 # the companion type-check so a failure says WHICH of the two is wrong.
@@ -192,6 +201,11 @@
 :HoldsComposerRoleShape a sh:NodeShape ;
     sh:property [ sh:path :hasRole ; sh:hasValue :ComposerRole ;
         sh:message "This agent does not hold :ComposerRole." ] ;
+    .
+
+:HoldsConductorRoleShape a sh:NodeShape ;
+    sh:property [ sh:path :hasRole ; sh:hasValue :ConductorRole ;
+        sh:message "This person does not hold :ConductorRole." ] ;
     .
 
 # --- Role shapes (gist:Category pattern) ---
@@ -231,8 +245,8 @@
         sh:message "isSignedTo must point to a :RecordLabel." ] ;
     sh:property [ sh:path :hasAward ; sh:class :MusicAward ;
         sh:message "hasAward must point to a :MusicAward (CQ-7)." ] ;
-    sh:property [ sh:path :bornOn ; sh:datatype xsd:date ; sh:maxCount 1 ;
-        sh:message "bornOn must be a single xsd:date." ] ;
+    sh:property [ sh:path :bornOn ; sh:datatype xsd:gYear ; sh:maxCount 1 ;
+        sh:message "bornOn must be a single xsd:gYear — year only, not a full date (personal-data minimisation)." ] ;
     sh:property [ sh:path :collaboratesWith ; sh:class :MusicalAgent ;
         sh:message "collaboratesWith must relate one music-making agent to another (CQ-2)." ] ;
     .

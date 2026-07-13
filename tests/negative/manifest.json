@@ -341,7 +341,7 @@
           "component": "DatatypeConstraintComponent",
           "path": "bornOn",
           "severity": "Violation",
-          "message_contains": "bornOn must be a single xsd:date"
+          "message_contains": "bornOn must be a single xsd:gYear"
         }
       ],
       "covers": [
@@ -361,6 +361,38 @@
           "component": "ClassConstraintComponent",
           "severity": "Violation",
           "message_contains": "hasRole must point to a :MusicalRole"
+        }
+      ]
+    },
+    {
+      "file": "orchestra_conducting_itself.ttl",
+      "shape": ":ConductedByShape",
+      "why": "An orchestra conducting itself. :conductedBy ranges over :MusicalPerson, not :MusicalAgent, precisely so an :Orchestra (a :Band, hence a :MusicalAgent) cannot be its own conductor.",
+      "covers": [
+        ":ConductedByShape",
+        ":HoldsConductorRoleShape"
+      ],
+      "expect": [
+        {
+          "focus": "NEG_UnconductedWork",
+          "component": "ClassConstraintComponent",
+          "path": "conductedBy",
+          "severity": "Violation",
+          "message_contains": "an ensemble does not conduct itself"
+        },
+        {
+          "focus": "NEG_UnconductedWork",
+          "component": "NodeConstraintComponent",
+          "path": "conductedBy",
+          "severity": "Violation",
+          "message_contains": "holds :ConductorRole"
+        },
+        {
+          "focus": "NEG_SelfConductingOrchestra",
+          "component": "HasValueConstraintComponent",
+          "path": "hasRole",
+          "severity": "Violation",
+          "message_contains": "does not hold :ConductorRole"
         }
       ]
     }

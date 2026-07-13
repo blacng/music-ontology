@@ -7,6 +7,7 @@
 ###############################################################################
 
 @prefix : <https://www.somusicvocabulary.org/music#> .
+@prefix dct: <http://purl.org/dc/terms/> .
 @prefix gist: <https://w3id.org/semanticarts/ns/ontology/gist/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -23,7 +24,18 @@
     rdfs:comment "A comprehensive vocabulary for describing music concepts, works, artists, instruments, and relationships."@en ;
     owl:versionInfo "3.0.0" ;
     owl:versionIRI <https://www.somusicvocabulary.org/music/3.0.0> ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> ;
+    dct:creator "Seun Odeyemi" ;
+    # gist is CC-BY-4.0, which requires attribution ON REDISTRIBUTION — and `make dataset`
+    # does redistribute it, as a named graph inside dist/music_dataset.trig. See NOTICE.
+    dct:source <https://w3id.org/semanticarts/ontology/gistCore> ;
     owl:imports <https://w3id.org/semanticarts/ontology/gistCore> .
+
+<https://w3id.org/semanticarts/ontology/gistCore>
+    dct:title "gist" ;
+    dct:creator "Semantic Arts, Inc." ;
+    dct:license <https://creativecommons.org/licenses/by/4.0/> ;
+    owl:versionInfo "14.1.0" .
 
 ###############################################################################
 # CLASSES — AGENTS & PEOPLE
@@ -736,10 +748,27 @@
 
 :producedBy a owl:ObjectProperty ;
     skos:prefLabel "produced by"@en ;
-    skos:scopeNote "Associates a musical work with the agent who produced it. The agent must hold :ProducerRole (enforced by :AlbumShape)."@en ;
+    skos:scopeNote "Associates a musical work with the agent who produced it. The agent must hold :ProducerRole (enforced by :ProducedByShape)."@en ;
     rdfs:domain :MusicalWork ;
     rdfs:range :MusicalAgent ;
     skos:definition "Relates a musical work to the agent who oversaw its production."@en ;
+    .
+
+# Conducting had no property at all. A conductor could be *labelled* one (:ConductorRole) and
+# then linked to nothing — not an orchestra, not a symphony, not a recording. Karajan was a
+# decorated dead end, which is a poor showing for a music ontology, since "conductor +
+# ensemble + composer + work" is the credit shape the entire classical catalogue is keyed on.
+#
+# Note how the pieces sit: the ORCHESTRA performs (:Orchestra ⊑ :Band ⊑ :MusicalArtist, so it
+# satisfies :performedBy) and the CONDUCTOR conducts. That is how the credit actually works —
+# the conductor is not a performer, which is precisely why :MusicianShape no longer expects an
+# instrument from them.
+:conductedBy a owl:ObjectProperty ;
+    skos:prefLabel "conducted by"@en ;
+    skos:scopeNote "Associates a musical work with the person who conducted it. The person must hold :ConductorRole (enforced by :ConductedByShape). Like every credit here, this attaches to the WORK — the model has no Recording, so it cannot yet distinguish two conductors' readings of the same symphony."@en ;
+    rdfs:domain :MusicalWork ;
+    rdfs:range :MusicalPerson ;
+    skos:definition "Relates a musical work to the person who directed its performance."@en ;
     .
 
 :releasedBy a owl:ObjectProperty ;
@@ -952,11 +981,17 @@ skos:scopeNote a owl:AnnotationProperty .
 
 # --- Time: bornOn replaces the removed hasAge ---
 
+# xsd:gYear, not xsd:date — data minimisation (GDPR Art. 5(1)(c)). The catalogue describes
+# real, named, living people. Exactly one consumer reads :bornOn — CQ-15 — and it only ever
+# took YEAR(?b). Storing a person's exact date of birth to answer a question about the decade
+# they came of age is collecting more than the purpose requires. The year is sufficient, so
+# the year is what we keep.
 :bornOn a owl:DatatypeProperty ;
     skos:prefLabel "born on"@en ;
     rdfs:domain :MusicalAgent ;
-    rdfs:range xsd:date ;
-    skos:definition "The date on which an agent was born."@en ;
+    rdfs:range xsd:gYear ;
+    skos:scopeNote "Year of birth only. Do not narrow to a full date: no competency question needs one, and this is personal data about living individuals."@en ;
+    skos:definition "The year in which an agent was born."@en ;
     .
 
 # --- Time: artist activity interval (the canonical era signal). :startsCareerIn

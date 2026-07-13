@@ -618,7 +618,7 @@
 :JimiHendrix a :Musician ;
     rdfs:label "Jimi Hendrix"@en ;
     rdfs:comment "American rock guitarist, singer, and songwriter."@en ;
-    :bornOn "1942-11-27"^^xsd:date ;
+    :bornOn "1942"^^xsd:gYear ;
     :hasInstrument :Guitar ;
     :hasGenre :Rock ;
     :originatesFrom :Seattle ;
@@ -657,7 +657,7 @@
     :hasInstrument :Trumpet ;
     rdfs:label "Quincy Jones"@en ;
     rdfs:comment "American record producer, conductor, and composer, known for producing Michael Jackson's Thriller."@en ;
-    :bornOn "1933-03-14"^^xsd:date ;
+    :bornOn "1933"^^xsd:gYear ;
     :originatesFrom :Chicago ;
     :startsCareerIn "1951"^^xsd:gYear ;
     .
@@ -718,7 +718,7 @@
     :hasRole :ComposerRole, :LyricistRole ;
     rdfs:label "Bob Dylan"@en ;
     rdfs:comment "American singer-songwriter widely considered one of the greatest songwriters of all time."@en ;
-    :bornOn "1941-05-24"^^xsd:date ;
+    :bornOn "1941"^^xsd:gYear ;
     :hasGenre :Folk ;
     :hasGenre :Rock ;
     :hasInstrument :Guitar ;
@@ -736,7 +736,7 @@
     :hasRole :LyricistRole ;
     rdfs:label "Paul McCartney"@en ;
     rdfs:comment "English singer-songwriter and musician, best known as a member of the Beatles."@en ;
-    :bornOn "1942-06-18"^^xsd:date ;
+    :bornOn "1942"^^xsd:gYear ;
     :startsCareerIn "1957"^^xsd:gYear ;
     :originatesFrom :Liverpool ;
     :speaksLanguage "English" ;
@@ -751,7 +751,7 @@
 :KanyeWest a :SoloArtist ;
     rdfs:label "Kanye West"@en ;
     rdfs:comment "American rapper, singer, songwriter, record producer, and fashion designer."@en ;
-    :bornOn "1977-06-08"^^xsd:date ;
+    :bornOn "1977"^^xsd:gYear ;
     :startsCareerIn "1996"^^xsd:gYear ;
     :originatesFrom :Chicago ;
     :speaksLanguage "English" ;
@@ -763,7 +763,7 @@
 :SadeAdu a :SoloArtist ;
     rdfs:label "Sade Adu"@en ;
     rdfs:comment "British-Nigerian singer, songwriter known for her smooth soulful voice."@en ;
-    :bornOn "1959-01-16"^^xsd:date ;
+    :bornOn "1959"^^xsd:gYear ;
     :startsCareerIn "1980"^^xsd:gYear ;
     :originatesFrom :London ;
     :speaksLanguage "English" ;
@@ -775,7 +775,7 @@
 :BeyonceKnowles a :SoloArtist ;
     rdfs:label "Beyoncé Knowles"@en ;
     rdfs:comment "American singer, songwriter, and actress, widely regarded as one of the greatest entertainers of all time."@en ;
-    :bornOn "1981-09-04"^^xsd:date ;
+    :bornOn "1981"^^xsd:gYear ;
     :startsCareerIn "1990"^^xsd:gYear ;
     :originatesFrom :Houston ;
     :speaksLanguage "English" ;
@@ -788,7 +788,7 @@
 :MilesDavis a :SoloArtist ;
     rdfs:label "Miles Davis"@en ;
     rdfs:comment "American jazz trumpeter and bandleader, one of the most influential musicians in jazz history."@en ;
-    :bornOn "1926-05-26"^^xsd:date ;
+    :bornOn "1926"^^xsd:gYear ;
     :startsCareerIn "1944"^^xsd:gYear ;
     :originatesFrom :Alton ;
     :speaksLanguage "English" ;
@@ -824,7 +824,7 @@
     :hasRole :LyricistRole ;
     rdfs:label "Taylor Swift"@en ;
     rdfs:comment "American singer-songwriter known for her narrative songwriting."@en ;
-    :bornOn "1989-12-13"^^xsd:date ;
+    :bornOn "1989"^^xsd:gYear ;
     :startsCareerIn "2004"^^xsd:gYear ;
     :originatesFrom :WestReading ;
     :speaksLanguage "English" ;
@@ -1021,10 +1021,17 @@
     :hasAward :MercuryPrize ;
     .
 
+# The classical credit shape: the ORCHESTRA performs, the CONDUCTOR conducts, the COMPOSER
+# composed. Three different agents in three different capacities on one work — the thing the
+# old role-as-class model could not lay out, and the reason :conductedBy now exists.
+# (Caveat, stated once and true of every credit here: these attach to the WORK. The model has
+# no Recording, so it cannot distinguish Karajan's 1963 reading from anyone else's.)
 :Symphony9Beethoven a :Symphony ;
     rdfs:label "Symphony No. 9 in D minor, Op. 125"@en ;
     rdfs:comment "The final complete symphony by Ludwig van Beethoven, premiered in 1824."@en ;
     :composedBy :LudwigVanBeethoven ;
+    :conductedBy :HerbertVonKarajan ;
+    :performedBy :BerlinPhilharmonic ;
     :releasedIn "1824"^^xsd:gYear ;
     :hasGenre :Classical ;
     :hasGenre :Romantic ;
@@ -1035,6 +1042,7 @@
     rdfs:label "Requiem in D minor, K. 626"@en ;
     rdfs:comment "A requiem mass by Wolfgang Amadeus Mozart, left unfinished at his death in 1791."@en ;
     :composedBy :WolfgangAmadeusMozart ;
+    :conductedBy :LeonardBernstein ;
     :releasedIn "1791"^^xsd:gYear ;
     :hasGenre :Classical ;
     :hasTimeSignature :FourFourTime ;

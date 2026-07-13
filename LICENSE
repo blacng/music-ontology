@@ -1,0 +1,38 @@
+Creative Commons Attribution 4.0 International (CC BY 4.0)
+
+Copyright (c) 2026 Seun Odeyemi
+
+The Comprehensive Music Vocabulary (the ontology, SHACL shapes, catalogue, competency
+questions, and supporting scripts in this repository) is licensed under the Creative
+Commons Attribution 4.0 International License.
+
+You are free to:
+
+  Share  — copy and redistribute the material in any medium or format
+  Adapt  — remix, transform, and build upon the material for any purpose, even
+           commercially
+
+Under the following terms:
+
+  Attribution — You must give appropriate credit, provide a link to the license, and
+  indicate if changes were made. You may do so in any reasonable manner, but not in any way
+  that suggests the licensor endorses you or your use.
+
+No additional restrictions — You may not apply legal terms or technological measures that
+legally restrict others from doing anything the license permits.
+
+Full licence text: https://creativecommons.org/licenses/by/4.0/legalcode
+
+---
+
+CC-BY-4.0 is chosen deliberately to match the licence of the gist upper ontology, which this
+project reuses and redistributes. See NOTICE for the third-party attribution that licence
+requires.
+
+---
+
+NOTE ON THE CATALOGUE: ontology/music_catalog_data.ttl contains biographical facts about
+real, named, living people (birth years, places of origin). It is an illustrative catalogue
+of documented public facts, not a curated or verified rights database, and it carries no
+statement-level provenance. Do not use it to make decisions about a person, and do not use
+it for rights or royalty administration. See docs/data-protection.md.

@@ -14,7 +14,7 @@
 :NEG_UnvalidatedPerson a :MusicalPerson ;
     rdfs:label "Negative fixture — a person with garbage in every slot"@en ;
     :hasInstrument :NEG_NotAnInstrument ;
-    :bornOn "sometime in the 1930s" ;
+    :bornOn "sometime in the 1930s" ;   # untyped string where an xsd:gYear belongs
     .
 
 :NEG_NotAnInstrument a :RecordLabel ;
