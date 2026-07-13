@@ -110,17 +110,23 @@ graph LR
   Place -->|hasPlaceType| PlaceType
   Place -->|locatedIn*| Place
   HistoricalEvent -->|locatedIn| Place
+  MusicalAgent -->|hasRole| MusicalRole
   Song & Album -->|performedBy| MusicalArtist
-  Album -->|producedBy| MusicProducer
+  MusicalWork -->|producedBy| MusicalAgent
   Album -->|hasTrack| Song
-  Song -->|writtenBy| Lyricist
+  MusicalWork -->|writtenBy| MusicalAgent
   Song -->|chartedIn| MusicChart
-  Composition -->|composedBy| Composer
+  MusicalWork -->|composedBy| MusicalAgent
+  MusicalWork -->|conductedBy| MusicalPerson
   WorkCollection -->|collects| MusicalWork
   WorkCollection -->|isCategorizedBy| CollectionType
 ```
 
-~56 classes / ~42 properties across agents, works, a genre taxonomy, instruments (incl. the
+Credit properties range over `:MusicalAgent`; the **role** requirement (the producer must hold
+`:ProducerRole`, etc.) is a SHACL constraint, not an `rdfs:range` — a range would not *check* the
+role, it would *manufacture* it.
+
+54 classes / 44 properties across agents, works, a genre taxonomy, instruments (incl. the
 `:Voice`/`:VocalInstrument` for singing), events/venues, awards/charts, category-typed places,
 historical events, curated work collections, and musical features (key, tempo, time signature).
 Agents re-parent to `gist:Person`/`gist:Organization`, works to `gist:Content`, instruments to

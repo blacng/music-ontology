@@ -25,7 +25,7 @@ The ontology's functional contract is the competency-question set in
 discovery and recommendation. "Done" for the ontology means every CQ has a passing SPARQL test
 against canonical instance data (Production Readiness Checklist item 1). **Realized in Artefact 5,
 extended in v2.2–v2.3:** `tests/cq_test_manifest.json` + `tests/test_data.ttl`, run by
-`scripts/run_cq_tests.py` — **17/17 pass**.
+`scripts/run_cq_tests.py` — **18/18 pass** (CQ-17 added in v3.0.0).
 
 ## Conventions
 
@@ -47,7 +47,8 @@ production use. Scope is **content-based candidate generation**, not personalise
   `:hasBroaderGenre`, top level marked `:TopLevelGenre`. Semantically sound transitivity.
 - **Geography** is structured: `:originatesFrom` (agents) and `:locatedIn` (orgs/venues/places,
   transitive) point to `:Place`/`:City`/`:Country`, enabling regional roll-up.
-- **Personal attrs:** `:hasHeight` removed; `:hasAge` replaced by `:bornOn` (`xsd:date`).
+- **Personal attrs:** `:hasHeight` removed; `:hasAge` replaced by `:bornOn` (**`xsd:gYear`** since
+  v3.0.0 — year only, personal-data minimisation; see `docs/data-protection.md`).
 - **Agent boundary** (Artefact-4 loop-back, SHACL-driven): `:MusicalAgent` is the shared parent
   of `:MusicalArtist` and `:Musician`; `:SoloArtist ⊑ :Musician`; `:collaboratesWith` relates
   `:MusicalAgent`s. Clears the 2 SHACL Violations at the schema level (no individual patching).
@@ -59,7 +60,10 @@ Applied via `scripts/apply_structural_fixes.py`; verified by `scripts/validate_f
 
 - **Vocalist instrument gap closed:** singing is modelled as `:hasInstrument :Voice`, where
   `:Voice a :VocalInstrument ⊑ :MusicalInstrument`. `MusicianShape` additionally exempts
-  `:Conductor` from the play-an-instrument expectation (`sh:or`), so the two legitimate
+  ~~`:Conductor` from the play-an-instrument expectation (`sh:or`)~~ — **withdrawn in v3.0.0.**
+  There is no exemption: a conductor who plays nothing is a `:MusicalPerson`, not a `:Musician`,
+  so `MusicianShape` never targets them. The `sh:or` was a band-aid over a bad type assignment.
+  The two legitimate
   non-instrumentalist cases no longer trip the soft warning.
 - **Annotations are SKOS-only** on vocabulary terms: classes and properties carry
   `skos:prefLabel` + `skos:definition` (+ `skos:scopeNote`), never `rdfs:label`/`rdfs:comment`.
@@ -118,7 +122,7 @@ pattern and the place-containment graph. Design pressure-tested via `model_dialo
   every CQ against TBox + ABox with the fixtures excluded and `?seed` left free, counting how many
   *real* individuals can seed it. It found three CQs green on fixtures alone (CQ-8, CQ-11, CQ-15),
   each with a **different** root cause — a genuine data gap, an asserted-direction bug, and sparse
-  `:bornOn` respectively. **Now 17/17 answerable.** Run it whenever a CQ or the ABox changes.
+  `:bornOn` respectively. **Now 18/18 answerable.** Run it whenever a CQ or the ABox changes.
 - **Thin coverage (accepted, not a defect):** CQ-15 has one answerable seed
   (`:AmericanCivilRightsMovement`); `:IrishWarOfIndependence` yields nothing because no artist in the
   catalogue originates from Ireland. CQ-16 has a single `:WorkCollection`. Both are honest signals of

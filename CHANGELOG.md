@@ -3,6 +3,91 @@
 All notable changes to the Comprehensive Music Vocabulary. Versions follow the ontology's
 `owl:versionInfo` / `owl:versionIRI`.
 
+## [3.0.0] — 2026-07-12
+
+**BREAKING.** `:Composer`, `:Lyricist`, `:MusicProducer` and `:Conductor` are no longer classes. They
+are `:MusicalRole` individuals (`:ComposerRole`, `:LyricistRole`, `:ProducerRole`, `:ConductorRole`)
+attached with `:hasRole`. **`?x a :MusicProducer` now returns zero rows.** They were removed rather
+than renamed in place so the break is loud: reusing the IRIs would have flipped them from class to
+individual and returned zero rows *silently*.
+
+### Why
+
+`:MusicProducer` sat under `gist:Person`, *outside* `:MusicalAgent`. Quincy Jones — whose own
+`rdfs:comment` in this catalogue reads *"record producer, conductor, and composer"* — was typed
+`:MusicProducer` and nothing else, so he could hold no `:hasInstrument` and perform no work.
+
+**Be precise about the defect, because the loose version is false.** Roles-as-classes did **not** make
+multi-role agents *unsayable* — OWL individuals take many types, and `:QuincyJones a :MusicProducer,
+:Composer` would have made him a `:Musician` and let him hold an instrument. The catalogue simply never
+asserted it. That was a missing triple, not an impossibility. What roles-as-classes actually cost:
+
+- **Anti-rigidity (OntoClean).** A class should hold what is essential to identity. Rubin cannot stop
+  being a person; he can stop producing.
+- **Query brittleness.** "Who holds more than one role?" had to enumerate every role class in a
+  `VALUES` clause, and broke whenever a role was added.
+- **Extensibility.** Each new role was a TBox release. Real catalogues carry dozens (engineer,
+  arranger, mixer, librettist). Now a role is one ABox triple.
+
+### Added
+- **`:MusicalPerson`** (⊑ `:MusicalAgent`, ⊑ `gist:Person`) — the person-side counterpart to `:Band`;
+  `:Musician` reparented beneath it. `:MusicalPersonShape` validates it.
+- **`:MusicalRole`** (⊑ `gist:Category`) and **`:hasRole`** (⊑ `gist:isCategorizedBy`), mirroring the
+  genre / place-type / collection-type pattern the model already used.
+- **`:conductedBy`** — conducting had no property at all. Karajan could be *labelled* a conductor and
+  then linked to nothing. Now `:Symphony9Beethoven :composedBy :LudwigVanBeethoven ; :conductedBy
+  :HerbertVonKarajan ; :performedBy :BerlinPhilharmonic` — three agents, three capacities, one work.
+- **`owl:disjointWith` / `owl:AllDisjointClasses`** — the domain TBox previously had **none**.
+- **`tests/negative/`** (17 fixtures) + **`make shacl-negative`** and **`make reason-negative`**,
+  both wired into CI.
+- **CQ-17** — "which agents hold more than one musical role?"
+- **LICENSE** (CC-BY-4.0) and **NOTICE** — gist is CC-BY and `make dataset` redistributes it, which
+  requires attribution. Neither existed.
+- **`docs/data-protection.md`**.
+
+### Changed
+- **`make shacl` now validates under RDFS inference with a taxonomy-only `ont_graph`.** It previously
+  ran with **no inference at all**, so `sh:targetClass :MusicalArtist` never reached a node asserted as
+  `:SoloArtist` — the shape hierarchy simply did not apply. Turning inference on is necessary; doing it
+  naively is a trap, because RDFS materialises `rdfs:domain`, and a domain is an inference *rule*, not
+  a constraint. It makes any `sh:class` check on that property's subject **unfalsifiable**. Stripping
+  domain/range from the validator's view of the TBox restores non-vacuity. Proven, not asserted: with
+  the full TBox as `ont_graph` a `:RecordLabel` asserting `:startsCareerIn` **conforms**.
+- **`rdfs:domain` on `:startsCareerIn`/`:activeFrom`/`:activeUntil`** is now `:MusicalAgent` (was
+  `:MusicalArtist`, which was false — producers and conductors have careers).
+- **`:producedBy`/`:writtenBy`/`:composedBy`** range over `:MusicalAgent`; the role requirement moved
+  into SHACL, anchored on the **property** (`sh:targetSubjectsOf`) not the work's class.
+- **`:writtenBy` domain widened to `:MusicalWork`** — under `:Song` a librettist was unsayable.
+- **`:bornOn` narrowed to `xsd:gYear`** — nine full birth dates were stored to serve one consumer that
+  only ever read the year (GDPR Art. 5(1)(c) minimisation). CQ-15 updated accordingly.
+
+### Removed
+- **`:MusicianShape`'s conductor exemption** (`sh:or ( … [sh:class :Conductor] )`) and
+  **`:CareerOnsetShape`'s producer arm** (`sh:or ( … [sh:class :MusicProducer] )`). Both band-aids
+  existed *only* because of the bad hierarchy; fixing it dissolved them rather than relocating them.
+- **`:MusicalArtist skos:broader :Artist`** — pointed at a class this ontology has never defined. It
+  had dangled quietly for several releases; a new undeclared-reference check caught it.
+
+### Fixed (found by the adversarial critique, before release)
+- **The credit guards were bypassable.** Anchored to the work's class, so `:SomeAlbum :writtenBy
+  :SomeRecordLabel` passed with **zero violations** — `:AlbumShape` never mentioned `:writtenBy`.
+- **`:MusicalPerson` had no shape**, a coverage regression this release introduced: it moved conductors
+  and producers out of `:Musician` (policed) into a class nothing validated.
+- **A `:Band` could hold `:ConductorRole`.** Demoting the role classes discarded what subclassing gave
+  free — gist states a Category has *"no formal semantics"*, so every such guarantee had to be restated.
+- **`make reason` was vacuously green.** Zero disjointness axioms meant HermiT had nothing to
+  contradict and could not fail on any input — the same defect as `make shacl`, one level up.
+
+### Known limits (see `sdd/decisions.md` AD-12, AD-14)
+- **The role is on the AGENT, not the CREDIT.** `:HoldsProducerRoleShape` can only catch an agent who
+  produces nothing *anywhere*; it **cannot catch a wrong credit**. Reifying credits (agent × role ×
+  work, as MusicBrainz/Discogs/DDEX do) is the real fix and is deferred.
+- **The shipped TBox and the validator's view are not the same graph.** A downstream RDFS store will
+  still *retype* bad data rather than reject it. **SHACL is the normative contract; entailment is not.**
+- **No Work/Recording/Release distinction.** `:belongsToAlbum sh:maxCount 1` is false for any song on
+  both a single and an album; covers and remasters are unrepresentable.
+- **No statement-level provenance.** Do not use this catalogue for rights administration.
+
 ## [Unreleased]
 
 Tooling, ABox data, and documentation. **No TBox change**, so no version bump — the model is untouched;

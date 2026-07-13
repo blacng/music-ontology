@@ -37,7 +37,7 @@ the v1/v2 SKOS non-transitivity gap is closed. Validated by `scripts/validate_fi
 
 This ontology describes the popular- and classical-music domain for a **music discovery /
 recommendation application**. It models musical **agents** (solo artists, bands and their
-members, composers, lyricists, producers, conductors, record labels), the **works** they
+members, and agents holding composer / lyricist / producer / conductor **roles**, record labels), the **works** they
 create (songs, albums and sub-types, classical compositions), a deep **genre** taxonomy
 (top-level genres and subgenres linked by transitive `:hasBroaderGenre`), **instruments** and their families,
 **events/venues**, **awards and charts**, and intrinsic **musical features** (key, tempo, time
@@ -46,7 +46,8 @@ signature). The relationships that matter for discovery are connective: genre me
 label rosters (`isSignedTo`), authorship/performance (`performedBy`, `composedBy`, `writtenBy`,
 `producedBy`), album composition (`hasTrack`/`belongsToAlbum`), instrumentation
 (`hasInstrument`), recognition (`hasAward`, `chartedIn`, `peaksAt`), and origin/era
-(`originatesFrom`, `startsCareerIn`, `releasedIn`).
+(`originatesFrom`, `startsCareerIn`, `releasedIn`), conducting (`conductedBy`), and the capacity in
+which an agent contributes (`hasRole` → `:MusicalRole`).
 
 ---
 
@@ -156,7 +157,10 @@ label rosters (`isSignedTo`), authorship/performance (`performedBy`, `composedBy
 ### CQ-8 — Producer lineage ⚠
 - **Question:** Given an album a user likes, which other albums share its producer?
 - **Use case:** "From the producer of…" discovery.
-- **Elements:** `:Album`, `:producedBy`, `:MusicProducer`.
+- **Elements:** `:Album`, `:producedBy`, `:MusicalAgent` holding `:ProducerRole`.
+  *(v3.0.0: `:MusicProducer` the CLASS no longer exists — a producer is an agent who holds
+  `:ProducerRole`. `:ProducedByShape` enforces it. Note the limit: the shape checks the agent
+  produces something SOMEWHERE, not that they produced THIS album — see AD-14.)*
 - **Pass condition (needs data):** After adding ≥2 albums per producer, seed `:Thriller` (Quincy Jones) returns Jones's other album(s). Currently each producer has one album ⇒ empty. Test-data target (Artefact 5).
 - **SPARQL skeleton:**
   ```sparql
@@ -340,3 +344,32 @@ real catalog. **17/17 pass** (12 original + CQ-1b + three v2.2 CQs + CQ-16). Run
   pass conditions to all CQs; reworked CQ-4 to release-era; replaced award-within-genre CQ
   with explainability CQ-7; recorded prototype waivers and deferred modelling fixes.
 - **v1**: initial 12 CQs.
+
+### CQ-17 — Multi-role agents ✅
+- **Question:** Which agents hold more than one musical role (e.g. producer *and* composer)?
+- **Use case:** Surfacing the polymaths — "Quincy Jones, who also conducted and composed."
+- **Elements:** `:MusicalAgent`, `:hasRole`, `:MusicalRole`.
+- **Pass condition:** `:QuincyJones` (3 roles) and `:BobDylan` (2) are returned; `:GeorgeMartin`
+  (1 role) is not. Answerable from the real catalogue (2 seeds — thin).
+- **SPARQL:**
+  ```sparql
+  SELECT ?agent (COUNT(DISTINCT ?r) AS ?n) WHERE {
+    ?agent :hasRole ?r . ?r a :MusicalRole .
+  } GROUP BY ?agent HAVING(COUNT(DISTINCT ?r) > 1)
+  ```
+- **Honest note on provenance:** this CQ was authored *with* the v3.0.0 model change, not before it,
+  which inverts the CQ-first rule in `CQ_generator.md`. It was initially justified with the claim that
+  the question was "unanswerable by construction" under roles-as-classes. **That claim was false** —
+  `:QuincyJones a :MusicProducer, :Composer` was always legal OWL and a `VALUES` clause over the four
+  role classes would have answered it. What the old model actually cost was that the query had to
+  *enumerate every role class*, so it broke whenever a role was added, and each new role needed a TBox
+  release. Read CQ-17 as a **regression test for `:hasRole`**, not as a stakeholder requirement.
+
+---
+
+## Changelog (v3.0.0)
+- Added **CQ-17** (multi-role agents) — 18 CQs total, 18/18 passing, 18/18 answerable from the real
+  catalogue (`make coverage`).
+- **CQ-8**: `:MusicProducer` the class is gone; a producer is an agent holding `:ProducerRole`.
+- **CQ-15**: `:bornOn` narrowed to `xsd:gYear` (personal-data minimisation), so the year is read with
+  `xsd:integer(STR(?b))` — SPARQL's `YEAR()` accepts only `xsd:date`/`xsd:dateTime`.
